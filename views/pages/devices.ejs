@@ -1,6 +1,6 @@
 <% include ../fragments/header.ejs %>
 
-<% if (grants) { %>
+<% if (grants == 0) { %>
 	<div class="alert alert-danger alert-dismissible fade show" role="alert">
 		<strong>Warning!</strong> You still need to link your Amazon Account via the Alexa App!
 		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -373,6 +373,11 @@ function checkCapability(check) {
 	}
 	// Single Capabilities HERE
 	else {
+		if ($('#ChannelController').prop('checked')) {
+			// Auto-select Activity (can be changed by user)
+			$('#TV').prop('checked', true);
+			$('input[name=appType]').each(function(index){if ($(this).attr("id") != "TV") {$('input[id^='+$(this).attr("id")+']').prop("checked", false)}});
+		}
 		if ($('#InputController').prop('checked')) {
 			// Auto-select Activity (can be changed by user)
 			$('#TV').prop('checked', true);

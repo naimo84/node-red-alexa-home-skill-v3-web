@@ -720,6 +720,15 @@ function replaceCapability(capability, reportState) {
 			]};
 	}
 
+	// ChannelController
+	if(capability == "ChannelController") {
+		return {
+			"type": "AlexaInterface",
+			"interface": "Alexa.ChannelController",
+			"version": "3",
+			};
+	}
+
 	// PowerController
 	if(capability == "PowerController") {
 		return {
@@ -1016,9 +1025,12 @@ app.get('/api/v1/getstate/:dev_id',
 														"name": "brightness",
 														"value": deviceJSON.state.brightness,
 														"timeOfSample": deviceJSON.state.time,
-														"uncertaintyInMilliseconds": 5000
+														"uncertaintyInMilliseconds": 10000
 													});
 											}
+											break;
+										case "ChannelController":
+											// Return Channel State - no reportable state as of December 2018
 											break;
 										case "ColorController":
 											// Return color
@@ -1032,7 +1044,7 @@ app.get('/api/v1/getstate/:dev_id',
 															"brightness": deviceJSON.state.brightness
 														},
 														"timeOfSample": deviceJSON.state.time,
-														"uncertaintyInMilliseconds": 5000
+														"uncertaintyInMilliseconds": 10000
 														});
 												}
 											break;
@@ -1044,7 +1056,7 @@ app.get('/api/v1/getstate/:dev_id',
 														"name": "colorTemperatureInKelvin",
 														"value": deviceJSON.state.colorTemperature,
 														"timeOfSample": deviceJSON.state.time,
-														"uncertaintyInMilliseconds": 5000
+														"uncertaintyInMilliseconds": 10000
 													});
 											}
 											break;
@@ -1056,7 +1068,7 @@ app.get('/api/v1/getstate/:dev_id',
 														"name": "input",
 														"value": deviceJSON.state.input,
 														"timeOfSample": deviceJSON.state.time,
-														"uncertaintyInMilliseconds": 5000
+														"uncertaintyInMilliseconds": 10000
 													});
 											}
 											break;
@@ -1068,7 +1080,7 @@ app.get('/api/v1/getstate/:dev_id',
 														"name": "lockState",
 														"value": deviceJSON.state.lock,
 														"timeOfSample": deviceJSON.state.time,
-														"uncertaintyInMilliseconds": 5000
+														"uncertaintyInMilliseconds": 10000
 													});
 											}
 											break;
@@ -1083,7 +1095,7 @@ app.get('/api/v1/getstate/:dev_id',
 															"name": "powerState",
 															"value": deviceJSON.state.power,
 															"timeOfSample": deviceJSON.state.time,
-															"uncertaintyInMilliseconds": 5000
+															"uncertaintyInMilliseconds": 10000
 													});
 											}
 											break;
@@ -1098,14 +1110,14 @@ app.get('/api/v1/getstate/:dev_id',
 															"scale":deviceJSON.validRange.scale.toUpperCase()
 															},
 														"timeOfSample":deviceJSON.state.time,
-														"uncertaintyInMilliseconds":5000
+														"uncertaintyInMilliseconds":10000
 													});
 												properties.push({
 														"namespace":"Alexa.ThermostatController",
 														"name":"thermostatMode",
 														"value":deviceJSON.state.thermostatMode,
 														"timeOfSample":deviceJSON.state.time,
-														"uncertaintyInMilliseconds":5000
+														"uncertaintyInMilliseconds":10000
 													});
 											}
 											break;
@@ -1119,7 +1131,7 @@ app.get('/api/v1/getstate/:dev_id',
 									  "value": "OK"
 									},
 									"timeOfSample": deviceJSON.state.time,
-									"uncertaintyInMilliseconds": 5000
+									"uncertaintyInMilliseconds": 10000
 								});
 
 								res.status(200).json(properties);
@@ -1141,7 +1153,7 @@ app.get('/api/v1/getstate/:dev_id',
 								  "value": "OK"
 								},
 								"timeOfSample": deviceJSON.state.time,
-								"uncertaintyInMilliseconds": 0
+								"uncertaintyInMilliseconds": 10000
 							});
 
 							//res.status(500).send();
@@ -1287,7 +1299,9 @@ app.get('/devices',
 		]);
 
 		Promise.all([userDevices, countDevices, countGrants]).then(([devices, countDevs, countUserGrants]) => {
-			res.render('pages/devices',{user: req.user, devices: devices, count: countDevs, grants: countUserGrants.countGrants, devs: true});
+			log2console("INFO", "Grant count for user: " + user + ", grants: " + countUserGrants[0].countGrants);
+			log2console("INFO", "countUserGrants: " + JSON.stringify(countUserGrants));
+			res.render('pages/devices',{user: req.user, devices: devices, count: countDevs, grants: countUserGrants[0].countGrants, devs: true});
 		}).catch(err => {
 			res.status(500).json({error: err});
 		});
@@ -1641,6 +1655,7 @@ function setstate(username, endpointId, payload) {
 				if (payload.state.hasOwnProperty('colorHue')) {dev.state.colorHue = payload.state.colorHue};
 				if (payload.state.hasOwnProperty('colorSaturation')) {dev.state.colorSaturation = payload.state.colorSaturation};
 				if (payload.state.hasOwnProperty('input')) {dev.state.input = payload.state.input};
+				if (payload.state.hasOwnProperty('channel')) {dev.state.input = payload.state.channel};
 				if (payload.state.hasOwnProperty('lock')) {dev.state.lock = payload.state.lock};
 				if (payload.state.hasOwnProperty('playback')) {dev.state.playback = payload.state.playback};
 				if (payload.state.hasOwnProperty('thermostatSetPoint')) {

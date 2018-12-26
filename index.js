@@ -1266,8 +1266,28 @@ app.get('/devices',
 		var user = req.user.username;
 		const userDevices = Devices.find({username:user});
 		const countDevices = Devices.countDocuments({username:user});
-		Promise.all([userDevices, countDevices]).then(([devices, count]) => {
-			res.render('pages/devices',{user: req.user, devices: devices, count: count, devs: true});
+		const countGrants = Account.aggregate([
+			{ "$match": {
+				"username" : user
+			}},
+			{ "$lookup": {
+				"from": "grantcodes",
+				"let": { "user_id": "$_id" },
+				"pipeline": [
+					{ "$match": {
+					"$expr": { "$eq": [ "$$user_id", "$user" ] }
+					}},
+					{ "$count": "count" }
+				],
+				"as": "grantCount"    
+			}},
+			{ "$addFields": {
+			"countGrants": { "$sum": "$grantCount.count" }
+			}}
+		]);
+
+		Promise.all([userDevices, countDevices, countGrants]).then(([devices, countDevs, countUserGrants]) => {
+			res.render('pages/devices',{user: req.user, devices: devices, count: countDevs, grants: countUserGrants.countGrants, devs: true});
 		}).catch(err => {
 			res.status(500).json({error: err});
 		});

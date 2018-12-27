@@ -1,0 +1,144 @@
+<% include ../fragments/header.ejs %>
+<div class="container main-content col-sm-6">
+  <form class="form-account" id="form-account">
+    <h1>My Account</h1>
+    <div class="form-group row">
+      <div class="col-sm-9 ">
+        Use this form to update your email address and country of residence, you can also link through to the password reset form from here.
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="col-sm-2">
+        <input id="userId" type="hidden">
+        <label for="username" class="col-form-label">Username:</label>
+      </div>
+      <div class="col-sm-7">
+        <input type="text" id="username" name="username" pattern="^[a-z,A-Z,0-9,_]{5,15}$" class="form-control" placeholder="Username" required title="a-z, A-Z, 0-9 characters and be 5-15 chars." value= <%= user.username %> disabled>
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="col-sm-2">
+        <label for="email" class="col-form-label">Email:</label>
+      </div>
+      <div class="col-sm-7">
+        <input type="email" class="form-control" id="email" value= <%= user.email %> required>
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="col-sm-2">
+        <label for="country" class="col-form-label">Country:</label>
+      </div>
+      <div class="col-sm-7">
+        <input type="text" id="country" class="form-control" required>
+        <input type="text" id="country_code" name="country_code" data-countrycodeinput="1" readonly="readonly" hidden />
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="col-sm-2">
+      </div>
+      <div class="col-sm-7 text-right">
+        <a href="/my-account" id="cancel" name="cancel" style="margin-left :5px" class="btn btn-secondary btn-space">Cancel</a>  
+        <button class="btn btn-primary btn-space" style="margin-left :5px" id="submit" type="submit" value="submit">Save Changes</button>
+      </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-9 bg-light rounded">
+          To change your password click the button below.
+        </div>
+    </div>
+    <div class="form-group row">
+      <div class="col-sm-2">
+      </div>
+      <div class="col-sm-7 text-right">
+          <a href="/changepassword" id="changepw" name="changepw" style="margin-left :5px" class="btn btn-info btn-space">Change Password</a>
+      </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-9 bg-light rounded">
+          Decided you want to remove your account? Click the button below to delete your account and all associated data.
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-2">
+        </div>
+        <div class="col-sm-7 text-right">
+            <button class="btn btn-danger btn-space" id="delete" type="button" onclick="deleteAccount('<%= user._id %>')">Delete Account</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+
+var cs = $("#country").countrySelect();
+
+$(document).ready(function() {
+  $("#form-account").submit(function(e) {
+    e.preventDefault();
+    saveAccount()
+  });
+
+  cs.countrySelect("selectCountry", user.country);
+
+});
+
+function saveAccount() {
+  // Check for changes against data passed to client on page load
+  // If no differences alert user, do nothing
+  // If differences, prompt user to confirm, then save account
+  var answer = confirm("Are you sure you want to save changes to your account?");
+  if (answer) {
+		var userId = $('#userId').val();
+    var email = $('#email').val();
+    var country = $("#country_code").val().trim();
+    if (user.email != email || user.country != country) {
+      var account = user;
+      account.email = email;
+      account.country = country;
+      if (account.username && account.email && account.country) {
+          //post update
+          //console.log("Updating" + JSON.stringify(account));
+          $.ajax({
+            url: '/account/' + account._id,
+            type: 'POST',
+            data: JSON.stringify(account),
+            dataType: 'json',
+            contentType: "application/json",
+            success: function(data){
+              //console.log("post response");
+              //console.log(data);
+              //reload
+              document.location.reload();
+            },
+          });
+          //console.log(JSON.stringify(account));
+      } else {
+        alert("Ensure email address and country are set!");
+      }
+    }
+    else {
+      prompt("You have not changed email address or country, nothing to save!")
+    }
+  }
+}
+
+function deleteAccount(id) {
+  var answer = confirm("Are you sure you want to delete your account/ all related data? This cannot be undone!");
+  if (answer) {
+    // Delete user account
+    $.ajax({
+				url:"/account/" + id,
+				type: 'DELETE',
+				success: function(data){
+					document.location.reload();
+				}
+    });
+  }
+}
+
+var user = {};
+user = <%-JSON.stringify(user)%>;
+
+</script>
+
+<% include ../fragments/footer.ejs %>

@@ -50,13 +50,13 @@ var port = (process.env.VCAP_APP_PORT || 3000);
 var host = (process.env.VCAP_APP_HOST || '0.0.0.0');
 var debug = (process.env.ALEXA_DEBUG || false)
 // MongoDB Settings
-var mongo_user = (process.env.MONGO_USER || undefined);
-var mongo_password = (process.env.MONGO_PASSWORD || undefined);
+var mongo_user = (process.env.MONGO_USER);
+var mongo_password = (process.env.MONGO_PASSWORD);
 var mongo_host = (process.env.MONGO_HOST || "mongodb");
 var mongo_port = (process.env.MONGO_PORT || "27017");
 // MQTT Settings
-var mqtt_user = (process.env.MQTT_USER || undefined);
-var mqtt_password = (process.env.MQTT_PASSWORD || undefined);
+var mqtt_user = (process.env.MQTT_USER);
+var mqtt_password = (process.env.MQTT_PASSWORD);
 var mqtt_port = (process.env.MQTT_PORT || "1883");
 var mqtt_url = (process.env.MQTT_URL || "mqtt://mosquitto:" + mqtt_port);
 // Express Settings
@@ -351,7 +351,12 @@ app.post('/login',
 		if (req.query.next) {
 			res.reconnect(req.query.next);
 		} else {
-			res.redirect('/devices');
+			if (req.user.username != mqtt_user) {
+				res.redirect('/devices');
+			}
+			else {
+				res.redirect('/admin/users');
+			}
 		}
 	});
 
@@ -1263,6 +1268,28 @@ app.post('/api/v1/command',
 	}
 );
 
+app.get('/my-account',
+	ensureAuthenticated,
+	function(req,res){
+		var view = {
+			dp: req.path, 
+			dh: 'https://' + process.env.WEB_HOSTNAME,
+			dt: 'My Account',
+			uid: req.user.username,
+			uip: req.ip,
+			ua: req.headers['user-agent']
+		}
+		if (enableAnalytics) {visitor.pageview(view).send()};
+
+		const user = Account.findOne({username: req.user.username});
+		Promise.all([user]).then(([userAccount]) => {
+			//log2console("INFO", "userAccount: " + userAccount);
+			res.render('pages/account',{user: userAccount, acc: true});
+		}).catch(err => {
+			res.status(500).json({error: err});
+		});
+});
+
 app.get('/devices',
 	ensureAuthenticated,
 	function(req,res){
@@ -1331,21 +1358,27 @@ app.put('/devices',
 app.post('/account/:user_id',
 	ensureAuthenticated,
 	function(req,res){
-		if (req.user.username === mqtt_user) { // Check is admin user
-			const country = countries.findByCountryCode(req.body.country.toUpperCase());
+		var user = req.body;
+		if (req.user.username === mqtt_user || req.user.username == user.username) { // Check is admin user, or user themselves
+			const country = countries.findByCountryCode(user.country.toUpperCase());
 			Promise.all([country]).then(([userCountry]) => {
 				if (country.statusCode == 200) {
 					var region = userCountry.data[0].region;
 					Account.findOne({_id: req.params.user_id},
 						function(err, data){
 							if (err) {
-								log2console("ERROR", "[Admin] Unable to update user account: " + req.params.user_id, err);
+								log2console("ERROR", "[Update User] Unable to update user account: " + req.params.user_id, err);
 								res.status(500);
-								res.send(err);
+								res.send();
 							} else {
-								log2console("INFO", "[Admin] Updated user account: " + req.params.user_id);
-								data.email = req.body.email;
-								data.country = req.body.country.toUpperCase();
+								if (req.user.username === mqtt_user) {
+									log2console("INFO", "[Update User] Superuser updated user account: " + req.params.user_id);
+								}
+								else {
+									log2console("INFO", "[Update User] Self-service user account update: " + req.params.user_id);
+								}
+								data.email = user.email;
+								data.country = user.country.toUpperCase();
 								data.region = region;
 								data.save(function(err, d){
 									res.status(201);
@@ -1355,32 +1388,51 @@ app.post('/account/:user_id',
 						});
 				}
 			}).catch(err => {
-				log2console("ERROR", "[Admin] Unable to update user account, user region lookup failed.");
+				log2console("ERROR", "[Update User] Unable to update user account, user region lookup failed.");
 				res.status(500).send("Unable to update user account, user region lookup failed!");
 			});
+		}
+		else {
+			log2console("WARNING", "[Update User] Attempt to modify user account blocked");
 		}
 });
 
 app.delete('/account/:user_id',
 	ensureAuthenticated,
 	function(req,res){
-		if (req.user.username === mqtt_user) { // Check is admin user
-			// Multiple vars for each step of clean-up
-			var userId = req.params.user_id;
-			const deleteAccount = Account.deleteOne({_id: userId});
-			const deleteGrantCodes = oauthModels.GrantCode.deleteMany({user: userId});
-			const deleteAccessTokens = oauthModels.AccessToken.deleteMany({user: userId});
-			const deleteRefreshTokens = oauthModels.RefreshToken.deleteMany({user: userId});
-			//const deleteDevices = Devices.deleteMany({username: username}); // need to get username here
-			Promise.all([deleteAccount, deleteGrantCodes, deleteAccessTokens, deleteRefreshTokens]).then(result => {
-				//log2console("INFO", result);
-				res.status(202).json({message: 'deleted'});
-				log2console("INFO", "[Admin] Deleted user account: " + userId);
-			}).catch(err => {
-				log2console("ERROR", "[Admin] Failed to delete user account: " + userId);
-				res.status(500).json({error: err});
-			});
-		}
+		var userId = req.params.user_id;
+		const user = Account.findOne({_id: userId});
+		Promise.all([user]).then(([userAccount]) => {
+			//log2console("INFO", "userAccount: " + userAccount);
+			//res.render('pages/account',{user: userAccount, acc: true});
+			if (userAccount.username == req.user.username || req.user.username === mqtt_user) {
+				const deleteAccount = Account.deleteOne({_id: userId});
+				const deleteGrantCodes = oauthModels.GrantCode.deleteMany({user: userId});
+				const deleteAccessTokens = oauthModels.AccessToken.deleteMany({user: userId});
+				const deleteRefreshTokens = oauthModels.RefreshToken.deleteMany({user: userId});
+				const deleteDevices = Devices.deleteMany({username: userAccount.username});
+				const deleteTopics = Topics.deleteOne({_id:userAccount.topics});
+				Promise.all([deleteAccount, deleteGrantCodes, deleteAccessTokens, deleteRefreshTokens, deleteDevices, deleteTopics]).then(result => {
+					//log2console("INFO", result);
+					res.status(202).json({message: 'deleted'});
+					if (req.user.username === mqtt_user) {
+						log2console("INFO", "[Delete User] Superuser deleted user account: " + userId)
+					}
+					else {
+						log2console("INFO", "[Delete User] Self-service account deletion, user account: " + userId)
+					}
+				}).catch(err => {
+					log2console("ERROR", "[Delete User] Failed to delete user account: " + userId);
+					res.status(500).json({error: err});
+				});
+			}
+			else {
+				log2console("WARNING", "[Delete User] Attempt to delete user account blocked");
+			}
+		}).catch(err => {
+			log2console("ERROR", "[Delete User] Failed to find user account: " + userId);
+			res.status(500).send();
+		});
 });
 
 app.post('/device/:dev_id',
@@ -1415,7 +1467,7 @@ app.delete('/device/:dev_id',
 	function(req,res){
 		var user = req.user.username;
 		var id = req.params.dev_id;
-		if (user != "mqtt-user") {
+		if (req.user.username != mqtt_user) {
 			Devices.deleteOne({_id: id, username: user},
 				function(err) {
 					if (err) {
@@ -1429,7 +1481,7 @@ app.delete('/device/:dev_id',
 					}
 				});
 		}
-		else if (user == "mqtt-user") {
+		else if (req.user.username === mqtt_user) {
 			Devices.deleteOne({_id: id},
 				function(err) {
 					if (err) {
@@ -1689,7 +1741,7 @@ function setstate(username, endpointId, payload) {
 function log2console(severity,message) {
 	var dt = new Date().toISOString();
 	var prefixStr = "[" + dt + "] " + "[" + severity + "]"
-	if (severity == "DEBUG" && debug)
+	if (severity == "DEBUG" && debug == true)
 		console.log(prefixStr, message);
 	else if (severity != "DEBUG") {
 		console.log(prefixStr, message);

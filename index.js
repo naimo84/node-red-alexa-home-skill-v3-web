@@ -195,6 +195,67 @@ var accessLogStream = rfs('access.log', {
 });
 
 var app = express();
+
+// New rate-limiter for getstate API
+var client = require('redis').createClient({
+	host: 'redis',
+	retry_strategy: function (options) {
+        if (options.error && options.error.code === 'ECONNREFUSED') {
+			return new Error('The server refused the connection');
+        }
+        if (options.total_retry_time > 1000 * 60 * 60) {
+			//log2console("ERROR", "[REDIS] Retry time exhausted");
+			return new Error('Retry time exhausted');
+        }
+        if (options.attempt > 100) {
+			// End reconnecting with built in error
+			log2console("ERROR", "[Core] Redis server connection retry limit exhausted");
+            return undefined;
+        }
+		// reconnect after
+		//log2console("ERROR", "[REDIS] Attempting reconnection after set interval");
+        return Math.min(options.attempt * 1000, 10000);
+   	}
+});
+
+client.on('connect', function() {
+    log2console("INFO", "[Core] Connecting to Redis server...");
+});
+
+client.on('ready', function() {
+    log2console("INFO", "[Core] Redis connection ready!");
+});
+
+client.on('reconnecting', function() {
+    log2console("INFO", "[Core] Attempting to reconnect to Redis server");
+});
+
+client.on('error', function (err) {
+    log2console("ERROR", "[Core] Unable to connect to Redis server");
+});
+
+
+var limiter = require('express-limiter')(app, client)
+limiter({
+	path: '/api/v1/getstate/:dev_id',
+	method: 'all',
+	lookup: function(req, res, opts, next) {
+		  opts.lookup = ['params.dev_id']
+		  opts.total = 150
+		  opts.expire = 1000 * 60 * 60
+		  return next()
+	},
+	onRateLimited: function (req, res, next) {
+		if (req.hasOwnProperty('user')) {
+			log2console("WARNING", "Rate limit exceeded for user:" + req.user.username)
+		}
+		else {
+			log2console("WARNING", "Rate limit exceeded for IP address:" + req.ip)
+		}
+		res.status(429).json('Rate limit exceeded for GetState API');
+	  }
+  })
+
 app.set('view engine', 'ejs');
 app.enable('trust proxy');
 app.use(morgan("combined", {stream: accessLogStream}));
@@ -908,6 +969,10 @@ var onGoingCommands = {};
 
 // Event handler for received MQTT messages - note subscribe near top of script.
 mqttClient.on('message',function(topic,message){
+	var arrTopic = topic.split("/"); 
+	var username = arrTopic[1];
+	var endpointId = arrTopic[2];
+
 	if (topic.startsWith('response/')){
 		log2console("INFO", "[Command API] Acknowledged MQTT response message for topic: " + topic);
 		var payload = JSON.parse(message.toString());
@@ -923,21 +988,17 @@ mqttClient.on('message',function(topic,message){
 				log2console("ERROR", "[Command API] Failed MQTT Command API response");
 			}
 			delete onGoingCommands[payload.messageId];
-			// should really parse uid out of topic
-			//measurement.send({
-			//	t:'event', 
-			//	ec:'command', 
-			//	ea: 'complete',
-			//	uid: waiting.user
-			//});
+			var params = {
+				ec: "Command",
+				ea: "Command API successfully processed MQTT command for username: " + username,
+				uid: username,
+			  }
+			if (enableAnalytics) {visitor.event(params).send()};
 		}
 	}
 	else if (topic.startsWith('state/')){
 		log2console("INFO", "[State API] Acknowledged MQTT state message topic: " + topic);
 		// Split topic/ get username and endpointId
-		var arrTopic = topic.split("/"); 
-		var username = arrTopic[1];
-		var endpointId = arrTopic[2];
 		var messageJSON = JSON.parse(message);
 		var payload = messageJSON.payload;
 		// Call setstate to update attribute in mongodb
@@ -955,13 +1016,12 @@ mqttClient.on('message',function(topic,message){
 		}
 		// If successful remove messageId from onGoingCommands
 		delete onGoingCommands[payload.messageId];
-		// should really parse uid out of topic
-		//measurement.send({
-		//	t:'event', 
-		//	ec:'command', 
-		//	ea: 'complete',
-		//	uid: waiting.user
-		//});
+		var params = {
+			ec: "Set State",
+			ea: "State API successfully processed MQTT state for username: " + username + " device: " + endpointId,
+			uid: username,
+		  }
+		if (enableAnalytics) {visitor.event(params).send()};
 	}
 	else {
 		log2console("DEBUG", "[MQTT] Unhandled MQTT via on message event handler: " + topic + message);

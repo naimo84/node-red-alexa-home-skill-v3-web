@@ -49,6 +49,8 @@ if (!(process.env.MAIL_SERVER && process.env.MAIL_USER && process.env.MAIL_PASSW
 var port = (process.env.VCAP_APP_PORT || 3000);
 var host = (process.env.VCAP_APP_HOST || '0.0.0.0');
 var debug = (process.env.ALEXA_DEBUG || false)
+log2console("INFO","[Core] Debug logging enabled:" + debug);
+
 // MongoDB Settings
 var mongo_user = (process.env.MONGO_USER);
 var mongo_password = (process.env.MONGO_PASSWORD);
@@ -248,9 +250,22 @@ limiter({
 	onRateLimited: function (req, res, next) {
 		if (req.hasOwnProperty('user')) {
 			log2console("WARNING", "Rate limit exceeded for user:" + req.user.username)
+			var params = {
+				ec: "Express-limiter",
+				ea: "Rate limited: " + req.user.username,
+				uid: req.user.username,
+				uip: req.ip
+			  }
+			if (enableAnalytics) {visitor.event(params).send()};
 		}
 		else {
 			log2console("WARNING", "Rate limit exceeded for IP address:" + req.ip)
+			var params = {
+				ec: "Express-limiter",
+				ea: "Rate limited: " + req.ip,
+				uip: req.ip
+			  }
+			if (enableAnalytics) {visitor.event(params).send()};
 		}
 		res.status(429).json('Rate limit exceeded for GetState API');
 	  }
@@ -620,10 +635,10 @@ app.get('/auth/start',oauthServer.authorize(function(applicationID, redirectURI,
 		if (application) {
 			var match = false, uri = url.parse(redirectURI || '');
 			for (var i = 0; i < application.domains.length; i++) {
-				log2console("INFO", "Checking OAuth redirectURI against defined service domain: " + application.domains[i]);
+				log2console("INFO", "[Oauth2] Checking OAuth redirectURI against defined service domain: " + application.domains[i]);
 				if (uri.host == application.domains[i] || (uri.protocol == application.domains[i] && uri.protocol != 'http' && uri.protocol != 'https')) {
 					match = true;
-					log2console("INFO", "Found Service definition associated with redirectURI: " + redirectURI);
+					log2console("INFO", "[Oauth2] Found Service definition associated with redirectURI: " + redirectURI);
 					break;
 				}
 			}
@@ -671,11 +686,11 @@ app.post('/auth/finish',function(req,res,next) {
 		}, function(error,user,info){
 			//console.log("/auth/finish authenticating");
 			if (user) {
-				log2console("INFO", "Authenticated: " + user.username);
+				log2console("INFO", "[Oauth2] Authenticated: " + user.username);
 				req.user = user;
 				next();
 			} else if (!error){
-				log2console("WARNING", "Not Authenticated");
+				log2console("WARNING", "[Oauth2] User not authenticated");
 				req.flash('error', 'Your email or password was incorrect. Please try again.');
 				res.redirect(req.body['auth_url'])
 			}
@@ -868,6 +883,24 @@ function replaceCapability(capability, reportState) {
 			"version" : "3",
 			"supportsDeactivation" : false
 		  };
+	}
+
+	// TemperatureSensor 
+	if(capability == "TemperatureSensor") {
+		return {
+			"type": "AlexaInterface",
+			"interface": "Alexa.TemperatureSensor",
+			"version" : "3",
+			"properties": {
+                "supported": [
+                  {
+                    "name": "temperature"
+                  }
+                ],
+                "proactivelyReported": false,
+                "retrievable": true
+              }
+			};
 	}
 
 	// ThermostatController - SinglePoint
@@ -1164,8 +1197,23 @@ app.get('/api/v1/getstate/:dev_id',
 													});
 											}
 											break;
+										case "TemperatureSensor":
+											// Return temperature
+											if (deviceJSON.state.hasOwnProperty('temperature') && deviceJSON.state.hasOwnProperty('time')) {
+												properties.push({
+													"namespace": "Alexa.TemperatureSensor",
+													"name": "temperature",
+													"value": {
+														"value": deviceJSON.state.temperature,
+														"scale": deviceJSON.validRange.scale.toUpperCase()
+													  },
+													"timeOfSample": deviceJSON.state.time,
+													"uncertaintyInMilliseconds": 10000
+												});
+											}
+											break
 										case "ThermostatController":
-											// Return Temperature
+											// Return thermostatSetPoint
 											if (deviceJSON.state.hasOwnProperty('thermostatSetPoint') && deviceJSON.state.hasOwnProperty('thermostatMode') && deviceJSON.state.hasOwnProperty('time')) {
 												properties.push({
 														"namespace":"Alexa.ThermostatController",
@@ -1513,6 +1561,7 @@ app.post('/device/:dev_id',
 						data.displayCategories = device.displayCategories;
 						data.reportState = device.reportState;
 						data.validRange = device.validRange;
+						data.state = device.state;
 						data.save(function(err, d){
 							res.status(201);
 							res.send(d);
@@ -1770,6 +1819,34 @@ function setstate(username, endpointId, payload) {
 				if (payload.state.hasOwnProperty('channel')) {dev.state.input = payload.state.channel};
 				if (payload.state.hasOwnProperty('lock')) {dev.state.lock = payload.state.lock};
 				if (payload.state.hasOwnProperty('playback')) {dev.state.playback = payload.state.playback};
+				if (payload.state.hasOwnProperty('temperature')) {dev.state.temperature = payload.state.temperature};
+				if (payload.state.hasOwnProperty('thermostatMode') && !payload.state.hasOwnProperty('thermostatSetPoint')) {
+					dev.state.thermostatMode = payload.state.thermostatMode;
+				};
+				if (payload.state.hasOwnProperty('targetSetpointDelta')) {
+					if (dev.state.hasOwnProperty('thermostatSetPoint')) {
+						var newTemp;
+						var newMode;
+						if (payload.state.targetSetpointDelta < 0 ) {
+							newTemp = dev.state.thermostatSetPoint - payload.state.targetSetpointDelta;
+							newMode = "COOL";
+						}
+						else {
+							newTemp = dev.state.thermostatSetPoint + payload.state.targetSetpointDelta;
+							newMode = "HEAT";
+						}
+						// Check within supported range of device
+						if (dev.hasOwnProperty('validRange')) {
+							if (dev.validRange.hasOwnProperty('validRange') && dev.validRange.hasOwnProperty('validRange')) {
+								if (!newTemp < dev.validRange.minimumValue || !newTemp > dev.validRange.maximumValue) {
+									dev.state.thermostatSetPoint = newTemp;
+									dev.state.thermostatMode = newMode;
+								}
+							}
+						}
+				
+					}
+				}
 				if (payload.state.hasOwnProperty('thermostatSetPoint')) {
 					if (dev.state.hasOwnProperty('thermostatSetPoint')) {
 						// Compare stored vs requested temperature, set state to HEAT/ COOl depending on difference
@@ -1801,7 +1878,7 @@ function setstate(username, endpointId, payload) {
 function log2console(severity,message) {
 	var dt = new Date().toISOString();
 	var prefixStr = "[" + dt + "] " + "[" + severity + "]"
-	if (severity == "DEBUG" && debug == true)
+	if (severity == "DEBUG" && debug == "true")
 		console.log(prefixStr, message);
 	else if (severity != "DEBUG") {
 		console.log(prefixStr, message);

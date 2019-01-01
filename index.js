@@ -826,35 +826,30 @@ function replaceCapability(capability, reportState) {
 			};
 	}
 
-	// PlaybackController w/ PowerController
-	if(capability == "PlaybackPowerController") {
-		return {
-			"type": "AlexaInterface",
-			"interface": "Alexa.PowerController",
-			"version": "3",
-			"properties": {
-				"supported": [{
-					"name": "powerState"
-				}],
-				"proactivelyReported": false,
-				"retrievable": reportState
-				}
-			},
-			{
-			"type": "AlexaInterface",
-			"interface": "Alexa.PlaybackController",
-			"version": "3",
-			"supportedOperations" : ["Play", "Pause", "Stop"]
-			};
-	}
-
 	// PlaybackController
 	if(capability == "PlaybackController") {
 		return {
 			"type": "AlexaInterface",
 			"interface": "Alexa.PlaybackController",
 			"version": "3",
-			"supportedOperations" : ["Play", "Pause", "Stop"]
+			"supportedOperations" : ["Play", "Pause", "Stop", "FastForward", "StartOver", "Previous", "Rewind", "Next"]
+			};
+	}
+
+	// Speaker
+	if(capability == "Speaker") {
+		return {
+			"type": "AlexaInterface",
+			"interface": "Alexa.Speaker",
+			"version": "3",
+			"properties":{
+				"supported":[{
+						"name":"volume"
+					},
+					{
+						"name":"muted"
+					}
+				]}
 			};
 	}
 
@@ -1132,14 +1127,14 @@ app.get('/api/v1/getstate/:dev_id',
 											break;
 										case "ColorController":
 											// Return color
-											if (deviceJSON.state.hasOwnProperty('colorHue') && deviceJSON.state.hasOwnProperty('colorSaturation') && deviceJSON.state.hasOwnProperty('brightness') && deviceJSON.state.hasOwnProperty('time')) {
+											if (deviceJSON.state.hasOwnProperty('colorHue') && deviceJSON.state.hasOwnProperty('colorSaturation') && deviceJSON.state.hasOwnProperty('colorBrightness') && deviceJSON.state.hasOwnProperty('time')) {
 												properties.push({
 														"namespace": "Alexa.ColorController",
 														"name": "color",
 														"value": {
 															"hue": deviceJSON.state.colorHue,
 															"saturation": deviceJSON.state.colorSaturation,
-															"brightness": deviceJSON.state.brightness
+															"brightness": deviceJSON.state.colorBrightness
 														},
 														"timeOfSample": deviceJSON.state.time,
 														"uncertaintyInMilliseconds": 10000
@@ -1813,6 +1808,7 @@ function setstate(username, endpointId, payload) {
 				if (payload.state.hasOwnProperty('power')) {dev.state.power = payload.state.power}
 				if (payload.state.hasOwnProperty('colorTemperature')) {dev.state.colorTemperature = payload.state.colorTemperature}
 				if (payload.state.hasOwnProperty('brightness')) {dev.state.brightness = payload.state.brightness};
+				if (payload.state.hasOwnProperty('colorBrightness')) {dev.state.colorBrightness = payload.state.colorBrightness};
 				if (payload.state.hasOwnProperty('colorHue')) {dev.state.colorHue = payload.state.colorHue};
 				if (payload.state.hasOwnProperty('colorSaturation')) {dev.state.colorSaturation = payload.state.colorSaturation};
 				if (payload.state.hasOwnProperty('input')) {dev.state.input = payload.state.input};

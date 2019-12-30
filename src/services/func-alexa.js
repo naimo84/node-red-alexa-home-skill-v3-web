@@ -167,7 +167,7 @@ const requestAccessTokenAsync = async(user) => {
     }
     catch(e) {
         logger.log('error', "[AlexaAuth] Error requesting Access Token for user: " + user.username + ", error: " + e.stack);
-        if (e.response) logger.log('error', "[AlexaAuth] Error response: " + e.response);
+        if (e.response) logger.log('error', "[AlexaAuth] Error response: " + JSON.stringify(e.response));
         return undefined;
     }
 }
@@ -489,7 +489,7 @@ const sendStateAsync = async(user, state) => {
     catch(e) {
         // User no-longer has skill linked with Amazon account, see: https://developer.amazon.com/en-US/docs/alexa/smarthome/debug-your-smart-home-skill.html
         if (e.response && e.response.status && e.response.status == 403) {
-            logger.log('warn', "[Alexa Send State] Failed to send change report for user: " + user.username + ", error response: " + e.response);
+            logger.log('warn', "[Alexa Send State] Failed to send change report for user: " + user.username + ", error response: " + JSON.stringify(e.response));
             logger.log('warn', "[Alexa Send State] Failed to send change report for user: " + user.username + ", to Alexa, user no-longer has linked skill.");
             // Remove 'Amazon' from users' active services
 			removeUserServices(user.username, "Amazon");
@@ -514,8 +514,6 @@ const validateCommandAsync = async(device, req) => {
                 if (compare < deviceJSON.attributes.colorTemperatureRange.temperatureMinK || compare > deviceJSON.attributes.colorTemperatureRange.temperatureMaxK) {
                     logger.log('warn', "[Alexa Command] User: " + req.user.username + ", requested color temperature: " + compare + ", on device: " + req.body.directive.endpoint.endpointId + ", which is out of range: " + JSON.stringify(deviceJSON.attributes.colorTemperatureRange));
                     // Send 417 HTTP code back to Lambda, Lambda will send correct error message to Alexa
-                    //res.status(417).send();
-                    //validationStatus = false;
                     return {status: false, response: 417};
                 }
                 else {
@@ -536,8 +534,6 @@ const validateCommandAsync = async(device, req) => {
                 if (compare < deviceJSON.attributes.temperatureRange.temperatureMin || compare > deviceJSON.attributes.temperatureRange.temperatureMax) {
                     logger.log('warn', "[Alexa Command] User: " + req.user.username + ", requested temperature: " + compare + ", on device: " + req.body.directive.endpoint.endpointId + ", which is out of range: " + JSON.stringify(deviceJSON.attributes.temperatureRange));
                     // Send 416 HTTP code back to Lamnda, Lambda will send correct error message to Alexa
-                    //res.status(416).send();
-                    //validationStatus = false;
                     return {status: false, response: 416};
                 }
                 else {

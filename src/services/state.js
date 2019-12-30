@@ -7,8 +7,6 @@ const uuidv4 = require('uuid/v4');
 const logger = require('../loaders/logger');
 const fs = require('fs');
 const util = require("util");
-//const mqttClient = require('../loaders/mqtt').mqttClient;
-//const notifyUser = require('../loaders/mqtt').notifyUser;
 ///////////////////////////////////////////////////////////////////////////
 // Functions
 ///////////////////////////////////////////////////////////////////////////
@@ -23,7 +21,6 @@ const requestToken2Async = gHomeFunc.requestToken2Async;
 ///////////////////////////////////////////////////////////////////////////
 // Variables
 ///////////////////////////////////////////////////////////////////////////
-//var debug = (process.env.ALEXA_DEBUG || false);
 const readFile = util.promisify(fs.readFile);
 // Google Auth JSON Web Token ================
 var gToken = undefined; // Store Report State OAuth Token

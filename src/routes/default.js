@@ -189,7 +189,7 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 			}
 			else {
 				// User exists with this email address
-				if (users.length > 0) {
+				if (users) {
 					logger.log('error', "[New User] Cannot create new user, user with email address already exists!");
 					req.flash('error_messages', 'Cannot create new user, user with email address already exists!');
 					return res.status(500).send('User with this email address already exists!');
@@ -197,7 +197,7 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 				// Another error occurred, log and send 500 error
 				else {
 					logger.log('error', "[New User] Creation failed, country status code: " + userCountry.statusCode);
-					req.flash('error_messages', 'Country lookup failed!');
+					req.flash('error_messages', 'New user creation failed!');
 					return res.status(500).send('New user creation failed!');
 				}
 			}
@@ -280,7 +280,7 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 	}
 	catch(e) {
 		// General error, send 500 status
-		logger.log('error' , "[Verify] Update user account: " + account.username + ", error: " + e.stack);
+		logger.log('error' , "[Verify] Update user account error: " + e.stack);
 		req.flash('error_messages', 'Failed to update user account!');
 		return res.status(500).send('Failed to update user account!');
 	}

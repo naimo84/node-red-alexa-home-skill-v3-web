@@ -231,9 +231,10 @@ router.post('/action', defaultLimiter,
 				var arrCommands = req.body.inputs[0].payload.commands;
 				// Iterate through each command
 				for (let command in arrCommands) {
+					logger.log('verbose', "[GHome Exec API] Command to execute: " +  JSON.stringify(command));
 					// Create array of devices to execute commands against
 					var arrCommandsDevices = command.devices;
-					logger.log('debug', "[GHome Exec API] # of endpoints in command request: " + arrCommandsDevices.length);
+					logger.log('verbose', "[GHome Exec API] # of endpoints in command request: " + arrCommandsDevices.length);
 					// Get command parameters, for use in Google Home response
 					var params = command.execution[0].params;
 					// Loop through each device in command, validate and send MQTT command

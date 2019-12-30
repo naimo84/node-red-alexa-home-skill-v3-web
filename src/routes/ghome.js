@@ -230,7 +230,7 @@ router.post('/action', defaultLimiter,
 				// Create array of commands
 				var arrCommands = req.body.inputs[0].payload.commands;
 				// Iterate through each command
-				for (let command in arrCommands) {
+				for (let command of arrCommands) {
 					logger.log('verbose', "[GHome Exec API] Command to execute: " +  JSON.stringify(command));
 					// Create array of devices to execute commands against
 					var arrCommandsDevices = command.devices;
@@ -238,7 +238,7 @@ router.post('/action', defaultLimiter,
 					// Get command parameters, for use in Google Home response
 					var params = command.execution[0].params;
 					// Loop through each device in command, validate and send MQTT command
-					for (let commandDevice in arrCommandsDevices) {
+					for (let commandDevice of arrCommandsDevices) {
 						// Match command device with a device from user devices defined on this service
 						var dbDevice = devices.find(obj => obj.endpointId == commandDevice.id);
 						if (dbDevice == undefined) {logger.log('debug', "[GHome Exec API] Failed to match device against devicesJSON")}

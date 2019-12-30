@@ -39,14 +39,11 @@ const saveGrantAsync = async(user, grantCode) => {
         await newGrant.save();
         // Test Grant Code by requesting an Access Token for user
         var accessToken = await requestAccessTokenAsync(user);
-        // Success, return Grant Code
-        if (accessToken != undefined){
-            return newGrant;
-        }
         // Failure, return undefined
-        else {
-            return undefined;
-        }
+        if (accessToken == undefined) return undefined;
+        // Success, return Grant Code
+        return newGrant;
+        // Failure, return undefined
     }
     catch(e) {
         // Failure, return undefined
@@ -170,6 +167,7 @@ const requestAccessTokenAsync = async(user) => {
     }
     catch(e) {
         logger.log('error', "[AlexaAuth] Error requesting Access Token for user: " + user.username + ", error: " + e.stack);
+        if (e.response) logger.log('error', "[AlexaAuth] Error response: " + e.response);
         return undefined;
     }
 }

@@ -789,7 +789,7 @@ const resetPassword = async(username, password) => {
 		await user.setPassword(password);
 		// Set MQTT Password
 		logger.log('debug', "[Change Password] User hash: " + user.hash + ", user salt: " + user.salt);
-		if (!account.salt || account.salt == undefined || !account.hash || account.hash == undefined){
+		if (!user.salt || user.salt == undefined || !user.hash || user.hash == undefined){
 			logger.log('error', "[Change Password] Unable to set MQTT password, hash / salt unavailable!");
 			return false;
 		}

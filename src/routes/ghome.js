@@ -274,7 +274,7 @@ router.post('/action', defaultLimiter,
 							}
 						}
 						// Build command object used for correlation/ response tracking
-						var command = {
+						var commandTracker = {
 							user: req.user.username,
 							userId: req.user._id,
 							requestId: requestId,
@@ -299,7 +299,7 @@ router.post('/action', defaultLimiter,
 							}
 						}
 						// Drop into shared ongoingCommands array, state API will monitor for response within timeout period
-						ongoingCommands[requestId + commandDevice.id] = command;
+						ongoingCommands[requestId + commandDevice.id] = commandTracker;
 						// client.hset(requestId + device.id, 'command', command); // Command drops into redis database, used to generate failure messages if not ack
 					};
 

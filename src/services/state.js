@@ -64,13 +64,14 @@ var refreshToken = setInterval(function(){
 ///////////////////////////////////////////////////////////////////////////
 // Functions
 ///////////////////////////////////////////////////////////////////////////
-
-
+// State update handler
 const updateDeviceState = async(username, endpointId, payload) => {
 	try {
 		logger.log('debug', "[State API] SetState payload:" + JSON.stringify(payload));
 		// Find matching device
 		var dev = await Devices.findOne({username:username, endpointId:endpointId});
+		// If no matching device found, stop further action (likely user has deleted device)
+		if (!dev) return false;
 		// Build state update
 		var dt = new Date().toISOString();
 		var deviceJSON = JSON.parse(JSON.stringify(dev));

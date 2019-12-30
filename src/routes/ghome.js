@@ -225,21 +225,19 @@ router.post('/action', defaultLimiter,
 				sendEventUid(req.path, "EXECUTE", "GHome EXECUTE Event", req.ip, req.user.username, req.headers['user-agent']);
 				// Find users devices defined on this service
 				var devices = await Devices.find({username: req.user.username});
-				logger.log('debug', "[GHome Exec API] Execute command(s) for user: " + req.user.username + ", command: " +  JSON.stringify(req.body.inputs[0].payload.commands));
+				logger.log('verbose', "[GHome Exec API] Execute command(s) for user: " + req.user.username + ", command: " +  JSON.stringify(req.body.inputs[0].payload.commands));
 				// Create array of commands
 				var arrCommands = req.body.inputs[0].payload.commands;
-				logger.log('verbose', "[GHome Exec API] # of commands in request: " + arrCommands.length);
+				logger.log('debug', "[GHome Exec API] # of commands in request: " + arrCommands.length);
 				// Iterate through each command
 				for (let command of arrCommands) {
 					//logger.log('verbose', "[GHome Exec API] Command to execute: " +  JSON.stringify(command));
-					// Create array of devices to execute commands against
-					//var arrCommandsDevices = command.devices;
-					logger.log('verbose', "[GHome Exec API] # of endpoints in command request: " + command.devices.length);
+					logger.log('debug', "[GHome Exec API] # of endpoints in command request: " + command.devices.length);
 					// Get command parameters, for use in Google Home response
 					var params = command.execution[0].params;
 					// Loop through each device in command, validate and send MQTT command
 					for (let commandDevice of command.devices) {
-						logger.log('verbose', "[GHome Exec API] Executing command for device id: " + commandDevice.id);
+						logger.log('debug', "[GHome Exec API] Executing command for device id: " + commandDevice.id);
 						// Match command device with a device from user devices defined on this service
 						var dbDevice = devices.find(obj => obj.endpointId == commandDevice.id);
 						if (dbDevice == undefined) {logger.log('debug', "[GHome Exec API] Failed to match device against devicesJSON")}
@@ -289,23 +287,16 @@ router.post('/action', defaultLimiter,
 						};
 						// Add additional deviceIds to command.devices if multi-device command to enable correlation of responses
 						for (let device of command.devices) {
-							logger.log('debug', "[GHome Exec API] Checking device.id: " + device.id + ", against commandDevice.id: " + commandDevice.id);
-							try {
-								if (device.id != undefined && device.id != commandDevice.id){
-									//command.response.payload.commands[0].ids.push(arrCommandsDevices[x].id);
-									commandTracker.devices.push(device.id);
-									logger.log('debug', "[GHome Exec API] Added endpointId to multi-device command");
-								}
-							}
-							catch(e) {
-								logger.log('error', "[GHome Exec API] Unable to add endpointId to multi-command response, error: " + e);
+							//logger.log('debug', "[GHome Exec API] Checking device.id: " + device.id + ", against commandDevice.id: " + commandDevice.id);
+							if (device.id != undefined && device.id != commandDevice.id){
+								commandTracker.devices.push(device.id);
+								logger.log('debug', "[GHome Exec API] Added endpointId to multi-device command");
 							}
 						}
 						// Drop into shared ongoingCommands array, state API will monitor for response within timeout period
 						ongoingCommands[requestId + commandDevice.id] = commandTracker;
 						// client.hset(requestId + device.id, 'command', command); // Command drops into redis database, used to generate failure messages if not ack
 					};
-
 				}
 			}
 			catch(e) {

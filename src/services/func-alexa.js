@@ -459,6 +459,8 @@ const sendStateAsync = async(user, state) => {
         }
         // Get valid Access Token for User
         var accessToken = await requestAccessTokenAsync(user);
+        // If access token request failed, break
+        if (accessToken == undefined) return false;
         // Add valid Access Token to State Response
         state.event.endpoint.scope.token = accessToken.token
         // POST State Update to Alexa API

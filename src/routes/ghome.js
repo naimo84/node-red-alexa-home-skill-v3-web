@@ -222,13 +222,13 @@ router.post('/action', defaultLimiter,
 		///////////////////////////////////////////////////////////////////////////
 		case 'action.devices.EXECUTE' :
 			try {
-				logger.log('verbose', "[GHome Exec API] Execute command(s) for user: " + req.user.username);
 				sendEventUid(req.path, "EXECUTE", "GHome EXECUTE Event", req.ip, req.user.username, req.headers['user-agent']);
 				// Find users devices defined on this service
 				var devices = await Devices.find({username: req.user.username});
 				logger.log('debug', "[GHome Exec API] Execute command(s) for user: " + req.user.username + ", command: " +  JSON.stringify(req.body.inputs[0].payload.commands));
 				// Create array of commands
 				var arrCommands = req.body.inputs[0].payload.commands;
+				logger.log('verbose', "[GHome Exec API] # of commands in request: " + arrCommands.length);
 				// Iterate through each command
 				for (let command of arrCommands) {
 					//logger.log('verbose', "[GHome Exec API] Command to execute: " +  JSON.stringify(command));
@@ -289,7 +289,7 @@ router.post('/action', defaultLimiter,
 						};
 						// Add additional deviceIds to command.devices if multi-device command to enable correlation of responses
 						for (let device in arrCommandsDevices) {
-
+							logger.log('debug', "[GHome Exec API] Checking device.id: " + device.id + ", against commandDevice.id: " + commandDevice.id);
 							try {
 								if (device.id != commandDevice.id){
 									//command.response.payload.commands[0].ids.push(arrCommandsDevices[x].id);

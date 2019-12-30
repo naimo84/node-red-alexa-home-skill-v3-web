@@ -235,6 +235,8 @@ const queryDeviceStateAsync = async(device) => {
 
 const validateCommandAsync = async(command, commandDevice, dbDevice, req) => {
 	try {
+		// Get command parameters
+		var params = command.execution[0].params;
 		// Handle Thermostat valueOutOfRange
 		if (command.execution[0].command == "action.devices.commands.ThermostatTemperatureSetpoint") {
 			var hasTemperatureMax = getSafe(() => dbDevice.attributes.temperatureRange.temperatureMax);

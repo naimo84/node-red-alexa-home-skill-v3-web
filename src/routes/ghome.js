@@ -291,7 +291,7 @@ router.post('/action', defaultLimiter,
 						for (let device in arrCommandsDevices) {
 							logger.log('debug', "[GHome Exec API] Checking device.id: " + device.id + ", against commandDevice.id: " + commandDevice.id);
 							try {
-								if (device.id != undefined && != commandDevice.id){
+								if (device.id != undefined && device.id != commandDevice.id){
 									//command.response.payload.commands[0].ids.push(arrCommandsDevices[x].id);
 									commandTracker.devices.push(device.id);
 									logger.log('debug', "[GHome Exec API] Added endpointId to multi-device command");

@@ -167,7 +167,7 @@ const requestAccessTokenAsync = async(user) => {
     }
     catch(e) {
         logger.log('error', "[AlexaAuth] Error requesting Access Token for user: " + user.username + ", error: " + e.stack);
-        if (e.response) logger.log('error', "[AlexaAuth] Error response: " + JSON.stringify(e.response));
+        if (e.response && e.response.data) logger.log('error', "[AlexaAuth] Error response: " + JSON.stringify(e.response.data));
         return undefined;
     }
 }
@@ -488,8 +488,8 @@ const sendStateAsync = async(user, state) => {
     }
     catch(e) {
         // User no-longer has skill linked with Amazon account, see: https://developer.amazon.com/en-US/docs/alexa/smarthome/debug-your-smart-home-skill.html
-        if (e.response && e.response.status && e.response.status == 403) {
-            logger.log('warn', "[Alexa Send State] Failed to send change report for user: " + user.username + ", error response: " + JSON.stringify(e.response));
+        if (e.response && e.response.data && e.response.status && e.response.status == 403) {
+            logger.log('warn', "[Alexa Send State] Failed to send change report for user: " + user.username + ", error response: " + JSON.stringify(e.response.data));
             logger.log('warn', "[Alexa Send State] Failed to send change report for user: " + user.username + ", to Alexa, user no-longer has linked skill.");
             // Remove 'Amazon' from users' active services
 			removeUserServices(user.username, "Amazon");

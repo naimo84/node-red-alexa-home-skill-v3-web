@@ -233,12 +233,12 @@ router.post('/action', defaultLimiter,
 				for (let command of arrCommands) {
 					//logger.log('verbose', "[GHome Exec API] Command to execute: " +  JSON.stringify(command));
 					// Create array of devices to execute commands against
-					var arrCommandsDevices = command.devices;
-					logger.log('verbose', "[GHome Exec API] # of endpoints in command request: " + arrCommandsDevices.length);
+					//var arrCommandsDevices = command.devices;
+					logger.log('verbose', "[GHome Exec API] # of endpoints in command request: " + command.devices.length);
 					// Get command parameters, for use in Google Home response
 					var params = command.execution[0].params;
 					// Loop through each device in command, validate and send MQTT command
-					for (let commandDevice of arrCommandsDevices) {
+					for (let commandDevice of command.devices) {
 						logger.log('verbose', "[GHome Exec API] Executing command for device id: " + commandDevice.id);
 						// Match command device with a device from user devices defined on this service
 						var dbDevice = devices.find(obj => obj.endpointId == commandDevice.id);
@@ -288,7 +288,7 @@ router.post('/action', defaultLimiter,
 							timestamp: Date.now()
 						};
 						// Add additional deviceIds to command.devices if multi-device command to enable correlation of responses
-						for (let device in arrCommandsDevices) {
+						for (let device of command.devices) {
 							logger.log('debug', "[GHome Exec API] Checking device.id: " + device.id + ", against commandDevice.id: " + commandDevice.id);
 							try {
 								if (device.id != undefined && device.id != commandDevice.id){

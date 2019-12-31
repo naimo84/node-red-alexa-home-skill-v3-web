@@ -71,6 +71,7 @@
 					</div>
 					<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+							<button type="button" class="btn btn-warning" onclick="deleteTokens()""></button>
 							<button class="btn btn-primary" id="submit" type="submit" value="submit">Save</button>
 					</div>
 				</form>
@@ -138,6 +139,21 @@
 		}
 		else {
 			alert("You cannot edit the superuser account")
+		}
+	}
+
+	function deleteTokens() {
+		var username = $('#username').val();
+		var id = $('#userId').val();
+		var answer = confirm("Are you sure you want to delete Oauth Tokens for user: " + username + "?");
+		if(answer & id != undefined) {
+			$.ajax({
+				url:"/tokens/" + id,
+				type: 'DELETE',
+				success: function(data){
+					document.location.reload();
+				}
+			});
 		}
 	}
 

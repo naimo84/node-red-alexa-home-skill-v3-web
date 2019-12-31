@@ -20,6 +20,7 @@ var countries = require('countries-api');
 var logger = require('../loaders/logger');
 const defaultLimiter = require('../loaders/limiter').defaultLimiter;
 const restrictiveLimiter = require('../loaders/limiter').restrictiveLimiter;
+const { promisify } = require('util');
 ///////////////////////////////////////////////////////////////////////////
 // Functions
 ///////////////////////////////////////////////////////////////////////////
@@ -401,7 +402,14 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 				var lostPassword = await LostPassword.findOne({uuid: token}).populate('user').exec();
 				if (lostPassword) {
 					// Login user
-					await req.login(lostPassword.user);
+					// await req.login(lostPassword.user);
+					// req.login expects a callback, look to use promisify, something similar to promisify(req.login(lostPassword.user)) in future
+					await new Promise(function(res, rej) {
+					 	req.login(lostPassword.user, function(err, data) {
+					 	  if (err) rej(err);
+					 	  else res(data);
+					 	});
+					})
 					// Remove one-time use token
 					lostPassword.remove();
 					var result = await resetPassword(req.user.username, req.body.password);

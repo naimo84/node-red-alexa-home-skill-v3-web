@@ -307,6 +307,10 @@ router.post('/verify-resend', defaultLimiter,  async (req, res) => {
 			// Find related user
 			var account = await Account.findOne({email: req.body.email});
 			// Check account is not already verified
+			if (!account) {
+				req.flash('error_messages', 'Unable to find matching account, check supplied email address!');
+				return res.status(400).send('Unable to find matching account, check supplied email address!');
+			}
 			if (!account.isVerified || account.isVerified && account.isVerified == false){
 				// generate new Verification Token
 				var mailToken = new verifyEmail({ _userId: account._id, token: crypto.randomBytes(16).toString('hex') });

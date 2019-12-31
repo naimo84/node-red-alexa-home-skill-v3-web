@@ -114,10 +114,12 @@
         <p>On creating your first flow you&#39;ll need to define a configuration for the bridge. If you are using the hosted bridge, you can leave the default values.</p>
         <p>If you are hosting your own, then be sure to set the correct Web API and MQTT host names.</p>
 
-        <h2 id="concept-flow">Concept Flow</h2>
+        <h2 id="concept-flow">Concept Flows</h2>
         <p>Refer to <a href="#capabilities-that-support-state">this table</a> for capabilities that support state</p>
         <h3 id="start-simple">Start Simple</h3>
-        <p>If you are only planning to use voice control you only need a default and a state node. This is a good starting point for any flow, you can then extend the flow to enable external state updates, or to perform other functions as outlined below.</p>
+        <p>If you are only planning to use voice control you only need a default and a state node, plus a node that enables you to interact with the device itself.
+          This is a good starting point for any flow, you can then extend the flow to enable external state updates, or to perform other functions as outlined below.</p>
+        <p><img src="/static/images/basic-flow.png" class="img-fluid" alt="Basic Concept Flow Diagram"></p>
         <p><strong>You should only include a single default and state node per device.</strong></p>
         <h3 id="auto-acknowledge">Auto-Acknowledge</h3>
         <p>Essentially, to use this Node-RED &lt;&gt; Alexa bridge your flows will require:</p>

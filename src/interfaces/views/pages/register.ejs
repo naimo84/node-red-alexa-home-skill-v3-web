@@ -22,10 +22,6 @@
       <script type="application/javascript">
         // Load CountrySelect
         $("#country").countrySelect();
-        var password = document.getElementById("password");
-        var verify = document.getElementById("verify");
-        password.onchange = validatePassword;
-        verify.onkeyup = validatePassword;
 
         $('a[href$="#tosModal"]').on( "click", function() {
           $('#tosModal').modal('show');
@@ -39,7 +35,6 @@
           // Username validation built-into input box
           var username = $('#username').val().trim().toLowerCase();
           var password = $('#password').val().trim();
-          var verify = $('#verify').val().trim();
           var email = $('#email').val().trim();
           var country = $("#country_code").val().trim();
 
@@ -68,13 +63,6 @@
 
         });
 
-        function validatePassword(){
-          if(password.value != verify.value) {
-            verify.setCustomValidity("Passwords Don't Match");
-          } else {
-            verify.setCustomValidity('');
-          }
-        }
       </script>
   </div>
 <%- include('../fragments/footer'); -%>

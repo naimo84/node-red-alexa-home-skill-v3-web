@@ -56,7 +56,8 @@ const saveGrantAsync = async(user, grantCode) => {
 const requestAccessTokenAsync = async(user) => {
     try {
         if (enableAlexaAuthorization == true) {
-            var now = (new Date().getTime());
+            // Create time comparator which is now, minus 5 seconds (to allow for request processing)
+            var now = (new Date().getTime() - 1000 * 5);
             // Get user Grant Code
             var grant = await AlexaAuth.AlexaAuthGrantCode.findOne({user: user});
             // Get user Refresh Token
@@ -70,6 +71,7 @@ const requestAccessTokenAsync = async(user) => {
             // Return existing, valid Access Token
             if (hasGrantCode != undefined && hasRefreshToken != undefined && hasAccessToken != undefined) {
                 logger.log('verbose', "[AlexaAuth] Returned existing Access Token for user: " + user.username);
+                logger.log('debug', "[AlexaAuth] Existing Access Token for user: " + user.username + ", token: " + JSON.stringify(access));
                 return access;
             }
             // Use existing Grant Code and Refresh Token to request new Access Token

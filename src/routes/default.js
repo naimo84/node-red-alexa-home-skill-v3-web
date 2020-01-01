@@ -160,7 +160,6 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 				// Check account.salt and account.hash are available to set MQTT password, if not present error to user
 				if (!account.salt || account.salt == undefined || !account.hash || account.hash == undefined){
 					logger.log('error', "[New User] Creation failed, password hash and salt not available to set MQTT password!");
-					req.flash('error_messages', 'Unable to set MQTT password!');
 					return res.status(500).send('New user creation failed, unable to set MQTT password!');
 				}
 				// Update User account with Topics and MQTT password
@@ -178,12 +177,10 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 					// Success, send 200 status
 					if (returnValue == true) {
 						sendEventUid(req.path, "Security", "Create Account", req.ip, req.body.username, req.headers['user-agent']);
-						req.flash('success_messages', 'A verification email has been sent to: ' + req.body.email + ", you need to verify your account to use this service.");
 						res.status(200).send('A verification email has been sent to: ' + req.body.email + ", you need to verify your account to use this service.")
 					}
 					// Failed, send 500 error status
 					else {
-						req.flash('error_messages', 'Verification email failed to send!');
 						res.status(500).send('Verification email failed to send!');
 					}
 				});
@@ -192,13 +189,11 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 				// User exists with this email address
 				if (users) {
 					logger.log('error', "[New User] Cannot create new user, user with email address already exists!");
-					req.flash('error_messages', 'Cannot create new user, user with email address already exists!');
 					return res.status(500).send('User with this email address already exists!');
 				}
 				// Another error occurred, log and send 500 error
 				else {
 					logger.log('error', "[New User] Creation failed, country status code: " + userCountry.statusCode);
-					req.flash('error_messages', 'New user creation failed!');
 					return res.status(500).send('New user creation failed!');
 				}
 			}
@@ -210,7 +205,6 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 	}
 	catch (e) {
 		logger.log('error', "[New User] Cannot create new user, error: " + e.stack);
-		req.flash('error_messages', 'New user creation failed!');
 		return res.status(500).send('New user creation failed!');
 	}
 });
@@ -239,11 +233,9 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 			var account = await Account.findOne({ _id: token._userId, email: req.body.email });
 			// Check account is not already verified (no need to proceed if it is)
 			if (!account) {
-				req.flash('error_messages', 'Unable to find matching account, check supplied email address!');
 				return res.status(400).send('Unable to find matching account, check supplied email address!');
 			}
 			else if (account.isVerified) {
-				req.flash('error_messages', 'Your account is already verified!');
 				return res.status(400).send('Your account is already verified!');
 			}
 			logger.log('debug', "[Verify] User hash: " + account.hash + ", user salt: " + account.salt);
@@ -266,19 +258,16 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 			// Log success
 			logger.log('verbose' , "[Verify] Update user account: " + account.username + " isVerified:true success");
 			// Generate success flash message
-			req.flash('success_messages', 'The account has been verified, you can now log in!');
 			// Send 200 response
 			return res.status(200).send("The account has been verified, you can now log in!");
 		}
 		else {
 			// Email address not supplied, send 400 status
 			if (!req.body.email) {
-				req.flash('error_messages', 'Please ensure you fill-in email address!');
 				return res.status(400).send('Please ensure you fill-in email address!');
 			}
 			// Token not supplied, send 400 status
 			if (!req.body.token) {
-				req.flash('error_messages', 'Please ensure you fill-in token value!');
 				return res.status(400).send('Please ensure you fill-in token value!');
 			}
 		}
@@ -286,7 +275,6 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 	catch(e) {
 		// General error, send 500 status
 		logger.log('error' , "[Verify] Update user account error: " + e.stack);
-		req.flash('error_messages', 'Failed to update user account!');
 		return res.status(500).send('Failed to update user account!');
 	}
 });
@@ -308,7 +296,6 @@ router.post('/verify-resend', defaultLimiter,  async (req, res) => {
 			var account = await Account.findOne({email: req.body.email});
 			// Check account is not already verified
 			if (!account) {
-				req.flash('error_messages', 'Unable to find matching account, check supplied email address!');
 				return res.status(400).send('Unable to find matching account, check supplied email address!');
 			}
 			if (!account.isVerified || account.isVerified && account.isVerified == false){
@@ -323,33 +310,28 @@ router.post('/verify-resend', defaultLimiter,  async (req, res) => {
 					if (returnValue == true) {
 						sendEventUid(req.path, "Security", "Send re-verification email", req.ip, account.username, req.headers['user-agent']);
 						logger.log('info' , "[Verify Resend] A new verification email has been sent to: " + account.email);
-						req.flash('success_messages', 'A verification email has been sent to: ' + account.email);
 						return res.status(200).send('A verification email has been sent to: ' + account.email);
 					}
 					else {
 						logger.log('error' , "[Verify Resend] Failed to send verification email to: " + account.email);
-						req.flash('error_messages', 'Verification email failed to send!');
 						return res.status(500).send('Verification email failed to send!');
 					}
 				});
 			}
 			// Account already verified
 			else if (account && account.isVerified && account.isVerified == true) {
-				req.flash('error_messages', 'Your account is already verified!');
 				return res.status(400).send('Your account is already verified!');
 			}
 		}
 		// Missing req.body.email
 		else {
 			logger.log('verbose' , "[Verify Resend] Missing email address!");
-			req.flash('error_messages', 'Please ensure you fill-in email address!');
 			return res.status(400).send('Missing email address!');
 		}
 	}
 	catch(e){
 		// General error, send 500 status
 		logger.log('error' , "[Verify Resend] Save user email verification token failed, error: " + e.stack);
-		req.flash('error_messages', 'Failed to generate and send email verification token!');
 		return res.status(500).send('Failed to generate and send email verification token!');
 	}
 });
@@ -381,20 +363,17 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 			//  Success, send 200 status
 			if (result == true) {
 				sendEventUid(req.path, "Security", "Successfully Changed Password", req.ip, req.user.username, req.headers['user-agent']);
-				req.flash('success_messages', 'Changed Password!');
-				res.status(200).send();
+				res.status(200).send('Changed Password!');
 			}
 			//  Failure, send error 400 status
 			else {
 				sendEventUid(req.path, "Security", "Failed to Changed Password", req.ip, req.user.username, req.headers['user-agent']);
-				req.flash('error_messages', 'Error setting new password!');
 				res.status(400).send("Problem setting new password");
 			}
 		}
 		catch(e) {
 			// General error, send 500 status
 			logger.log('error' , "[Change Password] Error setting authenticated user's password, error: " + e.stack);
-			req.flash('error_messages', 'Error setting new password!');
 			res.status(500).send("Error setting new password!");
 		}
 
@@ -424,19 +403,15 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 					logger.log('verbose' , "[Change Password] resetPassword result: " + result);
 					if (result == true) {
 						sendEventUid(req.path, "Security", "Successfully Changed Password", req.ip, req.user.username, req.headers['user-agent']);
-						req.flash('success_messages', 'Changed Password!');
-						return res.status(200).send();
+						return res.status(200).send('Changed Password!');
 					}
 					else {
 						sendEventUid(req.path, "Security", "Failed to Changed Password", req.ip, req.user.username, req.headers['user-agent']);
-						req.flash('error_messages', 'Error setting new password!');
 						return res.status(400).send("Error setting new password");
 					}
 				}
 			}
 			else {
-				req.flash('error_messages', 'Please ensure you fill-in token value!');
-				//res.locals.error_messages = 'Please ensure you fill-in token value!';
 				return res.status(400).send('Please ensure you fill-in token value!');
 			}
 		}
@@ -444,8 +419,6 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 			// General error, send 500 status
 			logger.log('error' , "[Change Password] Error setting unauthenticated user's password, error: " + e.stack);
 			//sendEventUid(req.path, "Security", "Failed to Changed Password", req.ip, req.user.username, req.headers['user-agent']);
-			req.flash('error_messages', 'Error setting new password!');
-			//res.locals.error_messages = 'Error setting new password!';
 			res.status(500).send("Error setting new password");
 		}
 	}
@@ -473,7 +446,6 @@ router.post('/lost-password', defaultLimiter, async (req, res) => {
 		var user = await Account.findOne({email: email});
 		var lostPassword = new LostPassword({user: user});
 		await lostPassword.save();
-		req.flash('success_messages', 'A password reset email has been sent to: ' + req.body.email + ".");
 		res.status(200).send('A password reset email has been sent to: ' + req.body.email + ".")
 		var body = mailer.buildLostPasswordBody(lostPassword.uuid, user.username, process.env.WEB_HOSTNAME);
 		mailer.send(req.body.email, process.env.MAIL_USER, 'Password Reset for' + process.env.BRAND, body.text, body.html);

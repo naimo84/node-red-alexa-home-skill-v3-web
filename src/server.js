@@ -29,7 +29,7 @@ if (!(process.env.MONGO_USER && process.env.MONGO_PASSWORD && process.env.MQTT_U
 }
 // Validate BRAND environment variables passed to container
 if (!(process.env.BRAND)) {
-	logger.log('error',"[Core] You MUST supply MONGO_USER, MONGO_PASSWORD, MQTT_USER, MQTT_PASSWORD and MQTT_PORT environment variables");
+	logger.log('error',"[Core] You MUST supply BRAND environment variable");
 	process.exit()
 }
 // Warn on not supply of MONGO/ MQTT host names

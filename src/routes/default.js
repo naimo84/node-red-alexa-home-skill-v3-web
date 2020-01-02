@@ -136,6 +136,15 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 	try {
 		var body = JSON.parse(JSON.stringify(req.body));
 		if (body.hasOwnProperty('username') && body.hasOwnProperty('email') && body.hasOwnProperty('country') && body.hasOwnProperty('password')) {
+			// Check password meets complexity requirements (for programmatic consumers)
+			var passwordRegEx = RegEx("(?=^.{12,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$");
+			if (passwordRegEx.test(body.password) == false) res.status(400).send('Password does not meet complexity requirements');
+			// Check email address format (for programmatic consumers)
+			var emailRegEx = RegEx('/^[^\s@]+@[^\s@]+\.[^\s@]+$/');
+			if (emailRegEx.test(body.email) == false) res.status(400).send('Email address format incorrect!');
+			// Check username format (for programmatic consumers)
+			var usernameRegEx = RegEx('^[a-z,A-Z,0-9,_]{5,15}$');
+			if (usernameRegEx.test(body.username) == false) res.status(400).send('Username format incorrect!');
 			// Get country from user supplied entry
 			var userCountry = await countries.findByCountryCode(req.body.country.toUpperCase());
 			// Check for any account that match given email address
@@ -174,24 +183,24 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 				var body = mailer.buildVerifyEmail(mailToken.token, account.username, process.env.WEB_HOSTNAME);
 				// Send  Verification Email
 				mailer.send(req.body.email, process.env.MAIL_USER, 'Account Verification for ' + process.env.BRAND, body.text, body.html, function(returnValue) {
-					// Success, send 200 status
+					// Success, 201 Created
 					if (returnValue == true) {
 						sendEventUid(req.path, "Security", "Create Account", req.ip, req.body.username, req.headers['user-agent']);
-						res.status(200).send('A verification email has been sent to: ' + req.body.email + ", you need to verify your account to use this service.")
+						res.status(201).send('A verification email has been sent to: ' + req.body.email + ", you need to verify your account to use this service.")
 					}
-					// Failed, send 500 error status
+					// Failed, 500 Internal Service Error
 					else {
 						res.status(500).send('Verification email failed to send!');
 					}
 				});
 			}
 			else {
-				// User exists with this email address
+				// User exists with this email address, 409 Conflict
 				if (users) {
 					logger.log('error', "[New User] Cannot create new user, user with email address already exists!");
-					return res.status(500).send('User with this email address already exists!');
+					return res.status(409).send('User with this email address already exists!');
 				}
-				// Another error occurred, log and send 500 error
+				// Error occurred with userCountry, 500 Internal Service Error
 				else {
 					logger.log('error', "[New User] Creation failed, country status code: " + userCountry.statusCode);
 					return res.status(500).send('New user creation failed!');
@@ -199,11 +208,12 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 			}
 		}
 		else {
-			// Missing critical body elements
-			return res.status(500).send('Please complete all required fields!');
+			// Missing critical body elements, 400 Bad Request
+			return res.status(400).send('Please complete all required fields!');
 		}
 	}
 	catch (e) {
+		// General failure, 500 Internal Service Error
 		logger.log('error', "[New User] Cannot create new user, error: " + e.stack);
 		return res.status(500).send('New user creation failed!');
 	}
@@ -614,7 +624,7 @@ router.delete('/account/:user_id', defaultLimiter,
 			}
 			else {
 				// Access denied, send 401 status
-				res.status(401).send();
+				res.status(401).send('Unauthorized');
 			}
 		}
 		catch(e){

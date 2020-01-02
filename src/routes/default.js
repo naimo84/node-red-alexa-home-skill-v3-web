@@ -137,14 +137,14 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 		var body = JSON.parse(JSON.stringify(req.body));
 		if (body.hasOwnProperty('username') && body.hasOwnProperty('email') && body.hasOwnProperty('country') && body.hasOwnProperty('password')) {
 			// Check password meets complexity requirements (for programmatic consumers)
-			var passwordRegEx = RegEx("(?=^.{12,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$");
-			if (passwordRegEx.test(body.password) == false) res.status(400).send('Password does not meet complexity requirements');
+			var passwordRegExp = RegExp("(?=^.{12,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$");
+			if (passwordRegExp.test(body.password) == false) res.status(400).send('Password does not meet complexity requirements');
 			// Check email address format (for programmatic consumers)
-			var emailRegEx = RegEx('/^[^\s@]+@[^\s@]+\.[^\s@]+$/');
-			if (emailRegEx.test(body.email) == false) res.status(400).send('Email address format incorrect!');
+			var emailRegExp = RegExp('/^[^\s@]+@[^\s@]+\.[^\s@]+$/');
+			if (emailRegExp.test(body.email) == false) res.status(400).send('Email address format incorrect!');
 			// Check username format (for programmatic consumers)
-			var usernameRegEx = RegEx('^[a-z,A-Z,0-9,_]{5,15}$');
-			if (usernameRegEx.test(body.username) == false) res.status(400).send('Username format incorrect!');
+			var usernameRegExp = RegExp('^[a-z,A-Z,0-9,_]{5,15}$');
+			if (usernameRegExp.test(body.username) == false) res.status(400).send('Username format incorrect!');
 			// Get country from user supplied entry
 			var userCountry = await countries.findByCountryCode(req.body.country.toUpperCase());
 			// Check for any account that match given email address

@@ -34,7 +34,7 @@ var logger = require('./loaders/logger');
 // Variables
 ///////////////////////////////////////////////////////////////////////////
 //var debug = (process.env.ALEXA_DEBUG || false);
-// MongoDB Settings, used for expression session handler DB connection
+// MongoDB Settings, used for express session handler DB connection
 var mongo_user = (process.env.MONGO_USER);
 var mongo_password = (process.env.MONGO_PASSWORD);
 var mongo_host = (process.env.MONGO_HOST || "mongodb");
@@ -135,19 +135,20 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 
-function requireHTTPS(req, res, next) {
-	if (req.get('X-Forwarded-Proto') === 'http') {
-        var url = 'https://' + req.get('host');
-        if (req.get('host') === 'localhost') {
-        	url += ':' + port;
-        }
-        url  += req.url;
-        return res.redirect(url);
-    }
-    next();
-}
+// function requireHTTPS(req, res, next) {
+// 	if (req.get('X-Forwarded-Proto') === 'http') {
+//         var url = 'https://' + req.get('host');
+//         if (req.get('host') === 'localhost') {
+//         	url += ':' + port;
+//         }
+//         url  += req.url;
+//         return res.redirect(url);
+//     }
+//     next();
+// }
 
-app.use(requireHTTPS);
+// app.use(requireHTTPS);
+
 app.set('views', path.join(__dirname, 'interfaces/views/'));
 app.use('/static', express.static(path.join(__dirname, '/interfaces/static')));
 app.use('/static/octicons', express.static('node_modules/@primer/octicons/build'), express.static('node_modules/@primer/octicons/build/svg')); // Octicons router

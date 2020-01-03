@@ -42,6 +42,8 @@ var mqttOptions = {
 ///////////////////////////////////////////////////////////////////////////
 logger.log('info', "[MQTT] Connecting to MQTT server: " + mqtt_url);
 
+mqttClient = mqtt.connect(mqtt_url, mqttOptions);
+
 mqttClient.on('error',function(err){
 	logger.log('error', "[MQTT] MQTT connect error");
 });
@@ -56,7 +58,6 @@ mqttClient.on('connect', function(){
 ///////////////////////////////////////////////////////////////////////////
 // MQTT Message Handlers
 ///////////////////////////////////////////////////////////////////////////
-
 // Event handler for received MQTT messages - note subscribe near top of script.
 mqttClient.on('message',function(topic,message){
 	var arrTopic = topic.split("/");
@@ -377,10 +378,6 @@ function notifyUser(severity, username, endpointId, message){
 		logger.log('error', "[MQTT] Failed to publish MQTT alert, error: " + err.stack);
 	}
 };
-
-exports.connect = () => {
-	mqttClient = mqtt.connect(mqtt_url, mqttOptions);
-}
 
 module.exports = {
 	mqttClient,

@@ -39,6 +39,10 @@ var enableGoogleHomeSync = true;
 if (!(process.env.HOMEGRAPH_APIKEY)){
 	enableGoogleHomeSync = false;
 }
+// Regular Expressions, used for validating API POST requests
+let passwordRegExp = /(?=^.{12,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
+let emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+let usernameRegExp = /^[a-z,A-Z,0-9,_]{5,15}$/;
 ///////////////////////////////////////////////////////////////////////////
 // Home
 ///////////////////////////////////////////////////////////////////////////
@@ -136,17 +140,11 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 		var body = JSON.parse(JSON.stringify(req.body));
 		if (body.hasOwnProperty('username') && body.hasOwnProperty('email') && body.hasOwnProperty('country') && body.hasOwnProperty('password')) {
 			// Check password meets complexity requirements (for programmatic consumers)
-			let passwordRegExp = /(?=^.{12,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
-			//if (passwordRegExp.test(body.password) == false) return res.status(400).send('Password does not meet complexity requirements');
-			if (passwordRegExp.test(req.body.password) == false) logger.log('warn', "[New User] Password does not match RegExp!");
+			if (passwordRegExp.test(req.body.password) == false) return res.status(400).send('Password does not meet complexity requirements!');
 			// Check email address format (for programmatic consumers)
-			let emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-			if (emailRegExp.test(req.body.email) == false) logger.log('warn', "[New User] Email does not match RegExp!");
-			//  if (emailRegExp.test(body.email) == false) return res.status(400).send('Email address format incorrect!');
+			if (emailRegExp.test(req.body.email) == false) return res.status(400).send('Email address format incorrect!');
 			// Check username format (for programmatic consumers)
-			let usernameRegExp = /^[a-z,A-Z,0-9,_]{5,15}$/;
-			// if (usernameRegExp.test(body.username) == false) return res.status(400).send('Username format incorrect!');
-			if (usernameRegExp.test(req.body.username) == false) logger.log('warn', "[New User] Username does not match RegExp!");
+			if (usernameRegExp.test(req.body.username) == false) return res.status(400).send('Username format incorrect!');
 			// Get country from user supplied entry
 			var userCountry = await countries.findByCountryCode(req.body.country.toUpperCase());
 			// Check for any account that match given email address
@@ -370,17 +368,18 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 	if (req.isAuthenticated()) {
 		try {
 			logger.log('verbose' , "[Change Password] Logged in user request to change password for user account: " + req.user.username);
-			// User is already logged-in, reset their password
+			// Check password meets complexity requirements (for programmatic consumers)
+			if (passwordRegExp.test(req.body.password) == false) return res.status(400).send('Password does not meet complexity requirements!');
 			var result = await resetPassword(req.user.username, req.body.password);
 			//  Success, send 202 status
 			if (result == true) {
 				sendEventUid(req.path, "Security", "Successfully Changed Password", req.ip, req.user.username, req.headers['user-agent']);
 				res.status(202).send('Changed Password!');
 			}
-			//  Failure, send error 400 status
+			//  Failure, send status 500, Internal Service Error
 			else {
 				sendEventUid(req.path, "Security", "Failed to Changed Password", req.ip, req.user.username, req.headers['user-agent']);
-				res.status(400).send("Problem setting new password");
+				res.status(500).send("Problem setting new password");
 			}
 		}
 		catch(e) {
@@ -400,9 +399,7 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 				var token = req.body.token;
 				var lostPassword = await LostPassword.findOne({uuid: token}).populate('user').exec();
 				if (lostPassword) {
-					// Login user
-					// await req.login(lostPassword.user);
-					// req.login expects a callback, look to use promisify, something similar to promisify(req.login(lostPassword.user)) in future
+					// Login user - req.login expects a callback, so promisify
 					await new Promise(function(res, rej) {
 					 	req.login(lostPassword.user, function(err, data) {
 					 	  if (err) rej(err);
@@ -411,6 +408,9 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 					})
 					// Remove one-time use token
 					lostPassword.remove();
+					// Check password meets complexity requirements (for programmatic consumers)
+					if (passwordRegExp.test(req.body.password) == false) return res.status(400).send('Password does not meet complexity requirements!');
+					// Reset user password
 					var result = await resetPassword(req.user.username, req.body.password);
 					logger.log('verbose' , "[Change Password] resetPassword result: " + result);
 					if (result == true) {
@@ -419,7 +419,7 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 					}
 					else {
 						sendEventUid(req.path, "Security", "Failed to Changed Password", req.ip, req.user.username, req.headers['user-agent']);
-						return res.status(400).send("Error setting new password");
+						return res.status(500).send("Error setting new password");
 					}
 				}
 			}

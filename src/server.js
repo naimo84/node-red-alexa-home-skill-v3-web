@@ -2,8 +2,8 @@
 // Depends
 ///////////////////////////////////////////////////////////////////////////
 var dotenv = require('dotenv').config();
-var http = require('http');
-var https = require('https');
+// var http = require('http');
+// var https = require('https');
 var logger = require('./loaders/logger');
 ///////////////////////////////////////////////////////////////////////////
 // Variables
@@ -54,13 +54,22 @@ if (process.env.VCAP_APPLICATION) {
 	app_id = 'https://' + app_uri;
 }
 else {
-	var app_id = 'http://localhost:' + port;
+	//var app_id = 'http://localhost:' + port;
+	var app_uri = (process.env.WEB_HOSTNAME || 'localhost');
+	var app_id = 'https://' + app_uri;
 }
 // Create HTTP Server, to be proxied
-var server = http.Server(app);
-server.listen(port, host, function(){
+var server = app.listen(port, function(){
 	logger.log('info', "[Core] App listening on: " + host + ":" + port);
 	logger.log('info', "[Core] App_ID -> " + app_id);
-	setTimeout(function(){
-	},5000);
 });
+// Set timeout to 5 seconds
+server.setTimeout = 5000;
+
+// var server = http.Server(app);
+// server.listen(port, host, function(){
+// 	logger.log('info', "[Core] App listening on: " + host + ":" + port);
+// 	logger.log('info', "[Core] App_ID -> " + app_id);
+// 	setTimeout(function(){
+// 	},5000);
+// });

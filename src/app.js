@@ -58,6 +58,8 @@ passport.deserializeUser(Account.deserializeUser());
 ///////////////////////////////////////////////////////////////////////////
 // Main
 ///////////////////////////////////////////////////////////////////////////
+// Connect to MongoDB
+db.connect();
 // Check admin account exists, if not create it using same credentials as MQTT user/password supplied
 Account.findOne({username: mqtt_user}, function(error, account){
 	if (!error && !account) {

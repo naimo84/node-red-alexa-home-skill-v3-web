@@ -6,13 +6,6 @@ var dotenv = require('dotenv').config();
 // var https = require('https');
 var logger = require('./loaders/logger');
 ///////////////////////////////////////////////////////////////////////////
-// Variables
-///////////////////////////////////////////////////////////////////////////
-// var consoleLoglevel = "info"; // default console log level
-// var debug = (process.env.ALEXA_DEBUG || false);
-// if (debug == "true") {consoleLoglevel = "debug"};
-// logger.log('info', "[Core] Log Level set to: " + consoleLoglevel);
-///////////////////////////////////////////////////////////////////////////
 // Main
 ///////////////////////////////////////////////////////////////////////////
 // Validate dotenv was successful
@@ -20,7 +13,6 @@ if (dotenv.error) {
 	logger.log('error',"[Core] dotenv parsing failed, please ensure you have mapped .env file to /usr/src/app/.env, an example file is provided, see .env.template for more information");
 	throw dotenv.error
 }
-
 var app = require('./app');
 // Validate CRITICAL environment variables passed to container
 if (!(process.env.MONGO_USER && process.env.MONGO_PASSWORD && process.env.MQTT_USER && process.env.MQTT_PASSWORD && process.env.MQTT_PORT)) {

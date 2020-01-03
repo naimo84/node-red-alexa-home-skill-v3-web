@@ -198,7 +198,7 @@ var state = require('./services/state'); // Load State API
 // Passport Configuration
 ///////////////////////////////////////////////////////////////////////////
 
-passport.use(new LocalStrategy(Account.createStrategy()));
+passport.use(new LocalStrategy(Account.authenticate()));
 // New Custom Local Strategy to provide user feedback
 //passport.use(new LocalStrategy(
 // 	function(username, password, done) {
@@ -218,7 +218,7 @@ passport.use(new LocalStrategy(Account.createStrategy()));
 // 	}
 // ));
 
-passport.use(new BasicStrategy(Account.createStrategy()));
+passport.use(new BasicStrategy(Account.authenticate()));
 // New Custom Local Strategy to provide user feedback
 // passport.use(new BasicStrategy(
 // 	function(username, password, done) {

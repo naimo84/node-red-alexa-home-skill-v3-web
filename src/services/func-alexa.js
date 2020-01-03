@@ -56,8 +56,8 @@ const saveGrantAsync = async(user, grantCode) => {
 const requestAccessTokenAsync = async(user) => {
     try {
         if (enableAlexaAuthorization == true) {
-            // Create time comparator which is now, minus 5 seconds (to allow for request processing)
-            var now = (new Date().getTime() - 1000 * 5);
+            // Create time comparator which is now, plus 5 seconds (to allow for request processing)
+            var now = (new Date().getTime() + 1000 * 5);
             // Get user Grant Code
             var grant = await AlexaAuth.AlexaAuthGrantCode.findOne({user: user});
             // Get user Refresh Token

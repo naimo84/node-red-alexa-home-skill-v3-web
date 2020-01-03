@@ -20,7 +20,6 @@ var countries = require('countries-api');
 var logger = require('../loaders/logger');
 const defaultLimiter = require('../loaders/limiter').defaultLimiter;
 const restrictiveLimiter = require('../loaders/limiter').restrictiveLimiter;
-const { promisify } = require('util');
 ///////////////////////////////////////////////////////////////////////////
 // Functions
 ///////////////////////////////////////////////////////////////////////////
@@ -137,17 +136,17 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 		var body = JSON.parse(JSON.stringify(req.body));
 		if (body.hasOwnProperty('username') && body.hasOwnProperty('email') && body.hasOwnProperty('country') && body.hasOwnProperty('password')) {
 			// Check password meets complexity requirements (for programmatic consumers)
-			var passwordRegExp = RegExp('(?=^.{12,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$');
+			let passwordRegExp = RegExp('^(?=^.{12,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$');
 			//if (passwordRegExp.test(body.password) == false) return res.status(400).send('Password does not meet complexity requirements');
-			if (passwordRegExp.test(body.password) == false) logger.log('warn', "[New User] Password does not match RegExp, result: " + passwordRegExp);
+			if (passwordRegExp.test(body.password) == false) logger.log('warn', "[New User] Password does not match RegExp!");
 			// Check email address format (for programmatic consumers)
-			var emailRegExp = RegExp('/^[^\s@]+@[^\s@]+\.[^\s@]+$/');
-			if (emailRegExp.test(body.email) == false) logger.log('warn', "[New User] Email does not match RegExp, result: " + emailRegExp);
+			let emailRegExp = RegExp('^[^\s@]+@[^\s@]+\.[^\s@]+$');
+			if (emailRegExp.test(body.email) == false) logger.log('warn', "[New User] Email does not match RegExp!");
 			//  if (emailRegExp.test(body.email) == false) return res.status(400).send('Email address format incorrect!');
 			// Check username format (for programmatic consumers)
-			var usernameRegExp = RegExp('^[a-z,A-Z,0-9,_]{5,15}$');
+			let usernameRegExp = RegExp('^[a-z,A-Z,0-9,_]{5,15}$');
 			// if (usernameRegExp.test(body.username) == false) return res.status(400).send('Username format incorrect!');
-			if (usernameRegExp.test(body.username) == false) logger.log('warn', "[New User] Username does not match RegExp, result: " + usernameRegExp);
+			if (usernameRegExp.test(body.username) == false) logger.log('warn', "[New User] Username does not match RegExp!");
 			// Get country from user supplied entry
 			var userCountry = await countries.findByCountryCode(req.body.country.toUpperCase());
 			// Check for any account that match given email address
@@ -272,7 +271,7 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 			logger.log('verbose' , "[Verify] Update user account: " + account.username + " isVerified:true success");
 			// Generate success flash message
 			// Send 200 response
-			return res.status(200).send("The account has been verified, you can now log in!");
+			return res.status(202).send("The account has been verified, you can now log in!");
 		}
 		else {
 			// Email address not supplied, send 400 status
@@ -323,7 +322,7 @@ router.post('/verify-resend', defaultLimiter,  async (req, res) => {
 					if (returnValue == true) {
 						sendEventUid(req.path, "Security", "Send re-verification email", req.ip, account.username, req.headers['user-agent']);
 						logger.log('info' , "[Verify Resend] A new verification email has been sent to: " + account.email);
-						return res.status(200).send('A verification email has been sent to: ' + account.email);
+						return res.status(202).send('A verification email has been sent to: ' + account.email);
 					}
 					else {
 						logger.log('error' , "[Verify Resend] Failed to send verification email to: " + account.email);
@@ -373,10 +372,10 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 			logger.log('verbose' , "[Change Password] Logged in user request to change password for user account: " + req.user.username);
 			// User is already logged-in, reset their password
 			var result = await resetPassword(req.user.username, req.body.password);
-			//  Success, send 200 status
+			//  Success, send 202 status
 			if (result == true) {
 				sendEventUid(req.path, "Security", "Successfully Changed Password", req.ip, req.user.username, req.headers['user-agent']);
-				res.status(200).send('Changed Password!');
+				res.status(202).send('Changed Password!');
 			}
 			//  Failure, send error 400 status
 			else {
@@ -416,7 +415,7 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 					logger.log('verbose' , "[Change Password] resetPassword result: " + result);
 					if (result == true) {
 						sendEventUid(req.path, "Security", "Successfully Changed Password", req.ip, req.user.username, req.headers['user-agent']);
-						return res.status(200).send('Changed Password!');
+						return res.status(202).send('Changed Password!');
 					}
 					else {
 						sendEventUid(req.path, "Security", "Failed to Changed Password", req.ip, req.user.username, req.headers['user-agent']);

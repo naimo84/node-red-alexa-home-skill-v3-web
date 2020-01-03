@@ -241,6 +241,7 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 			var token = await verifyEmail.findOne({ token: req.body.token });
 			// Find related user
 			var account = await Account.findOne({ _id: token._userId, email: req.body.email });
+			var accountWithHash = await Account.findByUsername(account.username, true);
 			// Check account is not already verified (no need to proceed if it is)
 			if (!account) {
 				return res.status(400).send('Unable to find matching account, check supplied email address!');
@@ -248,7 +249,8 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 			else if (account.isVerified) {
 				return res.status(400).send('Your account is already verified!');
 			}
-			logger.log('debug', "[Verify] User hash: " + account.hash + ", user salt: " + account.salt);
+			logger.log('debug', "[Verify] account hash: " + account.hash + ", account salt: " + account.salt);
+			logger.log('debug', "[Verify] accountWithHash: " + accountWithHash.hash + ", accountWithHash salt: " + accountWithHash.salt);
 			// // Create MQTT Topics for User
 			// var topics = new Topics({topics: [
 			// 	'command/' + account.username +'/#',

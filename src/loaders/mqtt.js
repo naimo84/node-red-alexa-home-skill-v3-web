@@ -51,7 +51,7 @@ mqttClient.on('reconnect', function(){
 	logger.log('warn', "[MQTT] MQTT reconnect event");
 });
 mqttClient.on('connect', function(){
-	logger.log('info', "[MQTT] MQTT connected, subscribing to 'response/#' and 'state/#")
+	logger.log('info', "[MQTT] MQTT connected, subscribing to 'response/#' and 'state/#'")
 	mqttClient.subscribe('response/#');
 	mqttClient.subscribe('state/#');
 });

@@ -13,7 +13,6 @@ const path = require('path');
 const { SitemapStream, streamToPromise } = require('sitemap');
 const { createGzip } = require('zlib');
 const robots = require('express-robots-txt');
-//var cookieParser = require('cookie-parser');
 ///////////////////////////////////////////////////////////////////////////
 // Loaders
 ///////////////////////////////////////////////////////////////////////////
@@ -33,7 +32,6 @@ var logger = require('./loaders/logger');
 ///////////////////////////////////////////////////////////////////////////
 // Variables
 ///////////////////////////////////////////////////////////////////////////
-//var debug = (process.env.ALEXA_DEBUG || false);
 // MongoDB Settings, used for express session handler DB connection
 var mongo_user = (process.env.MONGO_USER);
 var mongo_password = (process.env.MONGO_PASSWORD);
@@ -60,8 +58,6 @@ passport.deserializeUser(Account.deserializeUser());
 ///////////////////////////////////////////////////////////////////////////
 // Connect to MongoDB
 db.connect();
-// Connect to MQTT
-//mqtt.connect();
 // Check admin account exists, if not create it using same credentials as MQTT user/password supplied
 Account.findOne({username: mqtt_user}, function(error, account){
 	if (!error && !account) {
@@ -116,7 +112,6 @@ app.enable('trust proxy');
 app.use(favicon(path.join(__dirname, '/interfaces/static', 'favicon.ico')))
 
 app.use(morgan("combined", {stream: logger.stream})); // change to use Winston
-//app.use(cookieParser(cookieSecret));
 app.use(flash());
 // Session handler
 app.use(session({
@@ -134,20 +129,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
-
-// function requireHTTPS(req, res, next) {
-// 	if (req.get('X-Forwarded-Proto') === 'http') {
-//         var url = 'https://' + req.get('host');
-//         if (req.get('host') === 'localhost') {
-//         	url += ':' + port;
-//         }
-//         url  += req.url;
-//         return res.redirect(url);
-//     }
-//     next();
-// }
-
-// app.use(requireHTTPS);
 
 app.set('views', path.join(__dirname, 'interfaces/views/'));
 app.use('/static', express.static(path.join(__dirname, '/interfaces/static')));
@@ -217,7 +198,7 @@ var state = require('./services/state'); // Load State API
 // Passport Configuration
 ///////////////////////////////////////////////////////////////////////////
 
-passport.use(new LocalStrategy(Account.authenticate()));
+passport.use(new LocalStrategy(Account.createStrategy()));
 // New Custom Local Strategy to provide user feedback
 //passport.use(new LocalStrategy(
 // 	function(username, password, done) {
@@ -237,7 +218,7 @@ passport.use(new LocalStrategy(Account.authenticate()));
 // 	}
 // ));
 
-passport.use(new BasicStrategy(Account.authenticate()));
+passport.use(new BasicStrategy(Account.createStrategy()));
 // New Custom Local Strategy to provide user feedback
 // passport.use(new BasicStrategy(
 // 	function(username, password, done) {

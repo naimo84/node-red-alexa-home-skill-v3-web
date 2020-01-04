@@ -45,9 +45,9 @@
               xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
               xhr.onreadystatechange = function () {
                 if( xhr.readyState == 4 && xhr.status == 202) {
-                  //new verify token created / sent to users email address
+                  //account verified
                   alert(xhr.responseText);
-                  window.location = '/verify';
+                  window.location = '/login';
                 } else if (xhr.readyState == 4 && (xhr.status == 400 || xhr.status == 500)) {
                   //show error
                   alert(xhr.responseText);

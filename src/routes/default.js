@@ -243,7 +243,7 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 			// Find related user
 			var account = await Account.findOne({ _id: token._userId, email: req.body.email });
 			// Find related user, returning hash/ salt
-			if (token.user) var accountWithHash = await Account.findByUsername(token._userId.username, true);
+			if (token._userId) var accountWithHash = await Account.findByUsername(token._userId.username, true);
 			// Check account is not already verified (no need to proceed if it is)
 			if (!account) {
 				return res.status(400).send('Unable to find matching account, check supplied email address!');

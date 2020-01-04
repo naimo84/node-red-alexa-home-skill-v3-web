@@ -116,11 +116,12 @@ router.post('/toggle-topics/:username', defaultLimiter,
 					// Save new user-specific MQTT topics
 					await aclUser.save();
 				}
+				// // Get User
+				var account = await Account.findByUsername(req.params.username, true);
+				// Apply topic change
 				await Account.updateOne({username: account.username},{$set: {topics: aclUser._id}});
 				logger.log('debug' , "[Reset Topics] Reset MQTT topics for user: " + account.username + ", to: " + JSON.stringify(aclUser));
 
-				// // Get User
-				// var account = await Account.findByUsername(req.params.username, true);
 				// if (!account) return res.status(500).send('Account not found!');
 				// // Set user.topics to pattern-based MQTT topics
 				// if (account.topics == aclPattern._id){

@@ -156,7 +156,7 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 				// Force new usernames to be lowercase, will also prevent duplicate usernames with case variances
 				var username = req.body.username.toLowerCase();
 				// Register new user, Passport will verify username is unique
-				var account = await Account.register(new Account({ username : username, email: req.body.email, country: req.body.country.toUpperCase(), region: region,  mqttPass: "foo", active: true }), req.body.password);
+				var account = await Account.register(new Account({ username : username, email: req.body.email, country: req.body.country.toUpperCase(), region: region,  mqttPass: crypto.randomBytes(16).toString('hex'), active: true }), req.body.password);
 				// Create MQTT Topics for User
 				var topics = new Topics({topics: [
 					'command/' + account.username +'/#',
@@ -250,6 +250,8 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 				return res.status(400).send('Your account is already verified!');
 			}
 			if (account) logger.log('debug', "[Verify] account hash: " + account.hash + ", account salt: " + account.salt);
+			// If we just set MQTT password here, can we use shared topic with filter?
+
 			// // Create MQTT Topics for User
 			// var topics = new Topics({topics: [
 			// 	'command/' + account.username +'/#',

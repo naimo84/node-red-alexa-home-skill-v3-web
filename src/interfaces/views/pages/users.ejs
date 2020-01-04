@@ -163,7 +163,7 @@
 		var answer = confirm("Are you sure you want to reset MQTT topics for user: " + username + "?");
 		if(answer & username != undefined) {
 			$.ajax({
-				url:"/reset-topics/" + username,
+				url:"/admin/reset-topics/" + username,
 				type: 'POST',
 				success: function(data){
 					document.location.reload();

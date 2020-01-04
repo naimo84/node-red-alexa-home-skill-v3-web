@@ -239,11 +239,11 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 	try {
 		if (req.body.token && req.body.email) {
 			// Find a matching token, populate user for use in findByUsername account lookup
-			var token = await verifyEmail.findOne({ token: req.body.token }).populate('user').exec();
+			var token = await verifyEmail.findOne({ token: req.body.token }).populate('_userId').exec();
 			// Find related user
 			var account = await Account.findOne({ _id: token._userId, email: req.body.email });
 			// Find related user, returning hash/ salt
-			if (token.user) var accountWithHash = await Account.findByUsername(token.user.username, true);
+			if (token.user) var accountWithHash = await Account.findByUsername(token._userId.username, true);
 			// Check account is not already verified (no need to proceed if it is)
 			if (!account) {
 				return res.status(400).send('Unable to find matching account, check supplied email address!');

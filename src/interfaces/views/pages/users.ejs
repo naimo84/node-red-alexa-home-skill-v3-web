@@ -72,7 +72,7 @@
 					<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
 							<button type="button" class="btn btn-warning" onclick="deleteTokens()">Delete OAuth Tokens</button>
-							<button type="button" class="btn btn-danger" onclick="resetTopics()">Reset Topics</button>
+							<button type="button" class="btn btn-danger" onclick="resetTopics()">Toggle Topics</button>
 							<button class="btn btn-primary" id="submit" type="submit" value="submit">Save</button>
 					</div>
 				</form>
@@ -163,7 +163,7 @@
 		var answer = confirm("Are you sure you want to reset MQTT topics for user: " + username + "?");
 		if(answer & username != undefined) {
 			$.ajax({
-				url:"/admin/reset-topics/" + username,
+				url:"/admin/toggle-topics/" + username,
 				type: 'POST',
 				success: function(data){
 					document.location.reload();

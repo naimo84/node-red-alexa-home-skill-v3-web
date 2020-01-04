@@ -94,14 +94,14 @@ router.get('/users', defaultLimiter,
 ///////////////////////////////////////////////////////////////////////////
 // Users Topics
 ///////////////////////////////////////////////////////////////////////////
-router.post('/reset-topics/:username', defaultLimiter,
+router.post('/toggle-topics/:username', defaultLimiter,
 	ensureAuthenticated,
 	async (req, res) => {
 		try{
 			if (req.user.username === mqtt_user) {
 				if (!req.params.username) return res.status(400).send('Username not supplied!');
 				// Get shared pattern ACL
-				//var aclPattern = await Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
+				var aclPattern = await Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
 				// Get user-specific ACL
 				var aclUser = await Topics.findOne({topics:	['command/' + req.params.username + '/#','state/' + req.params.username + '/#','response/' + req.params.username + '/#','message/' + req.params.username + '/#']});
 				if (!aclUser) return res.status(500).send('ACL not found!');
@@ -109,8 +109,15 @@ router.post('/reset-topics/:username', defaultLimiter,
 				var account = await Account.findByUsername(req.params.username, true);
 				if (!account) return res.status(500).send('Account not found!');
 				// Set back to per-user topic
-				await Account.updateOne({username: account.username},{$set: {topics: aclUser._id}});
-				logger.log('debug' , "[Reset Topics] Successfully reset MQTT topics for user: " + account.username + ", to: " + JSON.stringify(aclUser));
+
+				if (account.topics == aclPattern._id){
+					await Account.updateOne({username: account.username},{$set: {topics: aclUser._id}});
+					logger.log('debug' , "[Reset Topics] Reset MQTT topics for user: " + account.username + ", to: " + JSON.stringify(aclUser));
+				}
+				else {
+					await Account.updateOne({username: account.username},{$set: {topics: aclPattern._id}});
+					logger.log('debug' , "[Reset Topics] Updated MQTT topics for user to pattern: " + account.username + ", to: " + JSON.stringify(aclPattern));
+				}
 			}
 			else {
 				res.redirect(303, '/');

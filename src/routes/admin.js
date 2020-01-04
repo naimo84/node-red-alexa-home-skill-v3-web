@@ -102,7 +102,7 @@ router.post('/toggle-topics/:username', defaultLimiter,
 			if (req.user.username === mqtt_user) {
 				if (!req.params.username) return res.status(400).send('Username not supplied!');
 				// Get shared pattern ACL
-				var aclPattern = await Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
+				//var aclPattern = await Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
 				// Get user-specific ACL
 				var aclUser = await Topics.findOne({topics:	['command/' + req.params.username + '/#','state/' + req.params.username + '/#','response/' + req.params.username + '/#','message/' + req.params.username + '/#']});
 				if (!aclUser) {
@@ -116,19 +116,22 @@ router.post('/toggle-topics/:username', defaultLimiter,
 					// Save new user-specific MQTT topics
 					await aclUser.save();
 				}
-				// Get User
-				var account = await Account.findByUsername(req.params.username, true);
-				if (!account) return res.status(500).send('Account not found!');
-				// Set user.topics to pattern-based MQTT topics
-				if (account.topics == aclPattern._id){
-					await Account.updateOne({username: account.username},{$set: {topics: aclUser._id}});
-					logger.log('debug' , "[Reset Topics] Reset MQTT topics for user: " + account.username + ", to: " + JSON.stringify(aclUser));
-				}
-				// Set user.topics back to per-user MQTT topics
-				else {
-					await Account.updateOne({username: account.username},{$set: {topics: aclPattern._id}});
-					logger.log('debug' , "[Reset Topics] Updated MQTT topics for user to pattern: " + account.username + ", to: " + JSON.stringify(aclPattern));
-				}
+				await Account.updateOne({username: account.username},{$set: {topics: aclUser._id}});
+				logger.log('debug' , "[Reset Topics] Reset MQTT topics for user: " + account.username + ", to: " + JSON.stringify(aclUser));
+
+				// // Get User
+				// var account = await Account.findByUsername(req.params.username, true);
+				// if (!account) return res.status(500).send('Account not found!');
+				// // Set user.topics to pattern-based MQTT topics
+				// if (account.topics == aclPattern._id){
+				// 	await Account.updateOne({username: account.username},{$set: {topics: aclUser._id}});
+				// 	logger.log('debug' , "[Reset Topics] Reset MQTT topics for user: " + account.username + ", to: " + JSON.stringify(aclUser));
+				// }
+				// // Set user.topics back to per-user MQTT topics
+				// else {
+				// 	await Account.updateOne({username: account.username},{$set: {topics: aclPattern._id}});
+				// 	logger.log('debug' , "[Reset Topics] Updated MQTT topics for user to pattern: " + account.username + ", to: " + JSON.stringify(aclPattern));
+				// }
 			}
 			// Not superuser, redirect
 			else {

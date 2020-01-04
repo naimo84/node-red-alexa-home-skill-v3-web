@@ -1,11 +1,8 @@
 <%- include('../fragments/header'); -%>
   <div class="container main-content">
       <form class="form-verifySend" id="form-verifySend">
-          <% if (error_messages) { %>
-            <p><strong><%= error_messages %></strong></p>
-          <% } %>
-          <% if (success_messages) { %>
-            <p><strong><%= success_messages %></strong></p>
+          <% if (message) { %>
+            <p><strong><%= message %></strong></p>
           <% } %>
           <h1 class="h3 mb-3 font-weight-normal">Account Verification</h1>
           <p>Use this form to verify your account.</p>

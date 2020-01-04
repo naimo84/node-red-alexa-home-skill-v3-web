@@ -134,13 +134,6 @@ app.set('views', path.join(__dirname, 'interfaces/views/'));
 app.use('/static', express.static(path.join(__dirname, '/interfaces/static')));
 app.use('/static/octicons', express.static('node_modules/@primer/octicons/build'), express.static('node_modules/@primer/octicons/build/svg')); // Octicons router
 
-// Add flash message handler
-app.use(function(req, res, next){
-    res.locals.success_messages = req.flash('success_messages');
-    res.locals.error_messages = req.flash('error_messages');
-    next();
-});
-
 // robots.txt
 app.use(robots({UserAgent: '*', Allow: '/', CrawlDelay: '5', Sitemap: 'https://' + process.env.WEB_HOSTNAME + '/sitemap.xml'}))
 

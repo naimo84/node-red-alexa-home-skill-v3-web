@@ -227,8 +227,8 @@ router.get(['/verify', '/verify/:token'], defaultLimiter, async (req, res) => {
 		res.render('pages/verify', {token: req.params.token, user: req.user, brand: process.env.BRAND, title: "Verify Account | " + process.env.BRAND});
 	}
 	else {
-		req.flash('error_messages', 'No token value supplied in URL, please ensure you manually enter token value below!');
-		res.render('pages/verify',{token: undefined, user: req.user, brand: process.env.BRAND, title: "Verify Account | " + process.env.BRAND});
+		let message =  'No token value supplied in URL, please ensure you manually enter token value below!';
+		res.render('pages/verify',{token: undefined, user: req.user, brand: process.env.BRAND, title: "Verify Account | " + process.env.BRAND, message: message});
 	}
 });
 ///////////////////////////////////////////////////////////////////////////
@@ -237,11 +237,12 @@ router.get(['/verify', '/verify/:token'], defaultLimiter, async (req, res) => {
 router.post('/verify', defaultLimiter, async (req, res) => {
 	try {
 		if (req.body.token && req.body.email) {
-			// Find a matching token
-			var token = await verifyEmail.findOne({ token: req.body.token });
+			// Find a matching token, populate user for use in findByUsername account lookup
+			var token = await verifyEmail.findOne({ token: req.body.token }).populate('user').exec();
 			// Find related user
 			var account = await Account.findOne({ _id: token._userId, email: req.body.email });
-			if (account) var accountWithHash = await Account.findByUsername(account.username, true);
+			// Find related user, returning hash/ salt
+			if (token.user) var accountWithHash = await Account.findByUsername(token.user.username, true);
 			// Check account is not already verified (no need to proceed if it is)
 			if (!account) {
 				return res.status(400).send('Unable to find matching account, check supplied email address!');
@@ -249,7 +250,6 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 			else if (account.isVerified) {
 				return res.status(400).send('Your account is already verified!');
 			}
-			logger.log('debug', "[Verify] account hash: " + account.hash + ", account salt: " + account.salt);
 			if (accountWithHash) logger.log('debug', "[Verify] accountWithHash: " + accountWithHash.hash + ", accountWithHash salt: " + accountWithHash.salt);
 			// // Create MQTT Topics for User
 			// var topics = new Topics({topics: [
@@ -358,8 +358,11 @@ router.get(['/change-password', '/change-password/:token'], restrictiveLimiter, 
 	}
 	else {
 		// Disable flash message if logged in
-		if (!req.user) {req.flash('error_messages', 'No token value supplied in URL, please ensure you manually enter token value below!')};
-		res.render('pages/change-password',{token: undefined, user: req.user, brand: process.env.BRAND, title: "Change Password | " + process.env.BRAND});
+		if (!req.user) {
+			let message = 'No token value supplied in URL, please ensure you manually enter token value below!';
+			res.render('pages/change-password',{token: undefined, user: req.user, brand: process.env.BRAND, title: "Change Password | " + process.env.BRAND, message: message})
+		}
+		else {res.render('pages/change-password',{token: undefined, user: req.user, brand: process.env.BRAND, title: "Change Password | " + process.env.BRAND})}
 	}
 });
 ///////////////////////////////////////////////////////////////////////////

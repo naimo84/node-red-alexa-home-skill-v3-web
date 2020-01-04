@@ -102,11 +102,9 @@ router.post('/user/:id/:state', defaultLimiter,
 				var state = (req.params.state === "true");
 				var result = await toggleUser(req.params.id, state);
 				if (result == true) {
-					req.flash('success_messages', 'Updated Account State!');
-					return res.status(200).send();
+					return res.status(200).send('Updated Account State!');
 				}
 				else {
-					req.flash('error_messages', 'Error updating account state!');
 					return res.status(400).send("Error updating account state!");
 				}
 			}
@@ -119,7 +117,6 @@ router.post('/user/:id/:state', defaultLimiter,
 		}
 		catch(e){
 			logger.log('error', "[Admin Users] Error disabling/ enabling user, error: " + e.stack);
-			req.flash('error_messages', 'Error updating account state!');
 			return res.status(400).send("Error updating account state!");
 		}
 });

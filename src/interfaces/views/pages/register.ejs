@@ -10,12 +10,6 @@
   <%- include('../fragments/privacy-modal'); -%>
 
   <div class="container main-content">
-      <% if (error_messages) { %>
-        <p><strong><%= error_messages %></strong></p>
-      <% } %>
-      <% if (success_messages) { %>
-        <p><strong><%= success_messages %></strong></p>
-      <% } %>
       <form class="form-register" id="form-register">
         <%- include('../fragments/register'); -%>
       </form>

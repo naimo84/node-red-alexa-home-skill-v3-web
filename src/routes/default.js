@@ -176,7 +176,7 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 				logger.log('debug', "[New User] User hash: " + account.hash + ", user salt: " + account.salt);
 				await Account.updateOne({username: account.username},{$set: {mqttPass: mqttPass, topics: topics._id}});
 				//Generate Mail Verification Token
-				var mailToken = new verifyEmail({ _userId: account._id, token: crypto.randomBytes(16).toString('hex') });
+				var mailToken = new verifyEmail({ user: account, token: crypto.randomBytes(16).toString('hex') });
 				// Save Mail Verification Token
 				await mailToken.save();
 				// Generate Verification Email
@@ -239,11 +239,11 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 	try {
 		if (req.body.token && req.body.email) {
 			// Find a matching token, populate user for use in findByUsername account lookup
-			var token = await verifyEmail.findOne({ token: req.body.token }).populate('_userId').exec();
+			var token = await verifyEmail.findOne({ token: req.body.token }).populate('user').exec();
 			// Find related user
-			var account = await Account.findOne({ _id: token._userId, email: req.body.email });
+			var account = await Account.findOne({ _id: token.user._id, email: req.body.email });
 			// Find related user, returning hash/ salt
-			if (token._userId) var accountWithHash = await Account.findByUsername(token._userId.username, true);
+			if (token.user) var accountWithHash = await Account.findByUsername(token.user.username, true);
 			// Check account is not already verified (no need to proceed if it is)
 			if (!account) {
 				return res.status(400).send('Unable to find matching account, check supplied email address!');
@@ -313,7 +313,7 @@ router.post('/verify-resend', defaultLimiter,  async (req, res) => {
 			}
 			if (!account.isVerified || account.isVerified && account.isVerified == false){
 				// generate new Verification Token
-				var mailToken = new verifyEmail({ _userId: account._id, token: crypto.randomBytes(16).toString('hex') });
+				var mailToken = new verifyEmail({ user: account, token: crypto.randomBytes(16).toString('hex') });
 				// Save the verification token
 				await mailToken.save();
 				// Generate Verification Email

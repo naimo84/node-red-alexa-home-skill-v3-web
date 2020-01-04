@@ -106,19 +106,19 @@ Account.findOne({username: mqtt_user}, function(error, account){
 });
 
 // Create new pattern-based universal MQTT topic ACL
-Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u/#']}, function(error, acl){
-	if (error) logger.log('error' , "[Topics] Unable to find pattern-based MQTT topic, error: " + error);
-	else if (!acl){
-		var topics = new Topics({topics: ['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
-		topics.save(function(err){
-			if (err) logger.log('error' , "[Topics] Unable to save pattern-based MQTT topic, error: " + err);
-			logger.log('debug' , "[Topics] Created pattern-based MQTT topic: " + topics);
-		});
-	}
-	else {
-		logger.log('debug' , '[Topics] Found pattern-based MQTT topic, topic: ' + JSON.stringify(acl));
-	}
-});
+// Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u/#']}, function(error, acl){
+// 	if (error) logger.log('error' , "[Topics] Unable to find pattern-based MQTT topic, error: " + error);
+// 	else if (!acl){
+// 		var topics = new Topics({topics: ['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
+// 		topics.save(function(err){
+// 			if (err) logger.log('error' , "[Topics] Unable to save pattern-based MQTT topic, error: " + err);
+// 			logger.log('debug' , "[Topics] Created pattern-based MQTT topic: " + topics);
+// 		});
+// 	}
+// 	else {
+// 		logger.log('debug' , '[Topics] Found pattern-based MQTT topic, topic: ' + JSON.stringify(acl));
+// 	}
+// });
 
 var app = express();
 app.set('view engine', 'ejs');

@@ -5,7 +5,7 @@
             <p><strong><%= message %></strong></p>
           <% } %>
           <h1 class="h3 mb-3 font-weight-normal">Account Verification</h1>
-          <p>Simply click 'verify' to complete the account verification process!</p>
+          <p>Simply click 'Verify Account' to complete the account verification process!</p>
           <% if (token != undefined) { %>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
@@ -30,7 +30,6 @@
               e.preventDefault();
               var xhr = new XMLHttpRequest();
               var token = $('#token').val().trim();
-              var email = $('#email').val().trim();
 
               var params = "&token=" + encodeURIComponent(token);
 

@@ -223,12 +223,13 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 ///////////////////////////////////////////////////////////////////////////
 router.get(['/verify', '/verify/:token'], defaultLimiter, async (req, res) => {
 	sendPageView(req.path, 'Verify', req.ip, req.headers['user-agent']);
-	if (req.params.token) {
-		res.render('pages/verify', {token: req.params.token, user: req.user, brand: process.env.BRAND, title: "Verify Account | " + process.env.BRAND});
+	let message = undefined;
+	if (!req.params.token) {
+		message = 'No token value supplied in URL, please ensure you manually enter token value below!';
+		res.render('pages/verify',{token: undefined, user: req.user, brand: process.env.BRAND, title: "Verify Account | " + process.env.BRAND, message: message});
 	}
 	else {
-		let message =  'No token value supplied in URL, please ensure you manually enter token value below!';
-		res.render('pages/verify',{token: undefined, user: req.user, brand: process.env.BRAND, title: "Verify Account | " + process.env.BRAND, message: message});
+		res.render('pages/verify',{token: req.params.token, user: req.user, brand: process.env.BRAND, title: "Verify Account | " + process.env.BRAND, message: message});
 	}
 });
 ///////////////////////////////////////////////////////////////////////////
@@ -353,16 +354,13 @@ router.post('/verify-resend', defaultLimiter,  async (req, res) => {
 ///////////////////////////////////////////////////////////////////////////
 router.get(['/change-password', '/change-password/:token'], restrictiveLimiter, async (req, res) => {
 	sendPageView(req.path, 'Change Password with Token', req.ip, req.headers['user-agent']);
-	if (req.params.token) {
-		res.render('pages/change-password', {token: req.params.token, user: req.user, brand: process.env.BRAND, title: "Change Password | " + process.env.BRAND});
+	let message = undefined;
+	if (!req.params.token) {
+		message = 'No token value supplied in URL, please ensure you manually enter token value below!';
+		res.render('pages/change-password',{token: undefined, user: req.user, brand: process.env.BRAND, title: "Change Password | " + process.env.BRAND, message: message})
 	}
 	else {
-		// Disable flash message if logged in
-		if (!req.user) {
-			let message = 'No token value supplied in URL, please ensure you manually enter token value below!';
-			res.render('pages/change-password',{token: undefined, user: req.user, brand: process.env.BRAND, title: "Change Password | " + process.env.BRAND, message: message})
-		}
-		else {res.render('pages/change-password',{token: undefined, user: req.user, brand: process.env.BRAND, title: "Change Password | " + process.env.BRAND})}
+		res.render('pages/change-password',{token: req.params.token, user: req.user, brand: process.env.BRAND, title: "Change Password | " + process.env.BRAND, message: message})
 	}
 });
 ///////////////////////////////////////////////////////////////////////////

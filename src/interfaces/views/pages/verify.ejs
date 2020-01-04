@@ -5,7 +5,7 @@
             <p><strong><%= message %></strong></p>
           <% } %>
           <h1 class="h3 mb-3 font-weight-normal">Account Verification</h1>
-          <p>Use this form to verify your account.</p>
+          <p>Simply click 'verify' to complete the account verification process!</p>
           <div class="input-group mb-3">
 							<div class="input-group-prepend">
 								<span class="input-group-text" id="basic-addon2" disabled><strong>Email Address</strong></span>
@@ -28,7 +28,7 @@
             </div>
           <% } %>
           <br>
-          <button class="btn btn-lg btn-secondary btn-block" id="submit" type="submit" value="submit">Submit</button>
+          <button class="btn btn-lg btn-secondary btn-block" id="submit" type="submit" value="submit">Verify Account</button>
         </form>
 
         <script type="application/javascript">
@@ -38,8 +38,7 @@
               var token = $('#token').val().trim();
               var email = $('#email').val().trim();
 
-              var params = 'email=' + encodeURIComponent(email)
-              + "&token=" + encodeURIComponent(token);
+              var params = "&token=" + encodeURIComponent(token);
 
               xhr.open('POST', '/verify',true);
               xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');

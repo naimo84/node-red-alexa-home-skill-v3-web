@@ -98,31 +98,44 @@ router.post('/toggle-topics/:username', defaultLimiter,
 	ensureAuthenticated,
 	async (req, res) => {
 		try{
+			// Check req.user is super user
 			if (req.user.username === mqtt_user) {
 				if (!req.params.username) return res.status(400).send('Username not supplied!');
 				// Get shared pattern ACL
 				var aclPattern = await Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
 				// Get user-specific ACL
 				var aclUser = await Topics.findOne({topics:	['command/' + req.params.username + '/#','state/' + req.params.username + '/#','response/' + req.params.username + '/#','message/' + req.params.username + '/#']});
-				if (!aclUser) return res.status(500).send('ACL not found!');
+				if (!aclUser) {
+					// Generate user-specific MQTT topics
+					aclUser = new Topics({topics: [
+						'command/' + req.params.username +'/#',
+						'state/'+ req.params.username + '/#',
+						'response/' + req.params.username + '/#',
+						'message/' + req.params.username + '/#'
+					]});
+					// Save new user-specific MQTT topics
+					await aclUser.save();
+				}
 				// Get User
 				var account = await Account.findByUsername(req.params.username, true);
 				if (!account) return res.status(500).send('Account not found!');
-				// Set back to per-user topic
-
+				// Set user.topics to pattern-based MQTT topics
 				if (account.topics == aclPattern._id){
 					await Account.updateOne({username: account.username},{$set: {topics: aclUser._id}});
 					logger.log('debug' , "[Reset Topics] Reset MQTT topics for user: " + account.username + ", to: " + JSON.stringify(aclUser));
 				}
+				// Set user.topics back to per-user MQTT topics
 				else {
 					await Account.updateOne({username: account.username},{$set: {topics: aclPattern._id}});
 					logger.log('debug' , "[Reset Topics] Updated MQTT topics for user to pattern: " + account.username + ", to: " + JSON.stringify(aclPattern));
 				}
 			}
+			// Not superuser, redirect
 			else {
 				res.redirect(303, '/');
 			}
 		}
+		// Error handler
 		catch(e){
 			logger.log('error', "[Reset Topics] Failed to reset topics for user, error: " + e.stack);
 			return res.status(500).send('Error!');

@@ -112,7 +112,7 @@ Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u
 		var topics = new Topics({topics: ['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
 		topics.save(function(err){
 			if (err) logger.log('error' , "[Topics] Unable to save pattern-based MQTT topic, error: " + err);
-			logger.log('debug' , "[Topics] Created pattern-based MQTT topic, error: " + topics);
+			logger.log('debug' , "[Topics] Created pattern-based MQTT topic: " + topics);
 		});
 	}
 	else {

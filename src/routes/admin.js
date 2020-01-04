@@ -91,6 +91,37 @@ router.get('/users', defaultLimiter,
 		}
 });
 ///////////////////////////////////////////////////////////////////////////
+// Users Topics
+///////////////////////////////////////////////////////////////////////////
+router.post('/reset-topics/:username', defaultLimiter,
+	ensureAuthenticated,
+	async (req, res) => {
+		try{
+			if (req.user.username === mqtt_user) {
+				if (!req.params.username) return res.status(400).send('Username not supplied!');
+				// Get shared pattern ACL
+				//var aclPattern = await Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
+				// Get user-specific ACL
+				var aclUser = await Topics.findOne({topics:	['command/' + req.params.username + '/#','state/' + req.params.username + '/#','response/' + req.params.username + '/#','message/' + req.params.username + '/#']});
+				if (!aclUser) return res.status(500).send('ACL not found!');
+				// Get User
+				var account = await Account.findByUsername(req.params.username, true);
+				if (!account) return res.status(500).send('Account not found!');
+				// Set back to per-user topic
+				account.topics = aclUser._id;
+				account.save;
+				logger.log('debug' , "[Reset Topics] Reset MQTT topics for user: " + username + ", to: " + JSON.stringify(aclUser));
+			}
+			else {
+				res.redirect(303, '/');
+			}
+		}
+		catch(e){
+			logger.log('error', "[Reset Topics] Failed to reset topics for user, error: " + e.stack);
+			return res.status(500).send('Error!');
+		}
+});
+///////////////////////////////////////////////////////////////////////////
 // User Disable/ Enable
 ///////////////////////////////////////////////////////////////////////////
 router.post('/user/:id/:state', defaultLimiter,

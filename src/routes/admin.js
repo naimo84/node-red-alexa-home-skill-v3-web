@@ -111,7 +111,7 @@ router.post('/reset-topics/:username', defaultLimiter,
 				// Set back to per-user topic
 				account.topics = aclUser._id;
 				account.save;
-				logger.log('debug' , "[Reset Topics] Reset MQTT topics for user: " + username + ", to: " + JSON.stringify(aclUser));
+				logger.log('debug' , "[Reset Topics] Reset MQTT topics for user: " + account.username + ", to: " + JSON.stringify(aclUser));
 			}
 			else {
 				res.redirect(303, '/');

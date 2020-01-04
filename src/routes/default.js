@@ -233,14 +233,23 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 			}
 			if (account) logger.log('debug', "[Verify] account hash: " + account.hash + ", account salt: " + account.salt);
 			// Find pattern-based ACL
-			var aclPattern = await Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
+			// var aclPattern = await Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
+			// Create user-specific ACL
+			var aclUser = new Topics({topics: [
+				'command/' + req.params.username +'/#',
+				'state/'+ req.params.username + '/#',
+				'response/' + req.params.username + '/#',
+				'message/' + req.params.username + '/#'
+			]});
+			// Save new user-specific MQTT topics
+			await aclUser.save();
 			// Create MQTT password based upon returned salt and hash
 			var mqttPass = "PBKDF2$sha256$901$" + account.salt + "$" + account.hash;
 			// Update the user account with MQTT password and MQTT topics, set isVerified to true
-			await Account.updateOne({username: account.username},{$set: {mqttPass: mqttPass, topics: aclPattern._id, isVerified: true}});
+			await Account.updateOne({username: account.username},{$set: {mqttPass: mqttPass, topics: aclUser._id, isVerified: true}});
 			// Log success
 			logger.log('verbose' , "[Verify] Update user account: " + account.username + " isVerified success");
-			logger.log('verbose' , "[Verify] Update user account: " + account.username + " topics: " + JSON.stringify(aclPattern));
+			logger.log('verbose' , "[Verify] Update user account: " + account.username + " topics: " + JSON.stringify(aclUser));
 			// Send 200 response
 			return res.status(202).send("The account has been verified, you can now use the service!");
 		}

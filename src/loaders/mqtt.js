@@ -301,7 +301,7 @@ var timeout = setInterval(function(){
 								// Cleanup waiting acknowledge command response, we're ready to send it
 								delete ongoingCommands[additionalCommand.requestId + arrCommandDevices[x]];
 							}
-						// If we have a response, we can delete unacknowledged command older than > maxTime in ms
+							// If we have a response, we can delete unacknowledged command older than > maxTime in ms
 							var diffAdditionalCommand = now - additionalCommand.timestamp;
 							if (diffAdditionalCommand > maxTime && response !== undefined) {delete ongoingCommands[additionalCommand.requestId + arrCommandDevices[x]];}
 						}

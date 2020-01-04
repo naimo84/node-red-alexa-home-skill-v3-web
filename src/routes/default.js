@@ -157,24 +157,24 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 				var username = req.body.username.toLowerCase();
 				// Register new user, Passport will verify username is unique, MQTT password set to random in case of later failures
 				var account = await Account.register(new Account({ username : username, email: req.body.email, country: req.body.country.toUpperCase(), region: region,  mqttPass: crypto.randomBytes(16).toString('hex'), active: true }), req.body.password);
-				// Create MQTT Topics for User
-				var topics = new Topics({topics: [
-					'command/' + account.username +'/#',
-					'state/'+ account.username + '/#',
-					'response/' + account.username + '/#',
-					'message/' + account.username + '/#'
-				]});
-				// Save new Topics
-				await topics.save();
-				// Check account.salt and account.hash are available to set MQTT password, if not present error to user
-				if (!account.salt || account.salt == undefined || !account.hash || account.hash == undefined){
-					logger.log('error', "[New User] Creation failed, password hash and salt not available to set MQTT password!");
-					return res.status(500).send('New user creation failed, unable to set MQTT password!');
-				}
-				// Update User account with Topics and MQTT password
-				var mqttPass = "PBKDF2$sha256$901$" + account.salt + "$" + account.hash;
-				logger.log('debug', "[New User] User hash: " + account.hash + ", user salt: " + account.salt);
-				await Account.updateOne({username: account.username},{$set: {mqttPass: mqttPass, topics: topics._id}});
+				// // Create MQTT Topics for User
+				// var topics = new Topics({topics: [
+				// 	'command/' + account.username +'/#',
+				// 	'state/'+ account.username + '/#',
+				// 	'response/' + account.username + '/#',
+				// 	'message/' + account.username + '/#'
+				// ]});
+				// // Save new Topics
+				// await topics.save();
+				// // Check account.salt and account.hash are available to set MQTT password, if not present error to user
+				// if (!account.salt || account.salt == undefined || !account.hash || account.hash == undefined){
+				// 	logger.log('error', "[New User] Creation failed, password hash and salt not available to set MQTT password!");
+				// 	return res.status(500).send('New user creation failed, unable to set MQTT password!');
+				// }
+				// // Update User account with Topics and MQTT password
+				// var mqttPass = "PBKDF2$sha256$901$" + account.salt + "$" + account.hash;
+				// logger.log('debug', "[New User] User hash: " + account.hash + ", user salt: " + account.salt);
+				// await Account.updateOne({username: account.username},{$set: {mqttPass: mqttPass, topics: topics._id}});
 				//Generate Mail Verification Token
 				var mailToken = new verifyEmail({ user: account, token: crypto.randomBytes(16).toString('hex') });
 				// Save Mail Verification Token
@@ -250,7 +250,15 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 				return res.status(400).send('Your account is already verified!');
 			}
 			if (account) logger.log('debug', "[Verify] account hash: " + account.hash + ", account salt: " + account.salt);
-			// If we just set MQTT password here, can we use shared topic with filter?
+			// Find pattern-based ACL
+			var aclPattern = await Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
+			// Create MQTT password based upon returned salt and hash
+			var mqttPass = "PBKDF2$sha256$901$" + account.salt + "$" + account.hash;
+			// Update the user account with MQTT password and MQTT topics
+			await Account.updateOne({username: account.username},{$set: {mqttPass: mqttPass, topics: aclPattern._id, isVerified: true}});
+			// Log success
+			logger.log('verbose' , "[Verify] Update user account: " + account.username + " isVerified success");
+			logger.log('verbose' , "[Verify] Update user account: " + account.username + " topics: " + JSON.stringify(aclPattern));
 
 			// // Create MQTT Topics for User
 			// var topics = new Topics({topics: [
@@ -265,14 +273,13 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 			// var mqttPass = "PBKDF2$sha256$901$" + account.salt + "$" + account.hash;
 			// await Account.updateOne({username: account.username},{$set: {mqttPass: mqttPass, topics: topics._id, isVerified: true}});
 			// Update isVerified to true
-			account.isVerified = true;
+			//account.isVerified = true;
 			// // Save account
-			await account.save();
-			// Log success
-			logger.log('verbose' , "[Verify] Update user account: " + account.username + " isVerified:true success");
+			//await account.save();
+
 			// Generate success flash message
 			// Send 200 response
-			return res.status(202).send("The account has been verified, you can now log in!");
+			return res.status(202).send("The account has been verified, you can now use the service!");
 		}
 		else {
 			// Email address not supplied, send 400 status

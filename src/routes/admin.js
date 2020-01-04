@@ -109,9 +109,8 @@ router.post('/reset-topics/:username', defaultLimiter,
 				var account = await Account.findByUsername(req.params.username, true);
 				if (!account) return res.status(500).send('Account not found!');
 				// Set back to per-user topic
-				account.topics = aclUser._id;
-				account.save;
-				logger.log('debug' , "[Reset Topics] Reset MQTT topics for user: " + account.username + ", to: " + JSON.stringify(aclUser));
+				await Account.updateOne({username: account.username},{$set: {topics: aclUser._id}});
+				logger.log('debug' , "[Reset Topics] Successfully reset MQTT topics for user: " + account.username + ", to: " + JSON.stringify(aclUser));
 			}
 			else {
 				res.redirect(303, '/');

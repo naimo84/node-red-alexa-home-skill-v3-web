@@ -240,10 +240,8 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 		if (req.body.token && req.body.email) {
 			// Find a matching token, populate user for use in findByUsername account lookup
 			var token = await verifyEmail.findOne({ token: req.body.token }).populate('user').exec();
-			// Find related user
-			var account = await Account.findOne({ _id: token.user._id, email: req.body.email });
 			// Find related user, returning hash/ salt
-			if (token.user) var accountWithHash = await Account.findByUsername(token.user.username, true);
+			var account = await Account.findByUsername(token.user.username, true);
 			// Check account is not already verified (no need to proceed if it is)
 			if (!account) {
 				return res.status(400).send('Unable to find matching account, check supplied email address!');
@@ -251,7 +249,7 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 			else if (account.isVerified) {
 				return res.status(400).send('Your account is already verified!');
 			}
-			if (accountWithHash) logger.log('debug', "[Verify] accountWithHash: " + accountWithHash.hash + ", accountWithHash salt: " + accountWithHash.salt);
+			if (account) logger.log('debug', "[Verify] account hash: " + account.hash + ", account salt: " + account.salt);
 			// // Create MQTT Topics for User
 			// var topics = new Topics({topics: [
 			// 	'command/' + account.username +'/#',

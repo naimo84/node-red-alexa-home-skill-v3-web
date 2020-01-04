@@ -105,10 +105,24 @@ Account.findOne({username: mqtt_user}, function(error, account){
 	}
 });
 
+// Create new pattern-based universal MQTT topic ACL
+Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u/#']}, function(error, acl){
+	if (error) logger.log('error' , "[Topics] Unable to find pattern-based MQTT topic, error: " + error);
+	else if (!acl){
+		var topics = new Topics({topics: ['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
+		topics.save(function(err){
+			if (err) logger.log('error' , "[Topics] Unable to save pattern-based MQTT topic, error: " + err);
+			logger.log('debug' , "[Topics] Created pattern-based MQTT topic, error: " + topics);
+		});
+	}
+	else {
+		logger.log('debug' , '[Topics] Found pattern-based MQTT topic, topic: ' + JSON.stringify(acl));
+	}
+});
+
 var app = express();
 app.set('view engine', 'ejs');
 app.enable('trust proxy');
-//app.use(favicon('/interfaces/static/favicon.ico'));
 app.use(favicon(path.join(__dirname, '/interfaces/static', 'favicon.ico')))
 
 app.use(morgan("combined", {stream: logger.stream})); // change to use Winston
@@ -237,24 +251,24 @@ passport.deserializeUser(Account.deserializeUser());
 var accessTokenStrategy = new PassportOAuthBearer(function(token, done) {
 	oauthModels.AccessToken.findOne({ token: token }).populate('user').populate('grant').exec(function(error, token) {
 		if (!error && token && !token.grant) {
-			logger.log('error', "[Core] Missing grant token: " + token);
+			logger.log('error', "[OAuth] Missing grant token: " + token);
 		}
 		// Added check for user account active (boolean)
 		if (!error && token && token.active && token.grant && token.grant.active && token.user && token.user.active) {
-			logger.log('debug', "[Core] OAuth Token good, token: " + token);
+			logger.log('debug', "[OAuth] OAuth Token good, token: " + token);
 			done(null, token.user, { scope: token.scope });
 		}
 		else if (!error) {
 			if (token.user && token.user.active == false) {
-				logger.log('warn', "[Core] OAuth Token warning, user: " + token.user.username + ", 'active' is false");
+				logger.log('warn', "[OAuth] OAuth Token warning, user: " + token.user.username + ", 'active' is false");
 			}
 			else {
-				logger.log('warn', "[Core] OAuth Token warning, token: " + token);
+				logger.log('warn', "[OAuth] OAuth Token warning, token: " + token);
 			}
 			done(null, false);
 		}
 		else {
-			logger.log('error', "[Core] OAuth Token error: " + error);
+			logger.log('error', "[OAuth] OAuth Token error: " + error);
 			done(error);
 		}
 	});

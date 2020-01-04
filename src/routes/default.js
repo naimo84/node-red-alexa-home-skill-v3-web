@@ -155,7 +155,7 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 				var region = userCountry.data[0].region;
 				// Force new usernames to be lowercase, will also prevent duplicate usernames with case variances
 				var username = req.body.username.toLowerCase();
-				// Register new user, Passport will verify username is unique
+				// Register new user, Passport will verify username is unique, MQTT password set to random in case of later failures
 				var account = await Account.register(new Account({ username : username, email: req.body.email, country: req.body.country.toUpperCase(), region: region,  mqttPass: crypto.randomBytes(16).toString('hex'), active: true }), req.body.password);
 				// Create MQTT Topics for User
 				var topics = new Topics({topics: [

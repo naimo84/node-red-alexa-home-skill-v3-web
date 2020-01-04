@@ -9,6 +9,7 @@ router.use(bodyParser.json());
 var Account = require('../models/account');
 var oauthModels = require('../models/oauth');
 var Devices = require('../models/devices');
+var Topics = require('../models/topics');
 var passport = require('passport');
 var BasicStrategy = require('passport-http').BasicStrategy;
 var LocalStrategy = require('passport-local').Strategy;

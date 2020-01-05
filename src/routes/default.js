@@ -429,16 +429,17 @@ router.post('/lost-password', defaultLimiter, async (req, res) => {
 	try {
 		var email = req.body.email;
 		var user = await Account.findOne({email: email});
+		if (!user) return res.status(400).send('Unable to find user with supplied email address!');
 		var lostPassword = new LostPassword({user: user});
 		await lostPassword.save();
-		res.status(200).send('A password reset email has been sent to: ' + req.body.email + ".")
+		res.status(202).send('A password reset email has been sent to: ' + req.body.email + ".")
 		var body = mailer.buildLostPasswordBody(lostPassword.uuid, user.username, process.env.WEB_HOSTNAME);
 		mailer.send(req.body.email, process.env.MAIL_USER, 'Password Reset for ' + process.env.BRAND, body.text, body.html);
 	}
 	catch(e){
 		// General error, send 500 status
 		logger.log('error' , "[Lost Password] Error generating lost password token/ email, error: " + e.stack);
-		res.status(404).send('Error generating lost password token/ email');
+		res.status(500).send('Error generating lost password token/ email');
 	}
 });
 ///////////////////////////////////////////////////////////////////////////

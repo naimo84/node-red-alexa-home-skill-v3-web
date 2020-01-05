@@ -131,7 +131,7 @@
 		var account = users[id];
 		$('#userId').val(account._id);
 		$('#username').prop('readonly', true);
-		if  (account.superuser != 1) {
+		if  (account.superuser != true) {
 			$('#username').val(account.username);
 			$('#email').val(account.email);
 			if (account.country == 'Unknown' || account.country == '' || typeof account.country == 'undefined') {cs.countrySelect("selectCountry","US")}

@@ -24,6 +24,7 @@ var mqtt = require('./loaders/mqtt');
 var Account = require('./models/account');
 var oauthModels = require('./models/oauth');
 var Topics = require('./models/topics');
+var Acls = require('./models/acls');
 var passport = require('passport');
 var BasicStrategy = require('passport-http').BasicStrategy;
 var LocalStrategy = require('passport-local').Strategy;
@@ -61,7 +62,7 @@ db.connect();
 // Check admin account exists, if not create it using same credentials as MQTT user/password supplied
 Account.findOne({username: mqtt_user}, function(error, account){
 	if (!error && !account) {
-		Account.register(new Account({username: mqtt_user, email: '', mqttPass: '', superuser: 1, active: true, isVerified: true}),
+		Account.register(new Account({username: mqtt_user, email: '', mqttPass: '', superuser: true, active: true, isVerified: true}),
 			mqtt_password, function(err, account){
 			var topics = new Topics({topics: [
 					'command/' +account.username+'/#',
@@ -105,20 +106,44 @@ Account.findOne({username: mqtt_user}, function(error, account){
 	}
 });
 
-// Create new pattern-based universal MQTT topic ACL
-// Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u/#']}, function(error, acl){
-// 	if (error) logger.log('error' , "[Topics] Unable to find pattern-based MQTT topic, error: " + error);
-// 	else if (!acl){
-// 		var topics = new Topics({topics: ['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
-// 		topics.save(function(err){
-// 			if (err) logger.log('error' , "[Topics] Unable to save pattern-based MQTT topic, error: " + err);
-// 			logger.log('debug' , "[Topics] Created pattern-based MQTT topic: " + topics);
-// 		});
-// 	}
-// 	else {
-// 		logger.log('debug' , '[Topics] Found pattern-based MQTT topic, topic: ' + JSON.stringify(acl));
-// 	}
-// });
+// Create new pattern-based universal MQTT topic ACLs for use with mosquitto-go-auth
+Acls.findOne({topic: 'command/%u/#'}, function(error, acl){
+	if (!error && !acl) {
+		var topic = new Acl({topic: 'command/%u/#', acc: 3});
+		topic.save(function(err){
+ 			if (err) logger.log('error' , "[Topics] Unable to save command pattern-based MQTT topic, error: " + err);
+ 			logger.log('debug' , "[Topics] Created command pattern-based MQTT topic: " + topics);
+ 		});
+	}
+});
+Acls.findOne({topic: 'message/%u/#'}, function(error, acl){
+	if (!error && !acl) {
+		var topic = new Acl({topic: 'message/%u/#', acc: 3});
+		topic.save(function(err){
+ 			if (err) logger.log('error' , "[Topics] Unable to save message pattern-based MQTT topic, error: " + err);
+ 			logger.log('debug' , "[Topics] Created message pattern-based MQTT topic: " + topics);
+ 		});
+	}
+});
+Acls.findOne({topic: 'state/%u/#'}, function(error, acl){
+	if (!error && !acl) {
+		var topic = new Acl({topic: 'state/%u/#', acc: 3});
+		topic.save(function(err){
+ 			if (err) logger.log('error' , "[Topics] Unable to save state pattern-based MQTT topic, error: " + err);
+ 			logger.log('debug' , "[Topics] Created state pattern-based MQTT topic: " + topics);
+ 		});
+	}
+});
+Acls.findOne({topic: 'response/%u/#'}, function(error, acl){
+	if (!error && !acl) {
+		var topic = new Acl({topic: 'response/%u/#', acc: 3});
+		topic.save(function(err){
+ 			if (err) logger.log('error' , "[Topics] Unable to save response pattern-based MQTT topic, error: " + err);
+ 			logger.log('debug' , "[Topics] Created response pattern-based MQTT topic: " + topics);
+ 		});
+	}
+});
+// Finish MQTT topic creation
 
 var app = express();
 app.set('view engine', 'ejs');

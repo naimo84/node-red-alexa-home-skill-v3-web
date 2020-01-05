@@ -9,7 +9,7 @@ var Account = new Schema({
     country:String,
     region: String,
     mqttPass: { type: String, default: '' },
-    superuser: { type: Number, default: 0},
+    superuser: { type: Boolean, default: false},
     topics: { type: Number},
     created: { type: Date, default: function(){
         return new Date();

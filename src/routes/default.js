@@ -379,26 +379,19 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 				var token = req.body.token;
 				var lostPassword = await LostPassword.findOne({uuid: token}).populate('user').exec();
 				if (lostPassword) {
-					// Login user - req.login expects a callback, so promisify
-					await new Promise(function(res, rej) {
-					 	req.login(lostPassword.user, function(err, data) {
-					 	  if (err) rej(err);
-					 	  else res(data);
-					 	});
-					})
-					// Remove one-time use token
-					lostPassword.remove();
 					// Check password meets complexity requirements (for programmatic consumers)
 					if (passwordRegExp.test(req.body.password) == false) return res.status(400).send('Password does not meet complexity requirements!');
+					// Remove one-time use token
+					lostPassword.remove();
 					// Reset user password
-					var result = await resetPassword(req.user.username, req.body.password);
+					var result = await resetPassword(lostPassword.user.username, req.body.password);
 					logger.log('verbose' , "[Change Password] resetPassword result: " + result);
 					if (result == true) {
-						sendEventUid(req.path, "Security", "Successfully Changed Password", req.ip, req.user.username, req.headers['user-agent']);
+						sendEventUid(req.path, "Security", "Successfully Changed Password", req.ip, lostPassword.user.username, req.headers['user-agent']);
 						return res.status(202).send('Changed Password!');
 					}
 					else {
-						sendEventUid(req.path, "Security", "Failed to Changed Password", req.ip, req.user.username, req.headers['user-agent']);
+						sendEventUid(req.path, "Security", "Failed to Changed Password", req.ip, lostPassword.user.username, req.headers['user-agent']);
 						return res.status(500).send("Error setting new password");
 					}
 				}
@@ -765,22 +758,22 @@ function ensureAuthenticated(req,res,next) {
 // Async function for password reset
 const resetPassword = async(username, password) => {
 	try {
-		// Find User/ Set Password
-		var user = await Account.findOne({username: username});
-		await user.setPassword(password);
+		// Find related user, returning hash/ salt
+		var account = await Account.findByUsername(username, true);
+		await account.setPassword(password);
 		// Set MQTT Password
-		logger.log('debug', "[Change Password] User hash: " + user.hash + ", user salt: " + user.salt);
-		if (!user.salt || user.salt == undefined || !user.hash || user.hash == undefined){
+		logger.log('debug', "[Change Password] Account hash: " + account.hash + ", account salt: " + account.salt);
+		if (!account.salt || account.salt == undefined || !account.hash || account.hash == undefined){
 			logger.log('error', "[Change Password] Unable to set MQTT password, hash / salt unavailable!");
 			return false;
 		}
-		var mqttPass = "PBKDF2$sha256$901$" + user.salt + "$" + user.hash;
-		user.mqttPass = mqttPass;
-		user.password = mqttPass;
+		var mqttPass = "PBKDF2$sha256$901$" + account.salt + "$" + account.hash;
+		account.mqttPass = mqttPass;
+		account.password = mqttPass;
 		// Save Account
-		await user.save();
+		await account.save();
 		// Return Success
-		logger.log('verbose', "[Change Password] Changed password for: " + user.username);
+		logger.log('verbose', "[Change Password] Changed password for: " + account.username);
 		return true;
 
 	}

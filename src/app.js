@@ -112,7 +112,7 @@ Acls.findOne({topic: 'command/%u/#'}, function(error, acl){
 		var topic = new Acls({topic: 'command/%u/#', acc: 3});
 		topic.save(function(err){
  			if (err) logger.log('error' , "[Topics] Unable to save command pattern-based MQTT topic, error: " + err);
- 			logger.log('debug' , "[Topics] Created command pattern-based MQTT topic: " + topics);
+ 			logger.log('debug' , "[Topics] Created command pattern-based MQTT topic: " + topic);
  		});
 	}
 });
@@ -121,7 +121,7 @@ Acls.findOne({topic: 'message/%u/#'}, function(error, acl){
 		var topic = new Acls({topic: 'message/%u/#', acc: 3});
 		topic.save(function(err){
  			if (err) logger.log('error' , "[Topics] Unable to save message pattern-based MQTT topic, error: " + err);
- 			logger.log('debug' , "[Topics] Created message pattern-based MQTT topic: " + topics);
+ 			logger.log('debug' , "[Topics] Created message pattern-based MQTT topic: " + topic);
  		});
 	}
 });
@@ -130,7 +130,7 @@ Acls.findOne({topic: 'state/%u/#'}, function(error, acl){
 		var topic = new Acls({topic: 'state/%u/#', acc: 3});
 		topic.save(function(err){
  			if (err) logger.log('error' , "[Topics] Unable to save state pattern-based MQTT topic, error: " + err);
- 			logger.log('debug' , "[Topics] Created state pattern-based MQTT topic: " + topics);
+ 			logger.log('debug' , "[Topics] Created state pattern-based MQTT topic: " + topic);
  		});
 	}
 });
@@ -139,7 +139,7 @@ Acls.findOne({topic: 'response/%u/#'}, function(error, acl){
 		var topic = new Acls({topic: 'response/%u/#', acc: 3});
 		topic.save(function(err){
  			if (err) logger.log('error' , "[Topics] Unable to save response pattern-based MQTT topic, error: " + err);
- 			logger.log('debug' , "[Topics] Created response pattern-based MQTT topic: " + topics);
+ 			logger.log('debug' , "[Topics] Created response pattern-based MQTT topic: " + topic);
  		});
 	}
 });

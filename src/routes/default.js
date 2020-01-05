@@ -438,7 +438,7 @@ router.post('/lost-password', defaultLimiter, async (req, res) => {
 		await lostPassword.save();
 		res.status(200).send('A password reset email has been sent to: ' + req.body.email + ".")
 		var body = mailer.buildLostPasswordBody(lostPassword.uuid, user.username, process.env.WEB_HOSTNAME);
-		mailer.send(req.body.email, process.env.MAIL_USER, 'Password Reset for' + process.env.BRAND, body.text, body.html);
+		mailer.send(req.body.email, process.env.MAIL_USER, 'Password Reset for ' + process.env.BRAND, body.text, body.html);
 	}
 	catch(e){
 		// General error, send 500 status

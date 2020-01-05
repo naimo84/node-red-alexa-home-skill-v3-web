@@ -42,7 +42,7 @@ if (!(process.env.HOMEGRAPH_APIKEY)){
 // Regular Expressions, used for validating API POST requests
 let passwordRegExp = /(?=^.{12,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
 let emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-let usernameRegExp = /^[a-z,A-Z,0-9,_]{5,15}$/;
+let usernameRegExp = /^[a-z0-9]{5,15}$/;
 ///////////////////////////////////////////////////////////////////////////
 // Home
 ///////////////////////////////////////////////////////////////////////////

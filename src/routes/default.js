@@ -432,9 +432,17 @@ router.post('/lost-password', defaultLimiter, async (req, res) => {
 		if (!user) return res.status(400).send('Unable to find user with supplied email address!');
 		var lostPassword = new LostPassword({user: user});
 		await lostPassword.save();
-		res.status(202).send('A password reset email has been sent to: ' + req.body.email + ".")
 		var body = mailer.buildLostPasswordBody(lostPassword.uuid, user.username, process.env.WEB_HOSTNAME);
-		mailer.send(req.body.email, process.env.MAIL_USER, 'Password Reset for ' + process.env.BRAND, body.text, body.html);
+		mailer.send(req.body.email, process.env.MAIL_USER, 'Password Reset for ' + process.env.BRAND, body.text, body.html, function(returnValue) {
+			// Success, 202 Accepted
+			if (returnValue == true) {
+				res.status(202).send('A password reset email has been sent to: ' + req.body.email + ".")
+			}
+			// Failed, 500 Internal Service Error
+			else {
+				res.status(500).send('Password reset email failed to send!');
+			}
+		});
 	}
 	catch(e){
 		// General error, send 500 status

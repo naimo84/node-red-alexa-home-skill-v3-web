@@ -155,8 +155,10 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 				var region = userCountry.data[0].region;
 				// Force new usernames to be lowercase, will also prevent duplicate usernames with case variances
 				var username = req.body.username.toLowerCase();
+				// Generate random, temporary MQTT password
+				var mqttPass = crypto.randomBytes(16).toString('hex');
 				// Register new user, Passport will verify username is unique, MQTT password set to random in case of later failures
-				var account = await Account.register(new Account({ username : username, email: req.body.email, country: req.body.country.toUpperCase(), region: region,  mqttPass: crypto.randomBytes(16).toString('hex'), active: true }), req.body.password);
+				var account = await Account.register(new Account({ username : username, email: req.body.email, country: req.body.country.toUpperCase(), region: region,  password: mqttPass, mqttPass: mqttPass, active: true }), req.body.password);
 				//Generate Mail Verification Token
 				var mailToken = new verifyEmail({ user: account, token: crypto.randomBytes(16).toString('hex') });
 				// Save Mail Verification Token
@@ -246,7 +248,7 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 			// Create MQTT password based upon returned salt and hash
 			var mqttPass = "PBKDF2$sha256$901$" + account.salt + "$" + account.hash;
 			// Update the user account with MQTT password and MQTT topics, set isVerified to true
-			await Account.updateOne({username: account.username},{$set: {mqttPass: mqttPass, topics: aclUser._id, isVerified: true}});
+			await Account.updateOne({username: account.username},{$set: {password: mqttPass, mqttPass: mqttPass, topics: aclUser._id, isVerified: true}});
 			// Log success
 			logger.log('verbose' , "[Verify] Update user account: " + account.username + " isVerified success");
 			logger.log('verbose' , "[Verify] Update user account: " + account.username + " topics: " + JSON.stringify(aclUser));
@@ -774,6 +776,7 @@ const resetPassword = async(username, password) => {
 		}
 		var mqttPass = "PBKDF2$sha256$901$" + user.salt + "$" + user.hash;
 		user.mqttPass = mqttPass;
+		user.password = mqttPass;
 		// Save Account
 		await user.save();
 		// Return Success

@@ -782,6 +782,7 @@ const resetPassword = async(username, password) => {
 		// Save Account
 		await account.save();
 		// Return Success
+		sendEventUid(req.path, "Security", "Password Reset", req.ip, req.body.username, req.headers['user-agent']);
 		logger.log('verbose', "[Change Password] Changed password for: " + account.username);
 		return true;
 

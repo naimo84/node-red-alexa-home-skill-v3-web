@@ -275,25 +275,46 @@ passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
 var accessTokenStrategy = new PassportOAuthBearer(function(token, done) {
 	oauthModels.AccessToken.findOne({ token: token }).populate('user').populate('grant').exec(function(error, token) {
-		if (!error && token && !token.grant) {
-			logger.log('error', "[OAuth] Missing grant token: " + token);
-		}
-		// Added check for user account active (boolean)
-		if (!error && token && token.active && token.grant && token.grant.active && token.user && token.user.active) {
-			logger.log('debug', "[OAuth] OAuth Token good, token: " + token);
-			done(null, token.user, { scope: token.scope });
-		}
-		else if (!error) {
-			if (token.user && token.user.active == false) {
-				logger.log('warn', "[OAuth] OAuth Token warning, user: " + token.user.username + ", 'active' is false");
+		if (!error && token) {
+			// Check token is active, has a grant, grant is active, has use and user is active
+			if (token.active && token.grant && token.grant.active && token.user && token.user.active) {
+				logger.log('verbose', "[OAuth] OAuth Token good, token: " + token);
+				done(null, token.user, { scope: token.scope });
 			}
-			else {
-				logger.log('warn', "[OAuth] OAuth Token warning, token: " + token);
+			// Found OAuth token, however token not active
+			else if (!token.active) {
+				logger.log('warn', "[OAuth] OAuth Token failure, token not active: " + token);
+				done(null, false);
 			}
+			// Found OAuth token, however token has no grant
+			else if (!token.grant) {
+				logger.log('warn', "[OAuth] OAuth Token failure, missing grant token: " + token);
+				done(null, false);
+			}
+			// Found OAuth token, however token grant not active
+			else if (!token.grant) {
+				logger.log('warn', "[OAuth] OAuth Token failure, grant token not active: " + token);
+				done(null, false);
+			}
+			// Found OAuth token, however token grant not active
+			else if (!token.user) {
+				logger.log('warn', "[OAuth] OAuth Token failure, user population failed: " + token);
+				done(null, false);
+			}
+			// Found OAuth token, however user is not active/ enabled
+			else if (token.user && token.user.active == false) {
+				logger.log('warn', "[OAuth] OAuth Token failure, user: " + token.user.username + ", user.active is false");
+				done(null, false);
+			}
+		}
+		// No OAuth token found
+		else if (!token) {
+			logger.log('warn', "[OAuth] OAuth Token failure, token not found for user!");
 			done(null, false);
 		}
+		// An Error occurred in trying to find OAuth token
 		else {
-			logger.log('error', "[OAuth] OAuth Token error: " + error);
+			logger.log('error', "[OAuth] OAuth Token lookup failed, error: " + error);
 			done(error);
 		}
 	});

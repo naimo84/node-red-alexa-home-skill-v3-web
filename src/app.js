@@ -276,29 +276,30 @@ passport.deserializeUser(Account.deserializeUser());
 var accessTokenStrategy = new PassportOAuthBearer(function(token, done) {
 	oauthModels.AccessToken.findOne({ token: token }).populate('user').populate('grant').exec(function(error, token) {
 		if (!error && token) {
+			logger.log('debug', "[OAuth] Returned OAuth Token: " + JSON.stringify(token));
 			// Check token is active, has a grant, grant is active, has use and user is active
 			if (token.active && token.grant && token.grant.active && token.user && token.user.active) {
-				logger.log('verbose', "[OAuth] OAuth Token good, token: " + token);
+				logger.log('verbose', "[OAuth] OAuth Token success for user: " + token.user.username + ", token: " + JSON.stringify(token));
 				done(null, token.user, { scope: token.scope });
 			}
 			// Found OAuth token, however token not active
 			else if (!token.active) {
-				logger.log('warn', "[OAuth] OAuth Token failure, token not active: " + token);
+				logger.log('warn', "[OAuth] OAuth Token failure, token not active: " + JSON.stringify(token));
 				done(null, false);
 			}
 			// Found OAuth token, however token has no grant
 			else if (!token.grant) {
-				logger.log('warn', "[OAuth] OAuth Token failure, missing grant token: " + token);
+				logger.log('warn', "[OAuth] OAuth Token failure, missing grant token: " + JSON.stringify(token));
 				done(null, false);
 			}
 			// Found OAuth token, however token grant not active
-			else if (!token.grant) {
-				logger.log('warn', "[OAuth] OAuth Token failure, grant token not active: " + token);
+			else if (!token.grant.active) {
+				logger.log('warn', "[OAuth] OAuth Token failure, grant token not active: " + JSON.stringify(token));
 				done(null, false);
 			}
-			// Found OAuth token, however token grant not active
+			// Found OAuth token, however token user missing (should never get here!)
 			else if (!token.user) {
-				logger.log('warn', "[OAuth] OAuth Token failure, user population failed: " + token);
+				logger.log('warn', "[OAuth] OAuth Token failure, user population failed: " + JSON.stringify(token));
 				done(null, false);
 			}
 			// Found OAuth token, however user is not active/ enabled

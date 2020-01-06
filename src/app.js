@@ -71,12 +71,12 @@ if (dotenv.error) {
 // Validate CRITICAL environment variables passed to container
 if (!(process.env.MONGO_USER && process.env.MONGO_PASSWORD && process.env.MQTT_USER && process.env.MQTT_PASSWORD && process.env.MQTT_PORT)) {
 	logger.log('error',"[Core] You MUST supply MONGO_USER, MONGO_PASSWORD, MQTT_USER, MQTT_PASSWORD and MQTT_PORT environment variables");
-	process.exit();
+	process.exit(1);
 }
 // Validate BRAND environment variables passed to container
 if (!(process.env.BRAND)) {
 	logger.log('error',"[Core] You MUST supply BRAND environment variable");
-	process.exit();
+	process.exit(1);
 }
 // Warn on not supply of MONGO/ MQTT host names
 if (!(process.env.MONGO_HOST && process.env.MQTT_URL)) {
@@ -100,7 +100,7 @@ const createServer = async() => {
 		// Setup superuser / service account
 		var boolSetupServiceAccount = await setupServiceAccount(mqtt_user, mqtt_password);
 		// Superuser setup failed, exit
-		if (boolSetupServiceAccount == false) process.exit();
+		if (boolSetupServiceAccount == false) process.exit(1);
 		// Create MQTT ACLs
 		let arrayACLs = ['command/%u/#','message/%u/#','state/%u/#','response/%u/#'];
 		let errACLs = false;
@@ -109,7 +109,7 @@ const createServer = async() => {
 			if (topic == undefined) errACLs = true;
 		}
 		// If ACL creation fails API will not function, exit
-		if (errACLs == true) process.exit();
+		if (errACLs == true) process.exit(1);
 		// Create Express instance
 		var app = express();
 		app.set('view engine', 'ejs');

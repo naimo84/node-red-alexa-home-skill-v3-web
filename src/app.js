@@ -294,7 +294,7 @@ const createServer = async() => {
 		server.setTimeout = 5000;
 	}
 	catch(e){
-		logger.log('error', "[App] Create Server catch error handler, error: " + err.stack);
+		logger.log('error', "[App] Create Server catch error handler, error: " + e.stack);
 	}
 }
 

@@ -255,14 +255,9 @@ const createServer = async() => {
 			err.status = 404;
 			next(err);
 		});
-
 		// Error Handler
 		app.use(function(err, req, res, next) {
 			res.status(err.status || 500).send(err.message);
-			//res.render('error', {
-			//  message: err.message,
-			//  error: {}
-			//});
 			if (err.status == 404){
 				logger.log('warn', "[App] Not found: " + err.status + ", path: " + req.path);
 			}

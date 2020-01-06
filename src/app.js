@@ -1,6 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////
 // Depends
 ///////////////////////////////////////////////////////////////////////////
+var dotenv = require('dotenv').config();
 var favicon = require('serve-favicon')
 var flash = require('connect-flash');
 var morgan = require('morgan');
@@ -14,22 +15,26 @@ const { SitemapStream, streamToPromise } = require('sitemap');
 const { createGzip } = require('zlib');
 const robots = require('express-robots-txt');
 ///////////////////////////////////////////////////////////////////////////
-// Loaders
+// Loaders/ Services
 ///////////////////////////////////////////////////////////////////////////
-var db = require('./loaders/db');
-var mqtt = require('./loaders/mqtt');
+var db = require('./loaders/db'); // Load DB module, note connect happens later
+var mqtt = require('./loaders/mqtt'); // Load MQTT client and connect
+var state = require('./services/state'); // Load State API
 ///////////////////////////////////////////////////////////////////////////
 // Schema
 ///////////////////////////////////////////////////////////////////////////
 var Account = require('./models/account');
 var oauthModels = require('./models/oauth');
-var Topics = require('./models/topics');
-var Acls = require('./models/acls');
 var passport = require('passport');
 var BasicStrategy = require('passport-http').BasicStrategy;
 var LocalStrategy = require('passport-local').Strategy;
 var PassportOAuthBearer = require('passport-http-bearer');
 var logger = require('./loaders/logger');
+///////////////////////////////////////////////////////////////////////////
+// External Functions
+///////////////////////////////////////////////////////////////////////////
+const createACL = require('./services/func-services').createACL;
+const setupServiceAccount = require('./services/func-services').setupServiceAccount()
 ///////////////////////////////////////////////////////////////////////////
 // Variables
 ///////////////////////////////////////////////////////////////////////////
@@ -41,8 +46,6 @@ var mongo_port = (process.env.MONGO_PORT || "27017");
 // MQTT Settings
 var mqtt_user = (process.env.MQTT_USER);
 var mqtt_password = (process.env.MQTT_PASSWORD);
-var mqtt_port = (process.env.MQTT_PORT || "1883");
-var mqtt_url = (process.env.MQTT_URL || "mqtt://mosquitto:" + mqtt_port);
 // Cookie Secret
 var cookieSecret = (process.env.COOKIE_SECRET || 'ihytsrf334');
 if (cookieSecret == 'ihytsrf334') {logger.log("warn", "[App] Using default Cookie Secret, please supply new secret using COOKIE_SECRET environment variable")}
@@ -57,300 +60,237 @@ passport.deserializeUser(Account.deserializeUser());
 ///////////////////////////////////////////////////////////////////////////
 // Main
 ///////////////////////////////////////////////////////////////////////////
-// Connect to MongoDB
-db.connect();
-// Check admin account exists, if not create it using same credentials as MQTT user/password supplied
-Account.findOne({username: mqtt_user}, function(error, account){
-	if (!error && !account) {
-		Account.register(new Account({username: mqtt_user, email: '', mqttPass: '', superuser: true, active: true, isVerified: true}),
-			mqtt_password, function(err, account){
-			var topics = new Topics({topics: [
-					'command/' +account.username+'/#',
-					'state/' + account.username + '/#',
-					'response/' + account.username + '/#',
-					'message/' + account.username + '/#'
-				]});
-			topics.save(function(err){
-				if (!err){
-					var s = Buffer.from(account.salt, 'hex').toString('base64');
-					var h = Buffer.from(account.hash, 'hex').toString(('base64'));
-					var mqttPass = "PBKDF2$sha256$901$" + account.salt + "$" + account.hash;
-					Account.updateOne(
-						{username: account.username},
-						{$set: {mqttPass: mqttPass, topics: topics._id}},
-						function(err, count){
-							if (err) {
-								logger.log('error', err);
-							}
-						}
-					);
-				}
-			});
-		});
+// *****
+// Pre-flight checks
+// *****
+// Validate dotenv was successful
+if (dotenv.error) {
+	logger.log('error',"[Core] dotenv parsing failed, please ensure you have mapped .env file to /usr/src/app/.env, an example file is provided, see .env.template for more information");
+	throw dotenv.error;
+}
+// Validate CRITICAL environment variables passed to container
+if (!(process.env.MONGO_USER && process.env.MONGO_PASSWORD && process.env.MQTT_USER && process.env.MQTT_PASSWORD && process.env.MQTT_PORT)) {
+	logger.log('error',"[Core] You MUST supply MONGO_USER, MONGO_PASSWORD, MQTT_USER, MQTT_PASSWORD and MQTT_PORT environment variables");
+	process.exit();
+}
+// Validate BRAND environment variables passed to container
+if (!(process.env.BRAND)) {
+	logger.log('error',"[Core] You MUST supply BRAND environment variable");
+	process.exit();
+}
+// Warn on not supply of MONGO/ MQTT host names
+if (!(process.env.MONGO_HOST && process.env.MQTT_URL)) {
+	logger.log('warn',"[Core] Using 'mongodb' for Mongodb and 'mosquitto' for MQTT service endpoints, no MONGO_HOST/ MQTT_URL environment variable supplied");
+}
+// Warn on not supply of MAIL username/ password/ server
+if (!(process.env.MAIL_SERVER && process.env.MAIL_USER && process.env.MAIL_PASSWORD)) {
+	logger.log('warn',"[Core] No MAIL_SERVER/ MAIL_USER/ MAIL_PASSWORD environment variable supplied. System generated emails will generate errors");
+}
+// Warn on SYNC_API not being specified/ request SYNC will be disabled
+if (!(process.env.HOMEGRAPH_APIKEY)){
+	logger.log('warn',"[Core] No HOMEGRAPH_APIKEY environment variable supplied. New devices, removal or device changes will not show in users Google Home App without this");
+}
+// *****
+// Create server itself
+// *****
+const createServer = async() => {
+	// Connect to MongoDB
+	db.connect();
+	// Setup superuser / service account
+	var boolSetupServiceAccount = await setupServiceAccount(mqtt_user, mqtt_password);
+	// Superuser setup failed, exit
+	if (boolSetupServiceAccount == false) process.exit();
+	// Create MQTT ACLs
+	let arrayACLs = ['command/%u/#','message/%u/#','state/%u/#','response/%u/#'];
+	let errACLs = false;
+	for (let acl in arrayACLs) {
+		var topic = await createACL(acl);
+		if (topic == undefined) errACLs = true;
 	}
-	else if (!error && account && !account.active && !account.isVerified) {
-		// Check necessary elements are set on super user account
-		Account.updateOne(
-			{username: account.username},
-			{$set: {isVerified: true, active: true}},
-			function(err, count){
-				if (err) {
-					logger.log('error' , "[App] Update super user account failed, error: " + err);
-				}
-				logger.log('verbose' , "[App] Update super user account isVerified:true, active:true success!");
-			}
-		);
-	}
-	else {
-		logger.log('info', "[App] Superuser MQTT account, " + mqtt_user + " already exists/ is configured correctly!");
-	}
-});
-
-// Create new pattern-based universal MQTT topic ACLs for use with mosquitto-go-auth
-Acls.findOne({topic: 'command/%u/#'}, function(error, acl){
-	if (!error && !acl) {
-		var topic = new Acls({topic: 'command/%u/#', acc: 3});
-		topic.save(function(err){
- 			if (err) logger.log('error' , "[Topics] Unable to save command pattern-based MQTT topic, error: " + err);
- 			logger.log('debug' , "[Topics] Created command pattern-based MQTT topic: " + topic);
- 		});
-	}
-});
-Acls.findOne({topic: 'message/%u/#'}, function(error, acl){
-	if (!error && !acl) {
-		var topic = new Acls({topic: 'message/%u/#', acc: 3});
-		topic.save(function(err){
- 			if (err) logger.log('error' , "[Topics] Unable to save message pattern-based MQTT topic, error: " + err);
- 			logger.log('debug' , "[Topics] Created message pattern-based MQTT topic: " + topic);
- 		});
-	}
-});
-Acls.findOne({topic: 'state/%u/#'}, function(error, acl){
-	if (!error && !acl) {
-		var topic = new Acls({topic: 'state/%u/#', acc: 3});
-		topic.save(function(err){
- 			if (err) logger.log('error' , "[Topics] Unable to save state pattern-based MQTT topic, error: " + err);
- 			logger.log('debug' , "[Topics] Created state pattern-based MQTT topic: " + topic);
- 		});
-	}
-});
-Acls.findOne({topic: 'response/%u/#'}, function(error, acl){
-	if (!error && !acl) {
-		var topic = new Acls({topic: 'response/%u/#', acc: 3});
-		topic.save(function(err){
- 			if (err) logger.log('error' , "[Topics] Unable to save response pattern-based MQTT topic, error: " + err);
- 			logger.log('debug' , "[Topics] Created response pattern-based MQTT topic: " + topic);
- 		});
-	}
-});
-// Finish MQTT topic creation
-
-var app = express();
-app.set('view engine', 'ejs');
-app.enable('trust proxy');
-app.use(favicon(path.join(__dirname, '/interfaces/static', 'favicon.ico')))
-
-app.use(morgan("combined", {stream: logger.stream})); // change to use Winston
-app.use(flash());
-// Session handler
-app.use(session({
-	store: new mongoStore({
-		url: "mongodb://" + mongo_user +":" + mongo_password + "@" + mongo_host + ":" + mongo_port + "/sessions"
-	}),
-	resave: true,
-	saveUninitialized: false,
-	secret: cookieSecret,
-	cookie: {
-		secure: true
-	}
-}));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.set('views', path.join(__dirname, 'interfaces/views/'));
-app.use('/static', express.static(path.join(__dirname, '/interfaces/static')));
-app.use('/static/octicons', express.static('node_modules/@primer/octicons/build'), express.static('node_modules/@primer/octicons/build/svg')); // Octicons router
-
-// robots.txt
-app.use(robots({UserAgent: '*', Allow: '/', CrawlDelay: '5', Sitemap: 'https://' + process.env.WEB_HOSTNAME + '/sitemap.xml'}))
-
-// Site Map, based on example here: https://www.npmjs.com/package/sitemap#example-of-using-sitemapjs-with-express
-let sitemap
-app.get('/sitemap.xml', function(req, res) {
-	res.header('Content-Type', 'application/xml');
-	res.header('Content-Encoding', 'gzip');
-	// if we have a cached entry send it
-	if (sitemap) {
-	  res.send(sitemap)
-	  return
-	}
-	try {
-	  const smStream = new SitemapStream({ hostname: 'https://' + process.env.WEB_HOSTNAME + '/' })
-	  const pipeline = smStream.pipe(createGzip())
-
-	  smStream.write({ url: '/',  changefreq: 'weekly', priority: 0.5 })
-	  smStream.write({ url: '/about/',  changefreq: 'weekly',  priority: 0.5})
-	  smStream.write({ url: '/docs',  changefreq: 'weekly',  priority: 0.5 })
-	  smStream.write({ url: '/login/',  changefreq: 'monthly',  priority: 0.3})
-	  smStream.write({ url: '/new-user/',  changefreq: 'monthly',  priority: 0.3})
-	  smStream.write({ url: '/privacy/',  changefreq: 'monthly',  priority: 0.3})
-	  smStream.write({ url: '/tos/',  changefreq: 'monthly',  priority: 0.3})
-	  smStream.end()
-
-	  // cache the response
-	  streamToPromise(pipeline).then(sm => sitemap = sm)
-	  // stream the response
-	  pipeline.pipe(res).on('error', (e) => {throw e})
-	} catch (e) {
-		console.error(e)
-		res.status(500).end()
-	}
-});
-
-
-///////////////////////////////////////////////////////////////////////////
-// Load Routes
-///////////////////////////////////////////////////////////////////////////
-const rtDefault = require('./routes/default');
-const rtAdmin = require('./routes/admin');
-const rtAuth = require('./routes/auth');
-const rtGhome = require('./routes/ghome');
-const rtAlexa = require('./routes/alexa');
-app.use('/', rtDefault);
-app.use('/admin', rtAdmin); // Admin Interface
-app.use('/auth', rtAuth); // OAuth endpoints
-app.use('/api/ghome', rtGhome); // Google Home API
-app.use('/api/v1', rtAlexa); // Alexa API
-
-var state = require('./services/state'); // Load State API
-
-///////////////////////////////////////////////////////////////////////////
-// Passport Configuration
-///////////////////////////////////////////////////////////////////////////
-
-passport.use(new LocalStrategy(Account.authenticate()));
-// New Custom Local Strategy to provide user feedback
-//passport.use(new LocalStrategy(
-// 	function(username, password, done) {
-// 	  Account.findOne({ username: username }, function (err, user) {
-// 		if (err) { return done(err); }
-// 		if (!user || user.password != password) {
-// 		  return done(null, false, { message: 'Incorrect username or password!' });
-// 		}
-// 		if (!user.active == true) {
-// 		  return done(null, false, { message: 'Account disabled!' });
-// 		}
-// 		// else if (!user.isVerified == true) {
-// 		// 	return done(null, false, { message: 'Please verify your account before logging in!' });
-// 		// }
-// 		return done(null, user);
-// 	  });
-// 	}
-// ));
-
-passport.use(new BasicStrategy(Account.authenticate()));
-// New Custom Local Strategy to provide user feedback
-// passport.use(new BasicStrategy(
-// 	function(username, password, done) {
-// 	  Account.findOne({ username: username }, function (err, user) {
-// 		if (err) { return done(err); }
-// 		if (!user || !user.validPassword(password)) {
-// 		  return done(null, false, { message: 'Incorrect username or password!' });
-// 		}
-// 		if (!user.active == true) {
-// 		  return done(null, false, { message: 'Account disabled!' });
-// 		}
-// 		// else if (!user.isVerified == true) {
-// 		// 	return done(null, false, { message: 'Please verify your account before logging in!' });
-// 		// }
-// 		return done(null, user);
-// 	  });
-// 	}
-// ));
-
-
-passport.serializeUser(Account.serializeUser());
-passport.deserializeUser(Account.deserializeUser());
-var accessTokenStrategy = new PassportOAuthBearer(function(token, done) {
-	oauthModels.AccessToken.findOne({ token: token }).populate('user').populate('grant').exec(function(error, token) {
-		if (!error && token) {
-			logger.log('debug', "[OAuth] Returned OAuth Token: " + JSON.stringify(token));
-			// Check token is active, has a grant, grant is active, has use and user is active
-			if (token.active && token.grant && token.grant.active && token.user && token.user.active) {
-				logger.log('verbose', "[OAuth] OAuth Token success for user: " + token.user.username + ", token: " + JSON.stringify(token));
-				done(null, token.user, { scope: token.scope });
-			}
-			// Found OAuth token, however token not active
-			else if (!token.active) {
-				logger.log('warn', "[OAuth] OAuth Token failure, token not active: " + JSON.stringify(token));
-				done(null, false);
-			}
-			// Found OAuth token, however token has no grant
-			else if (!token.grant) {
-				logger.log('warn', "[OAuth] OAuth Token failure, missing grant token: " + JSON.stringify(token));
-				done(null, false);
-			}
-			// Found OAuth token, however token grant not active
-			else if (!token.grant.active) {
-				logger.log('warn', "[OAuth] OAuth Token failure, grant token not active: " + JSON.stringify(token));
-				done(null, false);
-			}
-			// Found OAuth token, however token user missing (should never get here!)
-			else if (!token.user) {
-				logger.log('warn', "[OAuth] OAuth Token failure, user population failed: " + JSON.stringify(token));
-				done(null, false);
-			}
-			// Found OAuth token, however user is not active/ enabled
-			else if (token.user && token.user.active == false) {
-				logger.log('warn', "[OAuth] OAuth Token failure, user: " + token.user.username + ", user.active is false");
-				done(null, false);
-			}
+	// If ACL creation fails API will not function, exit
+	if (errACLs == true) process.exit();
+	// Create Express instance
+	var app = express();
+	app.set('view engine', 'ejs');
+	app.enable('trust proxy');
+	app.use(favicon(path.join(__dirname, '/interfaces/static', 'favicon.ico')))
+	// Configure logging
+	app.use(morgan("combined", {stream: logger.stream})); // change to use Winston
+	// Enable req.flash support
+	app.use(flash());
+	// Setup session handler
+	app.use(session({
+		store: new mongoStore({
+			url: "mongodb://" + mongo_user +":" + mongo_password + "@" + mongo_host + ":" + mongo_port + "/sessions"
+		}),
+		resave: true,
+		saveUninitialized: false,
+		secret: cookieSecret,
+		cookie: {
+			secure: true
 		}
-		// No OAuth token found
-		else if (!token) {
-			logger.log('warn', "[OAuth] OAuth Token failure, token not found for user!");
-			done(null, false);
+	}));
+	app.use(bodyParser.json());
+	app.use(bodyParser.urlencoded({ extended: false }));
+	app.use(passport.initialize());
+	app.use(passport.session());
+	// Set EJS views template path
+	app.set('views', path.join(__dirname, 'interfaces/views/'));
+	// Configure static content
+	app.use('/static', express.static(path.join(__dirname, '/interfaces/static')));
+	app.use('/static/octicons', express.static('node_modules/@primer/octicons/build'), express.static('node_modules/@primer/octicons/build/svg')); // Octicons router
+	// Setup robots.txt
+	app.use(robots({UserAgent: '*', Allow: '/', CrawlDelay: '5', Sitemap: 'https://' + process.env.WEB_HOSTNAME + '/sitemap.xml'}))
+	// Setup site map, based on example here: https://www.npmjs.com/package/sitemap#example-of-using-sitemapjs-with-express
+	let sitemap
+	app.get('/sitemap.xml', function(req, res) {
+		res.header('Content-Type', 'application/xml');
+		res.header('Content-Encoding', 'gzip');
+		// if we have a cached entry send it
+		if (sitemap) {
+			res.send(sitemap)
+			return
 		}
-		// An Error occurred in trying to find OAuth token
-		else {
-			logger.log('error', "[OAuth] OAuth Token lookup failed, error: " + error);
-			done(error);
+		try {
+			const smStream = new SitemapStream({ hostname: 'https://' + process.env.WEB_HOSTNAME + '/' })
+			const pipeline = smStream.pipe(createGzip())
+			smStream.write({ url: '/',  changefreq: 'weekly', priority: 0.5 })
+			smStream.write({ url: '/about/',  changefreq: 'weekly',  priority: 0.5})
+			smStream.write({ url: '/docs',  changefreq: 'weekly',  priority: 0.5 })
+			smStream.write({ url: '/login/',  changefreq: 'monthly',  priority: 0.3})
+			smStream.write({ url: '/new-user/',  changefreq: 'monthly',  priority: 0.3})
+			smStream.write({ url: '/privacy/',  changefreq: 'monthly',  priority: 0.3})
+			smStream.write({ url: '/tos/',  changefreq: 'monthly',  priority: 0.3})
+			smStream.end()
+			// cache the response
+			streamToPromise(pipeline).then(sm => sitemap = sm)
+			// stream the response
+			pipeline.pipe(res).on('error', (e) => {throw e})
+		} catch (e) {
+			console.error(e)
+			res.status(500).end()
 		}
 	});
-});
 
-passport.use(accessTokenStrategy);
+	///////////////////////////////////////////////////////////////////////////
+	// Load Routes
+	///////////////////////////////////////////////////////////////////////////
+	const rtDefault = require('./routes/default');
+	const rtAdmin = require('./routes/admin');
+	const rtAuth = require('./routes/auth');
+	const rtGhome = require('./routes/ghome');
+	const rtAlexa = require('./routes/alexa');
+	app.use('/', rtDefault);
+	app.use('/admin', rtAdmin); // Admin Interface
+	app.use('/auth', rtAuth); // OAuth endpoints
+	app.use('/api/ghome', rtGhome); // Google Home API
+	app.use('/api/v1', rtAlexa); // Alexa API
+	///////////////////////////////////////////////////////////////////////////
+	// Passport Configuration
+	///////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////
-// Error Handler
-///////////////////////////////////////////////////////////////////////////
+	passport.use(new LocalStrategy(Account.authenticate()));
+	passport.use(new BasicStrategy(Account.authenticate()));
 
-// 404 Handler
-app.use(function(req, res, next) {
-	const err = new Error('Not Found');
-	err.status = 404;
-	next(err);
-});
+	passport.serializeUser(Account.serializeUser());
+	passport.deserializeUser(Account.deserializeUser());
+	var accessTokenStrategy = new PassportOAuthBearer(function(token, done) {
+		oauthModels.AccessToken.findOne({ token: token }).populate('user').populate('grant').exec(function(error, token) {
+			if (!error && token) {
+				logger.log('debug', "[OAuth] Returned OAuth Token: " + JSON.stringify(token));
+				// Check token is active, has a grant, grant is active, has use and user is active
+				if (token.active && token.grant && token.grant.active && token.user && token.user.active) {
+					logger.log('verbose', "[OAuth] OAuth Token success for user: " + token.user.username + ", token: " + JSON.stringify(token));
+					done(null, token.user, { scope: token.scope });
+				}
+				// Found OAuth token, however token not active
+				else if (!token.active) {
+					logger.log('warn', "[OAuth] OAuth Token failure, token not active: " + JSON.stringify(token));
+					done(null, false);
+				}
+				// Found OAuth token, however token has no grant
+				else if (!token.grant) {
+					logger.log('warn', "[OAuth] OAuth Token failure, missing grant token: " + JSON.stringify(token));
+					done(null, false);
+				}
+				// Found OAuth token, however token grant not active
+				else if (!token.grant.active) {
+					logger.log('warn', "[OAuth] OAuth Token failure, grant token not active: " + JSON.stringify(token));
+					done(null, false);
+				}
+				// Found OAuth token, however token user missing (should never get here!)
+				else if (!token.user) {
+					logger.log('warn', "[OAuth] OAuth Token failure, user population failed: " + JSON.stringify(token));
+					done(null, false);
+				}
+				// Found OAuth token, however user is not active/ enabled
+				else if (token.user && token.user.active == false) {
+					logger.log('warn', "[OAuth] OAuth Token failure, user: " + token.user.username + ", user.active is false");
+					done(null, false);
+				}
+			}
+			// No OAuth token found
+			else if (!token) {
+				logger.log('warn', "[OAuth] OAuth Token failure, token not found for user!");
+				done(null, false);
+			}
+			// An Error occurred in trying to find OAuth token
+			else {
+				logger.log('error', "[OAuth] OAuth Token lookup failed, error: " + error);
+				done(error);
+			}
+		});
+	});
 
-// Error Handler
-app.use(function(err, req, res, next) {
-	res.status(err.status || 500).send(err.message);
-	//res.render('error', {
-	//  message: err.message,
-	//  error: {}
-	//});
-	if (err.status == 404){
-		logger.log('warn', "[App] Not found: " + err.status + ", path: " + req.path);
+	passport.use(accessTokenStrategy);
+
+	///////////////////////////////////////////////////////////////////////////
+	// Error Handler
+	///////////////////////////////////////////////////////////////////////////
+
+	// 404 Handler
+	app.use(function(req, res, next) {
+		const err = new Error('Not Found');
+		err.status = 404;
+		next(err);
+	});
+
+	// Error Handler
+	app.use(function(err, req, res, next) {
+		res.status(err.status || 500).send(err.message);
+		//res.render('error', {
+		//  message: err.message,
+		//  error: {}
+		//});
+		if (err.status == 404){
+			logger.log('warn', "[App] Not found: " + err.status + ", path: " + req.path);
+		}
+		else {
+			logger.log('error', "[App] Fall-back error handler, status code: " + err.status + ", message: " + err.message);
+		}
+	});
+
+	// NodeJS App Settings
+	var port = (process.env.VCAP_APP_PORT || 3000);
+	var host = (process.env.VCAP_APP_HOST || '0.0.0.0');
+	// Express Settings
+	if (process.env.VCAP_APPLICATION) {
+		var application = JSON.parse(process.env.VCAP_APPLICATION);
+		var app_uri = application['application_uris'][0];
+		app_id = 'https://' + app_uri;
 	}
 	else {
-		logger.log('error', "[App] Fall-back error handler, status code: " + err.status + ", message: " + err.message);
+		//var app_id = 'http://localhost:' + port;
+		var app_uri = (process.env.WEB_HOSTNAME || 'localhost');
+		var app_id = 'https://' + app_uri;
 	}
-});
+	// Create HTTP Server, to be proxied
+	var server = app.listen(port, function(){
+		logger.log('info', "[Core] App listening on: " + host + ":" + port);
+		logger.log('info', "[Core] App_ID -> " + app_id);
+	});
+	// Set timeout to 5 seconds
+	server.setTimeout = 5000;
+}
 
-module.exports = app;
-
-
-
-
+createServer();

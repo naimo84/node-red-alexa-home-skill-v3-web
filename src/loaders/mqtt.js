@@ -1,22 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////
 // Depends
 ///////////////////////////////////////////////////////////////////////////
-//var express = require('express');
-//var router = express.Router();
 const mqtt = require('mqtt');
 const logger = require('./logger'); // Moved to own module
-// const client = require('../loaders/redis-mqtt'); // Redis MQTT Command Holding Area
-// const redisScan = require('node-redis-scan');
-// const hgetAsync = promisify(client.hget).bind(client);
-// const delAsync = promisify(client.del).bind(client);
-// const setAsync = promisify(client.set).bind(client);
-//const scanner = new redisScan(client);
 const updateDeviceState = require('../services/state').updateDeviceState;
-//const setstate = stateApi.setstate;
 ///////////////////////////////////////////////////////////////////////////
 // Variables
 ///////////////////////////////////////////////////////////////////////////
-//var debug = (process.env.ALEXA_DEBUG || false);
 // MQTT ENV variables========================
 var mqtt_user = (process.env.MQTT_USER);
 var mqtt_password = (process.env.MQTT_PASSWORD);

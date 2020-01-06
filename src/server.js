@@ -11,18 +11,18 @@ var logger = require('./loaders/logger');
 // Validate dotenv was successful
 if (dotenv.error) {
 	logger.log('error',"[Core] dotenv parsing failed, please ensure you have mapped .env file to /usr/src/app/.env, an example file is provided, see .env.template for more information");
-	throw dotenv.error
+	throw dotenv.error;
 }
 var app = require('./app');
 // Validate CRITICAL environment variables passed to container
 if (!(process.env.MONGO_USER && process.env.MONGO_PASSWORD && process.env.MQTT_USER && process.env.MQTT_PASSWORD && process.env.MQTT_PORT)) {
 	logger.log('error',"[Core] You MUST supply MONGO_USER, MONGO_PASSWORD, MQTT_USER, MQTT_PASSWORD and MQTT_PORT environment variables");
-	process.exit()
+	process.exit();
 }
 // Validate BRAND environment variables passed to container
 if (!(process.env.BRAND)) {
 	logger.log('error',"[Core] You MUST supply BRAND environment variable");
-	process.exit()
+	process.exit();
 }
 // Warn on not supply of MONGO/ MQTT host names
 if (!(process.env.MONGO_HOST && process.env.MQTT_URL)) {
@@ -57,11 +57,3 @@ var server = app.listen(port, function(){
 });
 // Set timeout to 5 seconds
 server.setTimeout = 5000;
-
-// var server = http.Server(app);
-// server.listen(port, host, function(){
-// 	logger.log('info', "[Core] App listening on: " + host + ":" + port);
-// 	logger.log('info', "[Core] App_ID -> " + app_id);
-// 	setTimeout(function(){
-// 	},5000);
-// });

@@ -104,7 +104,7 @@ const createServer = async() => {
 		// Create MQTT ACLs
 		let arrayACLs = ['command/%u/#','message/%u/#','state/%u/#','response/%u/#'];
 		let errACLs = false;
-		for (let acl in arrayACLs) {
+		for (let acl of arrayACLs) {
 			var topic = await createACL(acl);
 			if (topic == undefined) errACLs = true;
 		}

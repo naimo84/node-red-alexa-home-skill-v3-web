@@ -4,7 +4,7 @@
 var Account = require('../models/account');
 var logger = require('../loaders/logger');
 var Acls = require('../models/acls');
-var Topics = require('./models/topics');
+var Topics = require('../models/topics');
 ///////////////////////////////////////////////////////////////////////////
 // Exports
 ///////////////////////////////////////////////////////////////////////////

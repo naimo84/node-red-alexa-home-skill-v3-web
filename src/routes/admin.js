@@ -40,7 +40,7 @@ router.get('/services', defaultLimiter,
 	ensureAuthenticated,
 	async (req, res) => {
 		try {
-			if (req.user.username === mqtt_user) {
+			if (req.user.superuser === true) {
 				sendPageViewUid(req.path, 'Services Admin', req.ip, req.user.username, req.headers['user-agent']);
 				const apps = await oauthModels.Application.find({});
 				res.render('pages/services',{user:req.user, services: apps, brand: process.env.BRAND, title: "OAuth Services | " + process.env.BRAND});
@@ -60,7 +60,7 @@ router.get('/users', defaultLimiter,
 	ensureAuthenticated,
 	async (req, res) => {
 		try{
-			if (req.user.username === mqtt_user) {
+			if (req.user.superuser === true) {
 				sendPageViewUid(req.path, 'User Admin', req.ip, req.user.username, req.headers['user-agent']);
 				var totalCount = await Account.countDocuments({});
 				// https://docs.mongodb.com/manual/reference/method/db.collection.find/#explicitly-excluded-fields
@@ -99,7 +99,7 @@ router.post('/toggle-topics/:username', defaultLimiter,
 	async (req, res) => {
 		try{
 			// Check req.user is super user
-			if (req.user.username === mqtt_user) {
+			if (req.user.superuser === true) {
 				if (!req.params.username) return res.status(400).send('Username not supplied!');
 				// Get shared pattern ACL
 				//var aclPattern = await Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
@@ -183,7 +183,7 @@ router.get('/user-devices', defaultLimiter,
 	ensureAuthenticated,
 	async (req, res) => {
 		try {
-			if (req.user.username === mqtt_user) {
+			if (req.user.superuser === true) {
 				sendPageViewUid(req.path, 'User Device Admin', req.ip, req.user.username, req.headers['user-agent']);
 				var devices = await Devices.find({});
 				var count = await Devices.countDocuments({});

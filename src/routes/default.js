@@ -557,7 +557,7 @@ router.post('/account/:user_id', defaultLimiter,
 				const userCountry = await countries.findByCountryCode(user.country.toUpperCase());
 				var region = userCountry.data[0].region;
 				var account = await Account.findOne({_id: req.params.user_id});
-				if (req.user.username === mqtt_user) {
+				if (req.user.superuser === true) {
 					logger.log('info', "[Update User] Superuser updated user account: " + req.params.user_id);
 				}
 				else {
@@ -601,7 +601,7 @@ router.delete('/account/:user_id', defaultLimiter,
 				await Topics.deleteOne({_id:userAccount.topics});
 				// Success send 200 status
 				res.status(202).send('Account deleted"');
-				if (req.user.username === mqtt_user) {
+				if (req.user.superuser === true) {
 					logger.log('info', "[Delete User] Superuser deleted user account: " + username)
 				}
 				else {
@@ -638,7 +638,7 @@ async (req, res) => {
 			await oauthModels.RefreshToken.deleteMany({user: userId});
 			// Success send 200 status
 			res.status(202).json({message: 'deleted OAuth tokens'});
-			if (req.user.username === mqtt_user) {
+			if (req.user.superuser === true) {
 				logger.log('info', "[Delete Tokens] Superuser deleted OAuth tokens for account: " + username)
 			}
 			else {

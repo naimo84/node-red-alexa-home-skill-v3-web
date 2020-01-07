@@ -1,38 +1,27 @@
 ///////////////////////////////////////////////////////////////////////////
 // Depends
 ///////////////////////////////////////////////////////////////////////////
-var express = require('express');
-var router = express.Router();
-var bodyParser = require('body-parser');
-router.use(bodyParser.urlencoded({ extended: true }));
-router.use(bodyParser.json());
-var Account = require('../models/account');
-var oauthModels = require('../models/oauth');
-var Devices = require('../models/devices');
-var Topics = require('../models/topics');
-var passport = require('passport');
-var BasicStrategy = require('passport-http').BasicStrategy;
-var LocalStrategy = require('passport-local').Strategy;
-//var countries = require('countries-api');
-var logger = require('../loaders/logger');
-const defaultLimiter = require('../loaders/limiter').defaultLimiter;
-//const restrictiveLimiter = require('../loaders/limiter').restrictiveLimiter;
-//const sendPageView = require('../services/ganalytics').sendPageView;
-const sendPageViewUid = require('../services/ganalytics').sendPageViewUid;
-//const sendEventUid = require('../services/ganalytics').sendEventUid;
+import express from 'express';
+import bodyParser from 'body-parser'
+import {Account} from '../models/account';
+import {oauthModels} from '../models/oauth';
+import {Devices} from '../models/devices';
+import {Topics} from '../models/topics';
+import {logger} from '../loaders/logger';
+import {defaultLimiter} from '../loaders/limiter';
+import {sendPageViewUid} from '../services/ganalytics'
 ///////////////////////////////////////////////////////////////////////////W
 // Variables
 ///////////////////////////////////////////////////////////////////////////
-//var debug = (process.env.ALEXA_DEBUG || false);
 // MQTT Settings  =========================================
-var mqtt_user = (process.env.MQTT_USER);
+const mqtt_user = (process.env.MQTT_USER);
 ///////////////////////////////////////////////////////////////////////////
-// Passport Configuration
+// Main
 ///////////////////////////////////////////////////////////////////////////
-passport.use(new LocalStrategy(Account.authenticate()));
-passport.use(new BasicStrategy(Account.authenticate()));
-passport.serializeUser(Account.serializeUser());
-passport.deserializeUser(Account.deserializeUser());
+// Setup Express router
+const router = express.Router();
+router.use(bodyParser.urlencoded({ extended: true }));
+router.use(bodyParser.json());
 ///////////////////////////////////////////////////////////////////////////
 // Services
 ///////////////////////////////////////////////////////////////////////////
@@ -42,7 +31,7 @@ router.get('/services', defaultLimiter,
 		try {
 			if (req.user.superuser === true) {
 				sendPageViewUid(req.path, 'Services Admin', req.ip, req.user.username, req.headers['user-agent']);
-				const apps = await oauthModels.Application.find({});
+				let apps = await oauthModels.Application.find({});
 				res.render('pages/services',{user:req.user, services: apps, brand: process.env.BRAND, title: "OAuth Services | " + process.env.BRAND});
 			} else {
 				res.redirect(303, '/');
@@ -62,9 +51,9 @@ router.get('/users', defaultLimiter,
 		try{
 			if (req.user.superuser === true) {
 				sendPageViewUid(req.path, 'User Admin', req.ip, req.user.username, req.headers['user-agent']);
-				var totalCount = await Account.countDocuments({});
+				let totalCount = await Account.countDocuments({});
 				// https://docs.mongodb.com/manual/reference/method/db.collection.find/#explicitly-excluded-fields
-				var usersAndDevs = await Account.aggregate([
+				let usersAndDevs = await Account.aggregate([
 					{ "$lookup": {
 						"from": "devices",
 						"let": { "username": "$username" },
@@ -101,10 +90,8 @@ router.post('/toggle-topics/:username', defaultLimiter,
 			// Check req.user is super user
 			if (req.user.superuser === true) {
 				if (!req.params.username) return res.status(400).send('Username not supplied!');
-				// Get shared pattern ACL
-				//var aclPattern = await Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
 				// Get user-specific ACL
-				var aclUser = await Topics.findOne({topics:	['command/' + req.params.username + '/#','state/' + req.params.username + '/#','response/' + req.params.username + '/#','message/' + req.params.username + '/#']});
+				let aclUser = await Topics.findOne({topics:	['command/' + req.params.username + '/#','state/' + req.params.username + '/#','response/' + req.params.username + '/#','message/' + req.params.username + '/#']});
 				if (!aclUser) {
 					// Generate user-specific MQTT topics
 					aclUser = new Topics({topics: [
@@ -117,22 +104,10 @@ router.post('/toggle-topics/:username', defaultLimiter,
 					await aclUser.save();
 				}
 				// // Get User
-				var account = await Account.findByUsername(req.params.username, true);
+				let account = await Account.findByUsername(req.params.username, true);
 				// Apply topic change
 				await Account.updateOne({username: account.username},{$set: {topics: aclUser._id}});
 				logger.log('debug' , "[Reset Topics] Reset MQTT topics for user: " + account.username + ", to: " + JSON.stringify(aclUser));
-
-				// if (!account) return res.status(500).send('Account not found!');
-				// // Set user.topics to pattern-based MQTT topics
-				// if (account.topics == aclPattern._id){
-				// 	await Account.updateOne({username: account.username},{$set: {topics: aclUser._id}});
-				// 	logger.log('debug' , "[Reset Topics] Reset MQTT topics for user: " + account.username + ", to: " + JSON.stringify(aclUser));
-				// }
-				// // Set user.topics back to per-user MQTT topics
-				// else {
-				// 	await Account.updateOne({username: account.username},{$set: {topics: aclPattern._id}});
-				// 	logger.log('debug' , "[Reset Topics] Updated MQTT topics for user to pattern: " + account.username + ", to: " + JSON.stringify(aclPattern));
-				// }
 			}
 			// Not superuser, redirect
 			else {
@@ -154,8 +129,8 @@ router.post('/user/:id/:state', defaultLimiter,
 		try{
 			if (req.user.username === mqtt_user && req.params.id && req.params.state) {
 				// Convert string input to boolean
-				var state = (req.params.state === "true");
-				var result = await toggleUser(req.params.id, state);
+				let state = (req.params.state === "true");
+				let result = await toggleUser(req.params.id, state);
 				if (result == true) {
 					return res.status(200).send('Updated Account State!');
 				}
@@ -185,8 +160,8 @@ router.get('/user-devices', defaultLimiter,
 		try {
 			if (req.user.superuser === true) {
 				sendPageViewUid(req.path, 'User Device Admin', req.ip, req.user.username, req.headers['user-agent']);
-				var devices = await Devices.find({});
-				var count = await Devices.countDocuments({});
+				let devices = await Devices.find({});
+				let count = await Devices.countDocuments({});
 				res.render('pages/user-devices',{user:req.user, devices: devices, devicecount: count, brand: process.env.BRAND, title: "Device Admin | " + process.env.BRAND});
 			}
 			else {
@@ -207,7 +182,7 @@ ensureAuthenticated,
 async (req, res) => {
 	try{
 		if (req.user.username == mqtt_user) {
-			var application = oauthModels.Application(req.body);
+			let application = oauthModels.Application(req.body);
 			await application.save();
 			res.status(201).send(application);
 		} else {
@@ -228,7 +203,7 @@ router.post('/service/:id', defaultLimiter,
 ensureAuthenticated,
 async (req, res) => {
 	try{
-		var service = req.body;
+		let service = req.body;
 		if (req.user.username == mqtt_user) {
 			await oauthModels.Application.findOne({_id: req.params.id});
 			data.title = service.title;
@@ -283,7 +258,7 @@ function ensureAuthenticated(req,res,next) {
 const toggleUser = async(id, enabled) => {
 	try {
 		// Find User
-		var user = await Account.findOne({_id: id});
+		let user = await Account.findOne({_id: id});
 		// Set Account Status
 		if (enabled == true && user.username != mqtt_user) {
 			user.active = true

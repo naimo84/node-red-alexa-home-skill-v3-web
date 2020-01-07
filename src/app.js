@@ -1,15 +1,15 @@
 ///////////////////////////////////////////////////////////////////////////
 // Depends
 ///////////////////////////////////////////////////////////////////////////
-var dotenv = require('dotenv').config();
-var favicon = require('serve-favicon')
-var flash = require('connect-flash');
-var morgan = require('morgan');
-var express = require('express');
+const dotenv = require('dotenv').config();
+const favicon = require('serve-favicon')
+const flash = require('connect-flash');
+const morgan = require('morgan');
+const express = require('express');
 const session = require('express-session');
 const mongoStore = require('connect-mongo')(session);
-var passport = require('passport');
-var bodyParser = require('body-parser');
+const passport = require('passport');
+const bodyParser = require('body-parser');
 const path = require('path');
 const { SitemapStream, streamToPromise } = require('sitemap');
 const { createGzip } = require('zlib');
@@ -17,19 +17,19 @@ const robots = require('express-robots-txt');
 ///////////////////////////////////////////////////////////////////////////
 // Loaders/ Services
 ///////////////////////////////////////////////////////////////////////////
-var db = require('./loaders/db'); // Load DB module, note connect happens later
-var mqtt = require('./loaders/mqtt'); // Load MQTT client and connect
-var state = require('./services/state'); // Load State API
+const db = require('./loaders/db'); // Load DB module, note connect happens later
+const mqtt = require('./loaders/mqtt'); // Load MQTT client and connect
+const state = require('./services/state'); // Load State API
 ///////////////////////////////////////////////////////////////////////////
 // Schema
 ///////////////////////////////////////////////////////////////////////////
-var Account = require('./models/account');
-var oauthModels = require('./models/oauth');
-var passport = require('passport');
-var BasicStrategy = require('passport-http').BasicStrategy;
-var LocalStrategy = require('passport-local').Strategy;
-var PassportOAuthBearer = require('passport-http-bearer');
-var logger = require('./loaders/logger');
+const Account = require('./models/account');
+const oauthModels = require('./models/oauth');
+const passport = require('passport');
+const BasicStrategy = require('passport-http').BasicStrategy;
+const LocalStrategy = require('passport-local').Strategy;
+const PassportOAuthBearer = require('passport-http-bearer');
+const logger = require('./loaders/logger');
 ///////////////////////////////////////////////////////////////////////////
 // External Functions
 ///////////////////////////////////////////////////////////////////////////
@@ -39,15 +39,15 @@ const setupServiceAccount = require('./services/func-services').setupServiceAcco
 // Variables
 ///////////////////////////////////////////////////////////////////////////
 // MongoDB Settings, used for express session handler DB connection
-var mongo_user = (process.env.MONGO_USER);
-var mongo_password = (process.env.MONGO_PASSWORD);
-var mongo_host = (process.env.MONGO_HOST || "mongodb");
-var mongo_port = (process.env.MONGO_PORT || "27017");
+const mongo_user = (process.env.MONGO_USER);
+const mongo_password = (process.env.MONGO_PASSWORD);
+const mongo_host = (process.env.MONGO_HOST || "mongodb");
+const mongo_port = (process.env.MONGO_PORT || "27017");
 // MQTT Settings
-var mqtt_user = (process.env.MQTT_USER);
-var mqtt_password = (process.env.MQTT_PASSWORD);
+const mqtt_user = (process.env.MQTT_USER);
+const mqtt_password = (process.env.MQTT_PASSWORD);
 // Cookie Secret
-var cookieSecret = (process.env.COOKIE_SECRET || 'ihytsrf334');
+const cookieSecret = (process.env.COOKIE_SECRET || 'ihytsrf334');
 if (cookieSecret == 'ihytsrf334') {logger.log("warn", "[App] Using default Cookie Secret, please supply new secret using COOKIE_SECRET environment variable")}
 else {logger.log("info", "[App] Using user-defined cookie secret")}
 ///////////////////////////////////////////////////////////////////////////

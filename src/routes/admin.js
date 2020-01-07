@@ -1,27 +1,37 @@
 ///////////////////////////////////////////////////////////////////////////
 // Depends
 ///////////////////////////////////////////////////////////////////////////
-import express from 'express';
-import bodyParser from 'body-parser'
-import {Account} from '../models/account';
-import {oauthModels} from '../models/oauth';
-import {Devices} from '../models/devices';
-import {Topics} from '../models/topics';
-import {logger} from '../loaders/logger';
-import {defaultLimiter} from '../loaders/limiter';
-import {sendPageViewUid} from '../services/ganalytics'
+const express = require('express');
+const router = express.Router();
+const bodyParser = require('body-parser');
+router.use(bodyParser.urlencoded({ extended: true }));
+router.use(bodyParser.json());
+const Account = require('../models/account');
+const oauthModels = require('../models/oauth');
+const Devices = require('../models/devices');
+const Topics = require('../models/topics');
+// const passport = require('passport');
+// const BasicStrategy = require('passport-http').BasicStrategy;
+// const LocalStrategy = require('passport-local').Strategy;
+//var countries = require('countries-api');
+const logger = require('../loaders/logger');
+const defaultLimiter = require('../loaders/limiter').defaultLimiter;
+//const restrictiveLimiter = require('../loaders/limiter').restrictiveLimiter;
+//const sendPageView = require('../services/ganalytics').sendPageView;
+const sendPageViewUid = require('../services/ganalytics').sendPageViewUid;
+//const sendEventUid = require('../services/ganalytics').sendEventUid;
 ///////////////////////////////////////////////////////////////////////////W
 // Variables
 ///////////////////////////////////////////////////////////////////////////
 // MQTT Settings  =========================================
 const mqtt_user = (process.env.MQTT_USER);
 ///////////////////////////////////////////////////////////////////////////
-// Main
+// Passport Configuration
 ///////////////////////////////////////////////////////////////////////////
-// Setup Express router
-const router = express.Router();
-router.use(bodyParser.urlencoded({ extended: true }));
-router.use(bodyParser.json());
+// passport.use(new LocalStrategy(Account.authenticate()));
+// passport.use(new BasicStrategy(Account.authenticate()));
+// passport.serializeUser(Account.serializeUser());
+// passport.deserializeUser(Account.deserializeUser());
 ///////////////////////////////////////////////////////////////////////////
 // Services
 ///////////////////////////////////////////////////////////////////////////
@@ -108,6 +118,18 @@ router.post('/toggle-topics/:username', defaultLimiter,
 				// Apply topic change
 				await Account.updateOne({username: account.username},{$set: {topics: aclUser._id}});
 				logger.log('debug' , "[Reset Topics] Reset MQTT topics for user: " + account.username + ", to: " + JSON.stringify(aclUser));
+
+				// if (!account) return res.status(500).send('Account not found!');
+				// // Set user.topics to pattern-based MQTT topics
+				// if (account.topics == aclPattern._id){
+				// 	await Account.updateOne({username: account.username},{$set: {topics: aclUser._id}});
+				// 	logger.log('debug' , "[Reset Topics] Reset MQTT topics for user: " + account.username + ", to: " + JSON.stringify(aclUser));
+				// }
+				// // Set user.topics back to per-user MQTT topics
+				// else {
+				// 	await Account.updateOne({username: account.username},{$set: {topics: aclPattern._id}});
+				// 	logger.log('debug' , "[Reset Topics] Updated MQTT topics for user to pattern: " + account.username + ", to: " + JSON.stringify(aclPattern));
+				// }
 			}
 			// Not superuser, redirect
 			else {

@@ -53,7 +53,9 @@ else {logger.log("info", "[App] Using user-defined cookie secret")}
 ///////////////////////////////////////////////////////////////////////////
 // Passport Configuration
 ///////////////////////////////////////////////////////////////////////////
-passport.use(new LocalStrategy(Account.authenticate()));
+// Configure Passport Local Strategy via createStrategy() helper method, as-per https://www.npmjs.com/package/passport-local-mongoose#simplified-passportpassport-local-configuration
+passport.use(Account.createStrategy());
+// Create Passport Basic Strategy
 passport.use(new BasicStrategy(Account.authenticate()));
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());

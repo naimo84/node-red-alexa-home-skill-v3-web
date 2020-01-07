@@ -224,6 +224,8 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 		if (req.body.token) {
 			// Find a matching token, populate user for use in findByUsername account lookup
 			var token = await verifyEmail.findOne({ token: req.body.token }).populate('user').exec();
+			// If no token return 400, bad request
+			if (!token) return res.status(400).send('Unable to find matching token!');
 			// Find related user, returning hash/ salt
 			var account = await Account.findByUsername(token.user.username, true);
 			// Check account is not already verified (no need to proceed if it is)
@@ -782,7 +784,6 @@ const resetPassword = async(username, password) => {
 		// Save Account
 		await account.save();
 		// Return Success
-		sendEventUid(req.path, "Security", "Password Reset", req.ip, req.body.username, req.headers['user-agent']);
 		logger.log('verbose', "[Change Password] Changed password for: " + account.username);
 		return true;
 

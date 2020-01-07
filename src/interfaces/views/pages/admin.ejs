@@ -1,15 +1,25 @@
 <%- include('../fragments/header'); -%>
+
+<%- include('../fragments/log-settings-modal'); -%>
+
   <div class="container main-content">
     <h1>Admin</h1>
-    <h2>Services</h2>
-    <p>Use Service page to define OAuth endpoints such as the Amazon Skill authentication endpoint.</p>
-    <!-- <a href="/admin/services">here</a> -->
-    <button type="button" class="btn btn-secondary" onclick="javascript:window.location='/admin/services'"">Define OAuth Services</button>
-    <br>
-    <br>
-    <h2>Users - <%= userCount %></h2>
-    <p>Use Users page to view defined users.</p>
-    <!-- <a href="/admin/users">here</a> -->
-    <button type="button" class="btn btn-secondary" onclick="javascript:window.location='/admin/users'">View Users</button>
+    <p>Use this page to manage service configuration settings.</p>
   </div>
+
+  <script>
+    function changeLogLevel() {
+      // Populate Modal with current logLevel setting, including currentLevel hidden input
+
+      // Show modal, with existing logLevel pre-selected, enable user to change logLevel
+      $("#logSettingsModal").modal();
+    }
+
+    function saveLogLevel(level) {
+      // Read current setting (hidden populated input, 'currentLevel')
+
+      // If selected != current, POST to new admin route to change logLevel
+    }
+</script>
+
 <%- include('../fragments/footer'); -%>

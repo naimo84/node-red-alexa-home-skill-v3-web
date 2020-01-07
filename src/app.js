@@ -9,6 +9,10 @@ var express = require('express');
 const session = require('express-session');
 const mongoStore = require('connect-mongo')(session);
 var passport = require('passport');
+var BasicStrategy = require('passport-http').BasicStrategy;
+var LocalStrategy = require('passport-local').Strategy;
+var PassportOAuthBearer = require('passport-http-bearer');
+var logger = require('./loaders/logger');
 var bodyParser = require('body-parser');
 const path = require('path');
 const { SitemapStream, streamToPromise } = require('sitemap');
@@ -25,11 +29,6 @@ var state = require('./services/state'); // Load State API
 ///////////////////////////////////////////////////////////////////////////
 var Account = require('./models/account');
 var oauthModels = require('./models/oauth');
-var passport = require('passport');
-var BasicStrategy = require('passport-http').BasicStrategy;
-var LocalStrategy = require('passport-local').Strategy;
-var PassportOAuthBearer = require('passport-http-bearer');
-var logger = require('./loaders/logger');
 ///////////////////////////////////////////////////////////////////////////
 // External Functions
 ///////////////////////////////////////////////////////////////////////////

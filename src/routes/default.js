@@ -769,15 +769,18 @@ function ensureAuthenticated(req,res,next) {
 // Async function for password reset
 const resetPassword = async(username, password) => {
 	try {
-		// Find related user, returning hash/ salt
-		var account = await Account.findByUsername(username, true);
+		// Find related user
+		var account = await Account.findOne({username: username});
+		// Set password
 		await account.setPassword(password);
-		// Set MQTT Password
+		// Get updated user object, returning hash/ salt for use in PBKDF2 MQTT password
+		var account = await Account.findByUsername(username, true);
 		logger.log('debug', "[Change Password] Account hash: " + account.hash + ", account salt: " + account.salt);
 		if (!account.salt || account.salt == undefined || !account.hash || account.hash == undefined){
 			logger.log('error', "[Change Password] Unable to set MQTT password, hash / salt unavailable!");
 			return false;
 		}
+		// Set MQTT Password
 		var mqttPass = "PBKDF2$sha256$901$" + account.salt + "$" + account.hash;
 		account.mqttPass = mqttPass;
 		account.password = mqttPass;
@@ -786,7 +789,6 @@ const resetPassword = async(username, password) => {
 		// Return Success
 		logger.log('verbose', "[Change Password] Changed password for: " + account.username);
 		return true;
-
 	}
 	catch(e) {
 		logger.log('error', "[Change Password] Unable to change password for user, error: " + e);

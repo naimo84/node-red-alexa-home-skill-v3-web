@@ -75,7 +75,22 @@ passport.use(new LocalStrategy((username, password, cb) => {
 
 
 // Create Passport Basic Strategy
-passport.use(new BasicStrategy(Account.authenticate()));
+// passport.use(new BasicStrategy(Account.authenticate()));
+passport.use(new BasicStrategy((username, password, cb) => {
+	authenticate(username, password, (err, user, error) => {
+	  // An error ocurred, do not authenticate
+	  if (err) { return cb(err); }
+	  // Check user is active, if not send customised error
+	  if (user && !user.active ) {return cb(null, false, new Error("User account disabled!"))};
+	  // Check user is active and verified, if not send customised error depending on scenario
+	  /*	if (user && (!user.active || !user.isVerifed)) {
+		  if (!user.active) return cb(null, false, new Error("User account disabled!"))
+		  if (!user.isVerified) return cb(null, false, new Error("User account not verified!"))
+	  }; */
+	  cb(null, user, error);
+	});
+  }));
+
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
 ///////////////////////////////////////////////////////////////////////////

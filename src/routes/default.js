@@ -773,6 +773,8 @@ const resetPassword = async(username, password) => {
 		var account = await Account.findOne({username: username});
 		// Set password
 		await account.setPassword(password);
+		// Save Account
+		await account.save();
 		// Get updated user object, returning hash/ salt for use in PBKDF2 MQTT password
 		var account = await Account.findByUsername(username, true);
 		logger.log('debug', "[Change Password] Account hash: " + account.hash + ", account salt: " + account.salt);

@@ -52,9 +52,6 @@ else {logger.log("info", "[App] Using user-defined cookie secret")}
 ///////////////////////////////////////////////////////////////////////////
 // Passport Configuration
 ///////////////////////////////////////////////////////////////////////////
-// Configure Passport Local Strategy via createStrategy() helper method, as-per https://www.npmjs.com/package/passport-local-mongoose#simplified-passportpassport-local-configuration
-// passport.use(Account.createStrategy());
-
 // Configure Passport Local Strategy, checking that account is enabled, with user feedback on account disabled
 const authenticate = Account.authenticate();
 passport.use(new LocalStrategy((username, password, cb) => {
@@ -73,9 +70,7 @@ passport.use(new LocalStrategy((username, password, cb) => {
   });
 }));
 
-
 // Create Passport Basic Strategy
-// passport.use(new BasicStrategy(Account.authenticate()));
 passport.use(new BasicStrategy((username, password, cb) => {
 	authenticate(username, password, (err, user, error) => {
 		logger.log('debug',"[Auth] Passport Basic Strategy, authentication called for user: " + username);
@@ -92,10 +87,8 @@ passport.use(new BasicStrategy((username, password, cb) => {
 	});
   }));
 
-///////////////////////////////////////////////////////////////////////////
-// Passport Configuration
-///////////////////////////////////////////////////////////////////////////
-var accessTokenStrategy = new PassportOAuthBearer(function(token, done) {
+// Create OAuth Bearer Strategy
+  passport.use(new PassportOAuthBearer(function(token, done) {
 	oauthModels.AccessToken.findOne({ token: token }).populate('user').populate('grant').exec(function(error, token) {
 		if (!error && token) {
 			logger.log('debug', "[OAuth] Returned OAuth Token: " + JSON.stringify(token));
@@ -141,14 +134,11 @@ var accessTokenStrategy = new PassportOAuthBearer(function(token, done) {
 			done(error);
 		}
 	});
-});
-passport.use(accessTokenStrategy);
+}));
+//passport.use(accessTokenStrategy);
 
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
-
-// passport.serializeUser(Account.serializeUser());
-// passport.deserializeUser(Account.deserializeUser());
 ///////////////////////////////////////////////////////////////////////////
 // Main
 ///////////////////////////////////////////////////////////////////////////

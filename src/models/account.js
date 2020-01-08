@@ -26,6 +26,7 @@ var options = {
 	iterations: 901,
     encoding: 'base64',
     limitAttempts: true,
+    usernameQueryFields: ["email"],
     findByUsername: function(model, queryParameters) {
         // Check account.active true, if not auth will fail
         queryParameters.active = true;

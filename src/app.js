@@ -60,10 +60,11 @@ else {logger.log("info", "[App] Using user-defined cookie secret")}
 const authenticate = Account.authenticate();
 passport.use(new LocalStrategy((username, password, cb) => {
   authenticate(username, password, (err, user, error) => {
+	logger.log('debug',"[Auth] Passport Local Strategy, authentication called for user: " + username);
 	// An error ocurred, do not authenticate
 	if (err) { return cb(err); }
 	// Check user is active, if not send customised error
-	if (user && !user.active ) {return cb(null, false, new Error("User account disabled!"))};
+	if (user && user.active == false ) {return cb(null, false, new Error("User account disabled!"))};
 	// Check user is active and verified, if not send customised error depending on scenario
 	/*	if (user && (!user.active || !user.isVerifed)) {
 		if (!user.active) return cb(null, false, new Error("User account disabled!"))
@@ -78,16 +79,17 @@ passport.use(new LocalStrategy((username, password, cb) => {
 // passport.use(new BasicStrategy(Account.authenticate()));
 passport.use(new BasicStrategy((username, password, cb) => {
 	authenticate(username, password, (err, user, error) => {
-	  // An error ocurred, do not authenticate
-	  if (err) { return cb(err); }
-	  // Check user is active, if not send customised error
-	  if (user && !user.active ) {return cb(null, false, new Error("User account disabled!"))};
-	  // Check user is active and verified, if not send customised error depending on scenario
-	  /*	if (user && (!user.active || !user.isVerifed)) {
-		  if (!user.active) return cb(null, false, new Error("User account disabled!"))
-		  if (!user.isVerified) return cb(null, false, new Error("User account not verified!"))
-	  }; */
-	  cb(null, user, error);
+		logger.log('debug',"[Auth] Passport Basic Strategy, authentication called for user: " + username);
+		// An error ocurred, do not authenticate
+		if (err) { return cb(err); }
+		// Check user is active, if not send customised error
+		if (user && user.active == false ) {return cb(null, false, new Error("User account disabled!"))};
+		// Check user is active and verified, if not send customised error depending on scenario
+		/*	if (user && (!user.active || !user.isVerifed)) {
+			if (!user.active) return cb(null, false, new Error("User account disabled!"))
+			if (!user.isVerified) return cb(null, false, new Error("User account not verified!"))
+		}; */
+		cb(null, user, error);
 	});
   }));
 

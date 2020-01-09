@@ -1,3 +1,4 @@
+.. _rst_index:
 **********
 Introduction
 **********

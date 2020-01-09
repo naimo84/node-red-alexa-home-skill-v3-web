@@ -1,3 +1,4 @@
+.. _rst_getting-started:
 **********
 Getting Started
 **********

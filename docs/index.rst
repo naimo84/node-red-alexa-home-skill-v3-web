@@ -10,19 +10,3 @@ Key Features
 * Amazon Alexa and Google Assistant support, either enabled individually or in parallel.
 * Support for a large array of device types including blinds, smart plugs, lights, thermostats (see more here).
 * Supports "out of band" state updates (from physical or other automated device interactions) whilst providing real-time visibility of device state across Smart Assistant applications.
-
-Getting Started
-########
-Before you can use this service with Alexa or Google Home you need to:
-
-* Create and verify an `account. <https://red.cb-net.co.uk/new-user>`_
-* Define one or more `devices. <https://red.cb-net.co.uk/devices>`_
-* Install the associated Node-RED nodes. `Install Node-RED Nodes`_
-* Setup Node-RED flows using your devices.
-
-Install Node-RED Nodes
-***********
-Install the Node-RED Nodes by either:
-
-* Using the palette look for "node-red-contrib-alexa-smart-home"
-* Using the command:: npm i node-red-contrib-alexa-smart-home

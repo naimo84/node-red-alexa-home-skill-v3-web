@@ -238,15 +238,24 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 			if (account) logger.log('debug', "[Verify] account hash: " + account.hash + ", account salt: " + account.salt);
 			// Find pattern-based ACL
 			// var aclPattern = await Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
-			// Create user-specific ACL
-			var aclUser = new Topics({topics: [
+			// Check for existing ACL
+			var aclUser = await Topics.findOne({topics: [
 				'command/' + req.params.username +'/#',
 				'state/'+ req.params.username + '/#',
 				'response/' + req.params.username + '/#',
 				'message/' + req.params.username + '/#'
 			]});
-			// Save new user-specific MQTT topics
-			await aclUser.save();
+			// If does not exist, create user-specific ACL
+			if (!aclUser) {
+				var aclUser = new Topics({topics: [
+					'command/' + req.params.username +'/#',
+					'state/'+ req.params.username + '/#',
+					'response/' + req.params.username + '/#',
+					'message/' + req.params.username + '/#'
+				]});
+				// Save new user-specific MQTT topics
+				await aclUser.save();
+			}
 			// Create MQTT password based upon returned salt and hash
 			var mqttPass = "PBKDF2$sha256$901$" + account.salt + "$" + account.hash;
 			// Update the user account with MQTT password and MQTT topics, set isVerified to true

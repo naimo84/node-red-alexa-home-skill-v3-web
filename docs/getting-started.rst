@@ -69,7 +69,7 @@ If you only plan on interacting with the device using the Alexa/ Google app, or 
 
 If, however, you will physically interact with the device, or it has a timer function or there are any other means for you to change its state, you will need to ensure you are sending "out of band" state updates (where the changes in state have not come from activity within the service itself) to the Node-RED Smart Home Control service.
 
-.. image:: concept-oob-state.png
+.. image:: concept-oob-state.PNG
     :width: 606px
     :align: left
     :height: 105px

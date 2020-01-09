@@ -1,6 +1,6 @@
-*****
+**********
 Getting Started
-*****
+**********
 Before you can use this service with Alexa or Google Home you need to:
 
 * Create and verify an `account. <https://red.cb-net.co.uk/new-user>`_
@@ -9,14 +9,14 @@ Before you can use this service with Alexa or Google Home you need to:
 * Setup Node-RED flows using your devices.
 
 Install Node-RED Nodes
-########
+################
 Install the Node-RED Nodes by either:
 
 * Using the palette look for "node-red-contrib-alexa-smart-home"
 * Using the command: `npm i node-red-contrib-alexa-smart-home`
 
 Concept Flows
-########
+################
 Refer to this table for capabilities that support state.
 
 Essentially, to use this service your Node-RED flows will require:

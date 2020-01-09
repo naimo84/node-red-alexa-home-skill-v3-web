@@ -334,7 +334,7 @@ router.post('/verify-resend', defaultLimiter,  async (req, res) => {
 router.get(['/change-password', '/change-password/:token'], restrictiveLimiter, async (req, res) => {
 	sendPageView(req.path, 'Change Password with Token', req.ip, req.headers['user-agent']);
 	let message = undefined;
-	if (!req.params.token) {
+	if (!req.params.token && !req.user) {
 		message = 'No token value supplied in URL, please ensure you manually enter token value below!';
 		res.render('pages/change-password',{token: undefined, user: req.user, brand: process.env.BRAND, title: "Change Password | " + process.env.BRAND, message: message})
 	}

@@ -50,6 +50,39 @@ var cookieSecret = (process.env.COOKIE_SECRET || 'ihytsrf334');
 if (cookieSecret == 'ihytsrf334') {logger.log("warn", "[App] Using default Cookie Secret, please supply new secret using COOKIE_SECRET environment variable")}
 else {logger.log("info", "[App] Using user-defined cookie secret")}
 ///////////////////////////////////////////////////////////////////////////
+// Main
+///////////////////////////////////////////////////////////////////////////
+// *****
+// Pre-flight checks
+// *****
+// Validate dotenv was successful
+if (dotenv.error) {
+	logger.log('error',"[Core] dotenv parsing failed, please ensure you have mapped .env file to /usr/src/app/.env, an example file is provided, see .env.template for more information");
+	throw dotenv.error;
+}
+// Validate CRITICAL environment variables passed to container
+if (!(process.env.MONGO_USER && process.env.MONGO_PASSWORD && process.env.MQTT_USER && process.env.MQTT_PASSWORD && process.env.MQTT_PORT)) {
+	logger.log('error',"[Core] You MUST supply MONGO_USER, MONGO_PASSWORD, MQTT_USER, MQTT_PASSWORD and MQTT_PORT environment variables");
+	process.exit(1);
+}
+// Validate BRAND environment variables passed to container
+if (!(process.env.BRAND)) {
+	logger.log('error',"[Core] You MUST supply BRAND environment variable");
+	process.exit(1);
+}
+// Warn on not supply of MONGO/ MQTT host names
+if (!(process.env.MONGO_HOST && process.env.MQTT_URL)) {
+	logger.log('warn',"[Core] Using 'mongodb' for Mongodb and 'mosquitto' for MQTT service endpoints, no MONGO_HOST/ MQTT_URL environment variable supplied");
+}
+// Warn on not supply of MAIL username/ password/ server
+if (!(process.env.MAIL_SERVER && process.env.MAIL_USER && process.env.MAIL_PASSWORD)) {
+	logger.log('warn',"[Core] No MAIL_SERVER/ MAIL_USER/ MAIL_PASSWORD environment variable supplied. System generated emails will generate errors");
+}
+// Warn on SYNC_API not being specified/ request SYNC will be disabled
+if (!(process.env.HOMEGRAPH_APIKEY)){
+	logger.log('warn',"[Core] No HOMEGRAPH_APIKEY environment variable supplied. New devices, removal or device changes will not show in users Google Home App without this");
+}
+///////////////////////////////////////////////////////////////////////////
 // Passport Configuration
 ///////////////////////////////////////////////////////////////////////////
 // Configure Passport Local Strategy, checking that account is enabled, with user feedback on account disabled
@@ -70,7 +103,7 @@ passport.use(new LocalStrategy((username, password, cb) => {
   });
 }));
 
-// Create Passport Basic Strategy
+// Create Passport Basic Strategy, checking that account is enabled, with user feedback on account disabled
 passport.use(new BasicStrategy((username, password, cb) => {
 	authenticate(username, password, (err, user, error) => {
 		logger.log('debug',"[Auth] Passport Basic Strategy, authentication called for user: " + username);
@@ -87,7 +120,7 @@ passport.use(new BasicStrategy((username, password, cb) => {
 	});
   }));
 
-// Create OAuth Bearer Strategy
+// Create OAuth Bearer Strategy, checking that account is enabled
   passport.use(new PassportOAuthBearer(function(token, done) {
 	oauthModels.AccessToken.findOne({ token: token }).populate('user').populate('grant').exec(function(error, token) {
 		if (!error && token) {
@@ -135,46 +168,11 @@ passport.use(new BasicStrategy((username, password, cb) => {
 		}
 	});
 }));
-//passport.use(accessTokenStrategy);
-
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
 ///////////////////////////////////////////////////////////////////////////
-// Main
+// Create Server
 ///////////////////////////////////////////////////////////////////////////
-// *****
-// Pre-flight checks
-// *****
-// Validate dotenv was successful
-if (dotenv.error) {
-	logger.log('error',"[Core] dotenv parsing failed, please ensure you have mapped .env file to /usr/src/app/.env, an example file is provided, see .env.template for more information");
-	throw dotenv.error;
-}
-// Validate CRITICAL environment variables passed to container
-if (!(process.env.MONGO_USER && process.env.MONGO_PASSWORD && process.env.MQTT_USER && process.env.MQTT_PASSWORD && process.env.MQTT_PORT)) {
-	logger.log('error',"[Core] You MUST supply MONGO_USER, MONGO_PASSWORD, MQTT_USER, MQTT_PASSWORD and MQTT_PORT environment variables");
-	process.exit(1);
-}
-// Validate BRAND environment variables passed to container
-if (!(process.env.BRAND)) {
-	logger.log('error',"[Core] You MUST supply BRAND environment variable");
-	process.exit(1);
-}
-// Warn on not supply of MONGO/ MQTT host names
-if (!(process.env.MONGO_HOST && process.env.MQTT_URL)) {
-	logger.log('warn',"[Core] Using 'mongodb' for Mongodb and 'mosquitto' for MQTT service endpoints, no MONGO_HOST/ MQTT_URL environment variable supplied");
-}
-// Warn on not supply of MAIL username/ password/ server
-if (!(process.env.MAIL_SERVER && process.env.MAIL_USER && process.env.MAIL_PASSWORD)) {
-	logger.log('warn',"[Core] No MAIL_SERVER/ MAIL_USER/ MAIL_PASSWORD environment variable supplied. System generated emails will generate errors");
-}
-// Warn on SYNC_API not being specified/ request SYNC will be disabled
-if (!(process.env.HOMEGRAPH_APIKEY)){
-	logger.log('warn',"[Core] No HOMEGRAPH_APIKEY environment variable supplied. New devices, removal or device changes will not show in users Google Home App without this");
-}
-// *****
-// Create server itself
-// *****
 const createServer = async() => {
 	try {
 		// Connect to MongoDB
@@ -204,9 +202,10 @@ const createServer = async() => {
 		// Setup session handler
 		app.use(session({
 			store: new mongoStore({
-				url: "mongodb://" + mongo_user +":" + mongo_password + "@" + mongo_host + ":" + mongo_port + "/sessions"
+				url: "mongodb://" + mongo_user +":" + mongo_password + "@" + mongo_host + ":" + mongo_port + "/sessions",
+				touchAfter: 24 * 3600
 			}),
-			resave: true,
+			resave: false,
 			saveUninitialized: false,
 			secret: cookieSecret,
 			cookie: {

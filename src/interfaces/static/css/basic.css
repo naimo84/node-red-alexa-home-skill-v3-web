@@ -140,7 +140,7 @@
 }
 
 .darkmode--activated .octicon {
-	color: #aeaba8;
+	filter: invert(100%);
   }
 
 .darkmode--activated .action {

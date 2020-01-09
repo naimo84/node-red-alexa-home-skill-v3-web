@@ -126,7 +126,7 @@ router.post('/user/:id/:state', defaultLimiter,
 	ensureAuthenticated,
 	async (req, res) => {
 		try{
-			if (req.user.username === mqtt_user && req.params.id && req.params.state) {
+			if (req.user.superuser === true && req.params.id && req.params.state) {
 				// Convert string input to boolean
 				let state = (req.params.state === "true");
 				let result = await toggleUser(req.params.id, state);
@@ -137,7 +137,7 @@ router.post('/user/:id/:state', defaultLimiter,
 					return res.status(400).send("Error updating account state!");
 				}
 			}
-			else if (req.user.username !== mqtt_user) {
+			else if (req.user.superuser !== true) {
 				return res.redirect(303, '/');
 			}
 			else if (!req.params.id && !req.params.state) {
@@ -179,7 +179,7 @@ router.put('/services', defaultLimiter,
 ensureAuthenticated,
 async (req, res) => {
 	try{
-		if (req.user.username == mqtt_user) {
+		if (req.user.superuser == true) {
 			let application = oauthModels.Application(req.body);
 			await application.save();
 			res.status(201).send(application);
@@ -202,7 +202,7 @@ ensureAuthenticated,
 async (req, res) => {
 	try{
 		let service = req.body;
-		if (req.user.username == mqtt_user) {
+		if (req.user.superuser === true) {
 			await oauthModels.Application.findOne({_id: req.params.id});
 			data.title = service.title;
 			data.oauth_secret = service.oauth_secret;
@@ -226,7 +226,7 @@ router.delete('/service/:id', defaultLimiter,
 ensureAuthenticated,
 async (req, res) => {
 	try{
-		if (req.user.username == mqtt_user) {
+		if (req.user.superuser == true) {
 			await oauthModels.Application.remove({_id:req.params.id});
 			res.status(200).send();
 		} else {

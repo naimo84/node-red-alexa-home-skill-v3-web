@@ -553,7 +553,7 @@ router.post('/account/:user_id', defaultLimiter,
 			// Get POST data
 			var user = req.body;
 			// Check requesting user matches req.params.user_id, or that user is SU
-			if (req.user.username === mqtt_user || req.user.username == user.username) {
+			if (req.user.superuser === true || req.user.username == user.username) {
 				const userCountry = await countries.findByCountryCode(user.country.toUpperCase());
 				var region = userCountry.data[0].region;
 				var account = await Account.findOne({_id: req.params.user_id});
@@ -590,7 +590,7 @@ router.delete('/account/:user_id', defaultLimiter,
 			// Find user based on req.params.user_id
 			var userAccount = await Account.findOne({_id: userId});
 			// Check requesting user matches req.params.user_id, or that user is SU
-			if (userAccount.username == req.user.username || req.user.username === mqtt_user) {
+			if (userAccount.username == req.user.username || req.user.superuser === true) {
 				var username = userAccount.username;
 				// Delete all account data
 				await Account.deleteOne({_id: userId});
@@ -630,7 +630,7 @@ async (req, res) => {
 		// Find user based on req.params.user_id
 		var userAccount = await Account.findOne({_id: userId});
 		// Check requesting user matches req.params.user_id, or that user is SU
-		if (userAccount.username == req.user.username || req.user.username === mqtt_user) {
+		if (userAccount.username == req.user.username || req.user.superuser === true) {
 			var username = userAccount.username;
 			// Delete Token data
 			await oauthModels.GrantCode.deleteMany({user: userId});
@@ -704,7 +704,7 @@ router.delete('/device/:dev_id', defaultLimiter,
 			var user = req.user.username;
 			var id = req.params.dev_id;
 			// Route for non-SU user, allow user to delete their own devices
-			if (req.user.username != mqtt_user) {
+			if (req.user.superuser !== true) {
 				// Delete device, using req.user.username and _id
 				await Devices.deleteOne({_id: id, username: user});
 				res.status(202).send();
@@ -712,7 +712,7 @@ router.delete('/device/:dev_id', defaultLimiter,
 				if (enableGoogleHomeSync == true){gHomeSync(req.user._id)};
 			}
 			// User is SU, can delete any device
-			else if  (req.user.username === mqtt_user) {
+			else if  (req.user.superuser === true) {
 				// Delete device, using _id only, SU limited
 				await Devices.deleteOne({_id: id});
 				res.status(202).send();

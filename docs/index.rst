@@ -1,4 +1,14 @@
 .. _rst_index:
+
+.. toctree::
+    :maxdepth: 2
+    :numbered:
+    :titlesonly:
+    :glob:
+    :hidden:
+
+    getting-started.rst
+
 **********
 Introduction
 **********

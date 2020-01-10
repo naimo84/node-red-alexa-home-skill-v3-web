@@ -98,7 +98,7 @@ If you only plan on interacting with the device using the Alexa/ Google app, or 
 If, however, you will physically interact with the device, or it has a timer function or there are any other means for you to change its state, you will need to ensure you are sending "out of band" state updates (where the changes in state have not come from activity within the service itself) to the Node-RED Smart Home Control service.
 
 .. image:: concept-oob-state.PNG
-    :alt: Screenshot of basic concept flow example
+    :alt: Screenshot of concept flow with out-of-band state updates
 
 In the example above you can see a function node that has been created to intercept MQTT messages for the device and "translate" them to the required format to send back to Node-RED Smart Home Control.
 
@@ -111,6 +111,6 @@ By default, when you add an "alexa-smart-home-v3" node to a flow it is configure
 It is possible to disable "Auto Acknowledge" and use your own logic to establish whether the command was successful, before setting `msg.acknowledge` to `true` or `false` and sending the message to a `alexa-smart-home-v3-resp` node. Note that you must send the **original** message, as output from the "alexa-smart-home-v3" node, modified to include msg.acknowledge.
 
 .. image:: concept-response.png
-    :alt: Screenshot of basic concept flow example
+    :alt: Screenshot of concept flow with response node
 
 .. warning:: This is the most advanced flow type, the majority of scenarios do not warrant/ require this level of complexity - it's just available should you want it!

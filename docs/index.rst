@@ -7,6 +7,7 @@
     :glob:
     :hidden:
 
+    index.rst
     getting-started.rst
 
 **********

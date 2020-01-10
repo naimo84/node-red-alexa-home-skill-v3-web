@@ -54,6 +54,7 @@ This is a good starting point for any flow, or first-time users. You can then ex
     :height: 105px
     :alt: Screenshot of basic concept flow example
 
+
 .. warning:: You should only include a single 'default' and single 'state' node per device.
 
 Add State
@@ -89,5 +90,6 @@ It is possible to disable Auto Acknowledge and use your own logic to establish w
     :align: left
     :height: 105px
     :alt: Screenshot of basic concept flow example
+
 
 .. note:: This is the most advanced flow type, the gross majority of scenarios do not warrant/ require this level of complexity - it's just available should you want it!

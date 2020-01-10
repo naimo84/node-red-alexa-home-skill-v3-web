@@ -4,13 +4,14 @@
 
     self
     getting-started.rst
+    troubleshooting.rst
 
 **********
 Introduction
 **********
 With 1200+ users, and 3500+ defined devices, available in 12 Amazon Alexa markets and due for launch (shortly!) in 11 Google Assistant markets, Node-RED Smart Home Control enables you to quickly bring voice-control to your Node-RED flows, using Amazon Alexa and/ or Google Assistant.
 
-.. warning:: Node-RED Smart Home Control is an Open Source, free to use service. There is no warranty or support, implied or otherwise and the creators and contributors of this service and/ or related website are not responsible for any issues arising from it's use, including loss or damage relating to equipment, property, injury or life. You consume this service at your own risk.
+.. warning:: Node-RED Smart Home Control is an open source, free to use service. There is no warranty or support, implied or otherwise and the creators and contributors of this service and/ or related website are not responsible for any issues arising from it's use, including loss or damage relating to equipment, property, injury or life. You consume this service at your own risk.
 
 Key Features
 ################
@@ -25,8 +26,8 @@ Supported Capabilities
    | Alexa       | Google        | Supported   | Example     | Example     |
    | Interface   | Trait         | Controls    | Usage       | Commands    |
    +=============+===============+=============+=============+=============+
-   | Brightness  | Brightness    | 0-100%,     | M           | "Alexa, set |
-   | Control     |               | increase,   | QTT-enabled | Lounge      |
+   | Brightness  | Brightness    | 0-100%,     | MQTT        | "Alexa, set |
+   | Control     |               | increase,   | -enabled    | Lounge      |
    |             |               | decrease    | smart bulb/ | Light to    |
    |             |               |             | light       | 50%",       |
    |             |               |             |             | "Alexa,     |
@@ -52,8 +53,8 @@ Supported Capabilities
    |             |               |             |             | to channel  |
    |             |               |             |             | 101"        |
    +-------------+---------------+-------------+-------------+-------------+
-   | Color       | C             | Red, Green, | M           | "Alexa, set |
-   | Control     | olorSetting   | Blue etc.   | QTT-enabled | Lounge      |
+   | Color       | C             | Red, Green, | MQTT        | "Alexa, set |
+   | Control     | olorSetting   | Blue etc.   | -enabled    | Lounge      |
    |             |               |             | smart bulb/ | Light to    |
    |             |               |             | light       | (Green \|   |
    |             |               |             |             | Red \|      |
@@ -67,8 +68,8 @@ Supported Capabilities
    |             |               |             |             | Yellow \|   |
    |             |               |             |             | etc)"       |
    +-------------+---------------+-------------+-------------+-------------+
-   | Color       | ColorSetting  | Warm, Warm  | M           | "Alexa, set |
-   | Temperature |               | White,      | QTT-enabled | Lounge      |
+   | Color       | ColorSetting  | Warm, Warm  | MQTT        | "Alexa, set |
+   | Temperature |               | White,      | -enabled    | Lounge      |
    | Control     |               | In          | smart bulb/ | Light to    |
    |             |               | candescent, | light       | Warm        |
    |             |               | Soft White, |             | White",     |

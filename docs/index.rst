@@ -1,10 +1,7 @@
 .. toctree::
-    :maxdepth: 2
     :titlesonly:
     :glob:
-    :hidden:
 
-    index.rst
     getting-started.rst
 
 **********

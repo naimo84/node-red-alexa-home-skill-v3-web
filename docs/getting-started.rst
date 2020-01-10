@@ -6,7 +6,7 @@ Before you can use this service with Alexa or Google Home you need to:
 
 * Create and verify an `account. <https://red.cb-net.co.uk/new-user>`_
 * Define one or more `devices. <https://red.cb-net.co.uk/devices>`_
-* Install the associated Node-RED nodes. `Install Node-RED Nodes`_
+* `Install Node-RED Nodes`_
 * Setup Node-RED flows using your devices.
 
 Install Node-RED Nodes

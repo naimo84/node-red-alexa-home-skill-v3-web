@@ -5,9 +5,37 @@ Getting Started
 Before you can use this service with Alexa or Google Home you need to:
 
 * Create and verify an `account. <https://red.cb-net.co.uk/new-user>`_
+* Link your Amazon and/ or Google account with the Node-RED Smart Home Control skill
 * Define one or more `devices. <https://red.cb-net.co.uk/devices>`_
 * `Install Node-RED Nodes`_
 * Setup Node-RED flows using your devices.
+
+Account Linking
+################
+
+Link your Amazon Account
+***************
+.. tip:: There are Alexa restrictions based on region/ locale, Amazon publish and update their region-specific restrictions `here. <https://developer.amazon.com/it/docs/device-apis/list-of-interfaces.html>`_
+
+To link your Amazon account:
+1. Open Alexa App on your mobile device
+2. Browse to "Skills and Games"
+3. Search for "Node-RED Smart Home Control"
+4. Link your account!
+
+Link your Google Account
+***************
+.. warning:: You currently have to request extension of the skill to your Google account. Please contact `node-red@cb-net.co.uk <mailto:node-red@cb-net.co.uk>` for access.
+
+To link your Google account:
+1. Open the Google Home App
+2. Hit Account icon (bottom right)
+3. Under Account go to Settings
+4. Under Settings go to Assistant
+5. Under Assistant go to Home Control
+6. Under Home Control open top-left menu and select "Manage account"
+
+.. note:: Not all capabilities are supported by Google Home, the device creation wizard highlights which capabilities/ traits are supported. To remove the need to define Google or Alexa-specific devices the API itself will automatically only expose a devices' supported capabilities/ actions to Google Home. You can see a comparison between the two services here.
 
 Install Node-RED Nodes
 ################
@@ -25,7 +53,9 @@ Click the edit button to define a new account:
 .. image:: account-config-initial.png
     :alt: Screenshot of initial account configuration.
 
-Enter your Node-RED Smart Home Control username and password and click 'Add' to save the account details. Unless you are hosting your own instance of the skill you can leave the default MQTT and Web API server names as-is.
+Enter your Node-RED Smart Home Control username and password and click 'Add' to save the account details.
+
+.. tip:: Unless you are hosting your own instance of the skill, you can leave the default "MQTT Hostname" and "Web API Hostname" fields as-is.
 
 .. image:: account-config-details.png
     :alt: Screenshot of username/ password configuration.
@@ -43,16 +73,16 @@ If you are only planning to use voice control only, and you are not concerned ab
 * An "alexa-smart-home-v3" node (set to `Auto Acknowledge`_)
 * A receiving node for commands, such as MQTT out/ publishing that enables you to interact with the device itself
 
-.. note:: Any device you chose to use this simple flow with must be configured with "Report State" **disabled**. See `Add State`_ if you want to benefit from state information in your Smart Assistant application(s).
-
 .. image:: basic-flow.png
     :alt: Screenshot of basic concept flow example
 
-You may also require a standard Node-RED function node (with your own code) to format command output appropriately for your chosen endpoint.
+.. note:: Any device you chose to use this simple flow with must be configured with "Report State" **disabled**. See `Add State`_ if you want to benefit from state information in your Smart Assistant application(s).
 
-This is a good starting point for any flow, or first-time users. You can then extend the flow to enable state updates, out-of-band state updates or to perform other functions as outlined below.
+You may also require a standard Node-RED function node (with your own code) to "format" command output appropriately for your chosen endpoint - examples include HTTP request, MQTT out, Yamaha AVR nodes that will likely require a specific msg format.
 
-.. warning:: You should only include a single 'default' and single 'state' node per device.
+This basic flow is a great starting point for first-time users. You can then progress to extend the flow to enable state updates, out-of-band state updates or to perform other functions as outlined in later examples.
+
+.. warning:: You should only include a single "alexa-smart-home-v3" and single "alexa-smart-home-v3-state" node per device.
 
 Add State
 ***************
@@ -74,11 +104,11 @@ In the example above you can see a function node that has been created to interc
 
 Auto Acknowledge
 ***************
-So, you're feeling brave? By default, when you add an "alexa-smart-home-v3" node to a flow it is configured for Auto Acknowledge, this means that a response is sent back to the web API confirming that the command has been received, and it is **assumed** that the command was successful. This may not be desirable, depending upon the criticality of the command you have issued.
+By default, when you add an "alexa-smart-home-v3" node to a flow it is configured for "Auto Acknowledge," this means that a response is sent back to Node-RED Smart Home Control confirming that the command has been received, and it is **assumed** that the command was successful. This may not be desirable, depending upon the criticality of the command you have issued.
 
-It is possible to disable Auto Acknowledge and use your own logic to establish whether the command was successful, before setting `msg.acknowledge` to `true` or `false` and sending the message to a `alexa-smart-home-v3-resp` node. Note that you must send the **original** message, as output from the "alexa-smart-home-v3" node, modified to include msg.acknowledge.
+It is possible to disable "Auto Acknowledge" and use your own logic to establish whether the command was successful, before setting `msg.acknowledge` to `true` or `false` and sending the message to a `alexa-smart-home-v3-resp` node. Note that you must send the **original** message, as output from the "alexa-smart-home-v3" node, modified to include msg.acknowledge.
 
 .. image:: concept-response.png
     :alt: Screenshot of basic concept flow example
 
-This is the most advanced flow type, the gross majority of scenarios do not warrant/ require this level of complexity - it's just available should you want it!
+.. warning:: This is the most advanced flow type, the gross majority of scenarios do not warrant/ require this level of complexity - it's just available should you want it!

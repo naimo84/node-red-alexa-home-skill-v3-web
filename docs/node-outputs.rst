@@ -121,7 +121,7 @@ Set brightness command output, used when specifying a percentage, such as 80%::
 
 Color Control
 ***************
-Set colour command output, used when specifying a colour, such as green:
+Set colour command output, used when specifying a colour, such as green::
 
     msg : {
                 topic: ""
@@ -248,7 +248,7 @@ Select input command output, used when specifying an input such as "HDMI 2"::
 
 .. tip:: msg.payload will be a string, representing the requested input
 
-.. note:: supported input names: HDMI1, HDMI2, HDMI3, HDMI4, phono, audio1, audio2 and "chromecast"
+.. note:: Supported input names: HDMI1, HDMI2, HDMI3, HDMI4, phono, audio1, audio2 and "chromecast"
 
 Playback Control
 ***************
@@ -327,7 +327,7 @@ Mute command::
                 _msgid: "8fcd1348.907e1"
             }
 
-msg.payload will always be either +/- 1, the number to adjust the thermostat set point by
+.. tip:: msg.payload will always be either +/- 1, the number to adjust the thermostat set point by
 
 Thermostat-Specific Capabilities/ Traits
 ################

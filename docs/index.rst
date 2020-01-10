@@ -5,6 +5,7 @@
     self
     getting-started.rst
     node-outputs.rst
+    state-reporting.rst
     troubleshooting.rst
 
 **********

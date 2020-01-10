@@ -57,12 +57,12 @@ Click the edit button to define a new account:
 
 Enter your Node-RED Smart Home Control username and password and click 'Add' to save the account details.
 
-.. tip:: Unless you are hosting your own instance of the skill, you can leave the default "MQTT Hostname" and "Web API Hostname" fields as-is.
-
 .. image:: account-config-details.png
     :alt: Screenshot of username/ password configuration.
 
 You can now start to build flows using the concept and example flows in this documentation for inspiration.
+
+.. tip:: Unless you are hosting your own instance of the skill, you can leave the default "MQTT Hostname" and "Web API Hostname" fields as-is.
 
 Concept Flows
 ################
@@ -92,7 +92,7 @@ Now you have basic voice commands working, let's add state updates to your flow.
 
 If you only plan on interacting with the device using the Alexa/ Google app, or voice assistants you can simply take state from the "alexa-smart-home-v3" node and feed it straight into the "alexa-smart-home-v3-state" node.
 
-.. image:: basic-flow.png
+.. image:: basic-flow-state.png
     :alt: Screenshot of concept flow with basic state updates
 
 If, however, you will physically interact with the device, or it has a timer function or there are any other means for you to change its state, you will need to ensure you are sending "out of band" state updates (where the changes in state have not come from activity within the service itself) to the Node-RED Smart Home Control service.

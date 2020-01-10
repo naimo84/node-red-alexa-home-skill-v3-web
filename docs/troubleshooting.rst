@@ -23,7 +23,11 @@ If you're not seeing any errors in the Node-RED debug console you can use "mosqu
 
     mosquitto_sub -h mq-red.cb-net.co.uk -t '#' -v -u <bridge_username> -P '<bridge password>' --capath /etc/ssl/certs --id test-<bridge_username> -p 8883
 
-.. note:: You'll only see messages for your account, the service uses access control to filter MQTT messages.
+If, after issuing voice or Alexa/ Google Home application based commands, you see no output you should:
+
+* Reset your password via the `My Account <https://red.cb-net.co.uk/my-account>`_ page - it may be your Web API and MQTT account passwords have become unsynchronised.
+
+.. note:: You'll only see messages for your account, the service uses Access Control Lists (ACLs) to filter MQTT messages.
 
 Review Node-RED Console Log
 ################
@@ -35,13 +39,13 @@ For Docker-deployed instances, this is as simple as executing the command (conta
 
 Throttling?
 ################
-Yes. Due to the architecture of Alexa skills, there is an AWS Lambda function that supports this service/ any Amazon interactions. In order to limit potential costs and ensure a good service experience for users across Node-RED Smart Home Control, a rate limiter is in-place for:
+Yes, throttling. Due to the architecture of Alexa skills, there is an AWS Lambda function that supports this service/ any Amazon interactions. In order to limit potential costs and ensure a good service experience for users across Node-RED Smart Home Control, a rate limiter is in-place for:
 
 * Viewing state in the Alexa Application
 
 In day-to-day usage you are extremely unlikely to be throttled, however during testing you may trigger the rate limit against your account/ a specific device.
 
-.. note:: The current rate limit is 100 requests, per device, per hour. If you exceed the defined limit you will be unable to request state data on the specific device for one hour. This is subject to change at any time, without warning.
+.. note:: The current rate limit is 100 requests, per device, per hour. If you exceed the defined limit you will be unable to request state data on the specific device for one hour. Commands are currently unaffected by this limit. This is subject to change at any time, without warning.
 
 
 Still Stuck?

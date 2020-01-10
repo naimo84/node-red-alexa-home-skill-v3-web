@@ -4,6 +4,7 @@
 
     self
     getting-started.rst
+    node-outputs.rst
     troubleshooting.rst
 
 **********
@@ -27,7 +28,7 @@ Supported Capabilities
    | Interface   | Trait         | Controls    | Usage       | Commands    |
    +=============+===============+=============+=============+=============+
    | Brightness  | Brightness    | 0-100%,     | MQTT        | "Alexa, set |
-   | Control     |               | increase,   | -enabled    | Lounge      |
+   | Controller  |               | increase,   | -enabled    | Lounge      |
    |             |               | decrease    | smart bulb/ | Light to    |
    |             |               |             | light       | 50%",       |
    |             |               |             |             | "Alexa,     |
@@ -43,7 +44,7 @@ Supported Capabilities
    |             |               |             |             | 50%"        |
    +-------------+---------------+-------------+-------------+-------------+
    | Channel     | Experimental  | Channel     | HTTP Out    | "Alexa, set |
-   | Control     | (number only) | number or   | node        | Lounge TV   |
+   | Controller  | (number only) | number or   | node        | Lounge TV   |
    |             |               | name etc.   |             | channel to  |
    |             |               |             |             | (101 \|     |
    |             |               |             |             | BBC1)",     |
@@ -54,7 +55,7 @@ Supported Capabilities
    |             |               |             |             | 101"        |
    +-------------+---------------+-------------+-------------+-------------+
    | Color       | C             | Red, Green, | MQTT        | "Alexa, set |
-   | Control     | olorSetting   | Blue etc.   | -enabled    | Lounge      |
+   | Controller  | olorSetting   | Blue etc.   | -enabled    | Lounge      |
    |             |               |             | smart bulb/ | Light to    |
    |             |               |             | light       | (Green \|   |
    |             |               |             |             | Red \|      |
@@ -70,7 +71,7 @@ Supported Capabilities
    +-------------+---------------+-------------+-------------+-------------+
    | Color       | ColorSetting  | Warm, Warm  | MQTT        | "Alexa, set |
    | Temperature |               | White,      | -enabled    | Lounge      |
-   | Control     |               | In          | smart bulb/ | Light to    |
+   | Controller  |               | In          | smart bulb/ | Light to    |
    |             |               | candescent, | light       | Warm        |
    |             |               | Soft White, |             | White",     |
    |             |               | White,      |             | "Hey        |
@@ -92,7 +93,7 @@ Supported Capabilities
    |             |               |             |             | trigger.    |
    +-------------+---------------+-------------+-------------+-------------+
    | Input       | None          | HDMI1,      | Yamaha      | "Alexa, on  |
-   | Control     |               | HDMI2,      | Music Cast  | AV Receiver |
+   | Controller  |               | HDMI2,      | Music Cast  | AV Receiver |
    |             |               | HDMI3,      | Amplifier   | change      |
    |             |               | HDMI4,      |             | input to    |
    |             |               | phono,      |             | HDMI1"      |
@@ -102,7 +103,7 @@ Supported Capabilities
    |             |               | chromecast" |             |             |
    +-------------+---------------+-------------+-------------+-------------+
    | Lock        | Experimental\*| Lock/       | MQTT        | "Alexa,     |
-   | Control     |               | Unlock      | connected   | Lock Front  |
+   | Controller  |               | Unlock      | connected   | Lock Front  |
    |             |               |             | Lock        | Door", "OK  |
    |             |               |             |             | Google,     |
    |             |               |             |             | unlock      |
@@ -116,7 +117,7 @@ Supported Capabilities
    |             |               |             |             | with Alexa  |
    +-------------+---------------+-------------+-------------+-------------+
    | Playback    | Experimental  | Play,       | Kodi RPC    | "Alexa,     |
-   | Control     |               | Pause,      | (including  | (pause \|   |
+   | Controller  |               | Pause,      | (including  | (pause \|   |
    |             |               | Stop, Fast  | Plex Addon  | play \|     |
    |             |               | Forward,    | control)    | stop)       |
    |             |               | Rewind,     |             | Kitchen     |
@@ -126,13 +127,13 @@ Supported Capabilities
    |             |               |             |             | Kitchen TV  |
    +-------------+---------------+-------------+-------------+-------------+
    | Percentage  | None          | Increase    | Any MQTT    | "Alexa, set |
-   | Control     |               | by%,        | enabled Fan | Bedroom Fan |
+   | Controller  |               | by%,        | enabled Fan | Bedroom Fan |
    |             |               | decrease by |             | to 50%"     |
    |             |               | %, set to   |             |             |
    |             |               | specific %  |             |             |
    +-------------+---------------+-------------+-------------+-------------+
    | Power       | OnOff         | On/ Off     | Any MQTT    | "Alexa,     |
-   | Control     |               |             | enabled     | turn (on \| |
+   | Controller  |               |             | enabled     | turn (on \| |
    |             |               |             | sm          | off)        |
    |             |               |             | art-switch/ | Kitchen     |
    |             |               |             | plug, KODI  | Light",     |
@@ -148,7 +149,7 @@ Supported Capabilities
    |             |               |             |             | Light"      |
    +-------------+---------------+-------------+-------------+-------------+
    | Range       | OpenClose     | 0-100       | Any MQTT    | "Alexa,     |
-   | Control     | (Support      | (Blinds),   | enabled     | (raise \|   |
+   | Controller  | (Support      | (Blinds),   | enabled     | (raise \|   |
    |             | for Blinds/   | 0-10        | smart       | lower)      |
    |             | Awning        | (Anything   | blinds.     | Kitchen     |
    |             | only)         | else)       |             | Blind",     |
@@ -163,7 +164,7 @@ Supported Capabilities
    |             |               |             |             | Blind"      |
    +-------------+---------------+-------------+-------------+-------------+
    | Scene       | Scene         | On/ Off     | Any MQTT    | "Alexa,     |
-   | Control     |               |             | enabled     | turn on     |
+   | Controller  |               |             | enabled     | turn on     |
    |             |               |             | s           | Movie       |
    |             |               |             | mart-switch | Night",     |
    |             |               |             |             | "Hey        |
@@ -172,7 +173,7 @@ Supported Capabilities
    |             |               |             |             | Night"      |
    +-------------+---------------+-------------+-------------+-------------+
    | Speaker     | Experimental  | Set volume  | Amplifier,  | "Alexa,     |
-   | Control     |               | to #,       | AVR, any    | (increase   |
+   | Controller  |               | to #,       | AVR, any    | (increase   |
    |             |               | increase/   | device that | \| decrease |
    |             |               | decrease    | can be set  | \| mute)    |
    |             |               | volume,     | to a        | volume on   |
@@ -190,7 +191,7 @@ Supported Capabilities
    +-------------+---------------+-------------+-------------+-------------+
    | Step        | None          | Increase/   | Device that | "Alexa,     |
    | Speaker     |               | decrease    | cannot be   | (increase   |
-   | Control     |               | volume,     | set to      | \| decrease |
+   | Controller  |               | volume,     | set to      | \| decrease |
    |             |               | mute,       | specific    | \| mute)    |
    |             |               | unmute      | volume,     | volume on   |
    |             |               |             | only        | AV          |

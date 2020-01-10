@@ -3,12 +3,47 @@ Node Outputs
 **********
 Note that outputs are consistent across Alexa and Google Home issued commands, this is intentional in order to eliminate the need to re-engineer flows/ create complex logic to manage the different command directives.
 
+General Capabilities/ Traits
+################
+
+Percentage Control
+***************
+Set percentage command output, used when specifying a specific percentage, such as 25%::
+
+    msg : {
+                topic: ""
+                name: "Test Fan"
+                _messageId: "6851dbbf-e826-41f9-89ee-7cd4c9699a17"
+                _endpointId: "104"
+                _confId: "bfd0fcf4.bc90e"
+                command: "SetPercentage"
+                extraInfo: object
+                payload: 25
+                acknowledge: true
+                _msgid: "a9433270.f9ea8"
+            }
+
+Adjust percentage command output, used when reducing/ increasing percentage (either by a specific amount or stating increase/ decrease)::
+
+    msg : {
+                topic: ""
+                name: "Test Fan"
+                _messageId: "ffa95808-dc09-4c50-a242-d166acb05d1b"
+                _endpointId: "104"
+                _confId: "bfd0fcf4.bc90e"
+                command: "AdjustPercentage"
+                extraInfo: object
+                payload: 25
+                acknowledge: true
+                _msgid: "68eadf30.4f1a4"
+            }
+
 Light-Specific Capabilities/ Traits
 ################
 
 Brightness Control
 ***************
-Set Brightness command output, used when specifying a specific percentage, such as 80%::
+Set brightness command output, used when specifying a specific percentage, such as 80%::
 
     msg : {
                 topic: ""
@@ -72,6 +107,7 @@ Set color temperature command output, used when specifying values either by name
     -  cool \|\| cool white: 7000
 
 ::
+
     msg : {
                 topic: ""
                 name: "Bedroom Light"

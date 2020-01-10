@@ -8,7 +8,7 @@ General Capabilities/ Traits
 
 Percentage Control
 ***************
-Set percentage command output, used when specifying a specific percentage, such as 25%::
+Set percentage command output, used when specifying a percentage, such as 25%::
 
     msg : {
                 topic: ""
@@ -38,12 +38,61 @@ Adjust percentage command output, used when reducing/ increasing percentage (eit
                 _msgid: "68eadf30.4f1a4"
             }
 
+Power Control
+***************
+Set percentage command output, for "turn on" commands::
+
+    msg : {
+                topic: ""
+                name: "Study Light"
+                _messageId: "0791c4b3-c874-4192-a5ac-4c4b643c36ab"
+                _endpointId: "17"
+                _confId: "bfd0fcf4.bc90e"
+                command: "TurnOn"
+                extraInfo: object
+                payload: "ON"
+                acknowledge: true
+                _msgid: "c94c43fa.41d31"
+            }
+
+And, for a "turn off" commands::
+
+    msg : {
+                topic: ""
+                name: "Study Light"
+                _messageId: "912cc5c0-4014-4fbf-9178-22bff9f55ef2"
+                _endpointId: "17"
+                _confId: "bfd0fcf4.bc90e"
+                command: "TurnOff"
+                extraInfo: object
+                payload: "OFF"
+                acknowledge: true
+                _msgid: "ca26cee2.12a86"
+            }
+
+Scene Control
+***************
+On scene activation::
+
+    msg : {
+                topic: ""
+                name: "Movie Night"
+                _messageId: "3b6f7aa1-38c3-45a4-a94d-96e488c6d5ad"
+                _endpointId: "7"
+                _confId: "bfd0fcf4.bc90e"
+                command: "Activate"
+                extraInfo: object
+                empty
+                acknowledge: true
+                _msgid: "c3f50a98.9e0b08"
+            }
+
 Light-Specific Capabilities/ Traits
 ################
 
 Brightness Control
 ***************
-Set brightness command output, used when specifying a specific percentage, such as 80%::
+Set brightness command output, used when specifying a percentage, such as 80%::
 
     msg : {
                 topic: ""
@@ -75,7 +124,7 @@ Adjust Brightness command output, used when reducing/ increasing brightness (eit
 
 Color Control
 ***************
-Set colour command output, used when specifying a specific colour, such as green::
+Set colour command output, used when specifying a colour, such as green::
 
     msg : {
                 topic: ""
@@ -144,7 +193,7 @@ Media-Specific Capabilities/ Traits
 
 Channel Control
 ***************
-Change channel command output, used when specifying a specific channel number, such as 101::
+Change channel command output, used when specifying a channel number, such as 101::
 
     msg : {
                 topic: ""
@@ -159,7 +208,7 @@ Change channel command output, used when specifying a specific channel number, s
                 _msgid: "bd3268f0.742d98"
             }
 
-Command output, used when specifying a specific channel number, such as BBC 1::
+Command output, used when specifying a channel number, such as "BBC 1"::
 
     msg : {
                 topic: ""
@@ -178,7 +227,7 @@ Command output, used when specifying a specific channel number, such as BBC 1::
 
 Input Control
 ***************
-Select input command output, used when specifying a specific input such as "HDMI 2"::
+Select input command output, used when specifying an input such as "HDMI 2"::
 
     msg : {
                 topic: ""
@@ -195,7 +244,7 @@ Select input command output, used when specifying a specific input such as "HDMI
 
 Playback Control
 ***************
-For playback control, msg.command changes, base dupon the requested action (i.e. Play, Pause etc)::
+For playback control, msg.command changes, based upon the requested action (i.e. Play, Pause etc)::
 
     msg : {
                 topic: ""
@@ -207,4 +256,58 @@ For playback control, msg.command changes, base dupon the requested action (i.e.
                 extraInfo: object
                 acknowledge: true
                 _msgid: "fda4a47c.e79c08"
+            }
+
+Volume Control
+***************
+
+.. tip:: There are two speaker device types, a "Step Speaker" which is a "dumb" speaker that has no state and a "Speaker" which can return state (in terms of volume level).
+
+Adjust volume command, if no value specified message msg.payload will be +/- 10::
+
+    msg : {
+                topic: ""
+                name: "Test Speaker"
+                _messageId: "77c8161c-8935-446a-9087-2ee0b9b90cdc"
+                _endpointId: "98"
+                _confId: "bfd0fcf4.bc90e"
+                command: "AdjustVolume"
+                extraInfo: object
+                payload: 10
+                acknowledge: true
+                _msgid: "9f95ad7e.c2574"
+            }
+
+.. info:: For "Step Speaker" devices, msg.payload will always be +/- 10.
+
+Set volume command, used to set to specific value/ percentage::
+
+    msg : {
+                topic: ""
+                name: "Lounge TV"
+                _messageId: "0bfd0aac-8dd1-4c8c-a341-9cfb14fa06d6"
+                _endpointId: "11"
+                _confId: "bfd0fcf4.bc90e"
+                command: "SetVolume"
+                extraInfo: object
+                payload: 50
+                acknowledge: true
+                _msgid: "aa31e847.2da6e8"
+            }
+
+.. warning:: "Step Speaker" volume cannot be set to a specific number.
+
+Mute command, will msg.payload will be either "ON" or "OFF"::
+
+    msg : {
+                topic: ""
+                name: "Lounge TV"
+                _messageId: "7fd278b4-1e9f-4195-9dc9-40e378a5f24b"
+                _endpointId: "11"
+                _confId: "bfd0fcf4.bc90e"
+                command: "SetMute"
+                extraInfo: object
+                payload: "ON"
+                acknowledge: true
+                _msgid: "8fcd1348.907e1"
             }

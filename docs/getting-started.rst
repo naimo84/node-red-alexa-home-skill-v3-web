@@ -23,12 +23,12 @@ Once Node-RED Nodes are installed you'll need to configure your account settings
 Click the edit button to define a new account:
 
 .. image:: account-config-initial.png
-    :alt: Screenshot of basic concept flow example
+    :alt: Screenshot of initial account configuration.
 
 Enter your Node-RED Smart Home Control username and password and click 'Add' to save the account details. Unless you are hosting your own instance of the skill you can leave the default MQTT and Web API server names as-is.
 
-.. image:: account-config-details
-    :alt: Screenshot of basic concept flow example
+.. image:: account-config-details.png
+    :alt: Screenshot of username/ password configuration.
 
 You can now start to build flows using the concept and example flows in this documentation for inspiration.
 

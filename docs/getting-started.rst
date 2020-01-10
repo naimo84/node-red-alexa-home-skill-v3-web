@@ -18,6 +18,7 @@ Link your Amazon Account
 .. tip:: There are Alexa restrictions based on region/ locale, Amazon publish and update their region-specific restrictions `here. <https://developer.amazon.com/it/docs/device-apis/list-of-interfaces.html>`_
 
 To link your Amazon account:
+
 1. Open Alexa App on your mobile device
 2. Browse to "Skills and Games"
 3. Search for "Node-RED Smart Home Control"
@@ -25,9 +26,10 @@ To link your Amazon account:
 
 Link your Google Account
 ***************
-.. warning:: You currently have to request extension of the skill to your Google account. Please contact `node-red@cb-net.co.uk <mailto:node-red@cb-net.co.uk>` for access.
+.. warning:: You currently have to request extension of the skill to your Google account. Please contact `node-red@cb-net.co.uk <mailto:node-red@cb-net.co.uk>`_ for access.
 
 To link your Google account:
+
 1. Open the Google Home App
 2. Hit Account icon (bottom right)
 3. Under Account go to Settings
@@ -44,7 +46,7 @@ Install the Node-RED Nodes by either:
 * Using the palette look for "node-red-contrib-alexa-smart-home"
 * Using the command: `npm i node-red-contrib-alexa-smart-home`
 
-Account Configuration
+Node-RED Configuration
 ################
 Once Node-RED Nodes are installed you'll need to configure your account settings, drag a new "alexa-smart-home-v3" node onto the canvas and double click it.
 
@@ -111,4 +113,4 @@ It is possible to disable "Auto Acknowledge" and use your own logic to establish
 .. image:: concept-response.png
     :alt: Screenshot of basic concept flow example
 
-.. warning:: This is the most advanced flow type, the gross majority of scenarios do not warrant/ require this level of complexity - it's just available should you want it!
+.. warning:: This is the most advanced flow type, the majority of scenarios do not warrant/ require this level of complexity - it's just available should you want it!

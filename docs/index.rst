@@ -1,7 +1,9 @@
 .. toctree::
     :titlesonly:
     :glob:
+    :hidden:
 
+    self
     getting-started.rst
 
 **********

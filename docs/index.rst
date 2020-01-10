@@ -113,7 +113,7 @@ Supported Capabilities
    |             |               |             |             | as a        |
    |             |               |             |             | trigger     |
    |             |               |             |             | with Alexa  |
-   +-------------+-------------+-------------+-------------+-------------+
+   +-------------+---------------+-------------+-------------+-------------+
    | Playback    | Experimental  | Play,       | Kodi RPC    | "Alexa,     |
    | Control     |               | Pause,      | (including  | (pause \|   |
    |             |               | Stop, Fast  | Plex Addon  | play \|     |

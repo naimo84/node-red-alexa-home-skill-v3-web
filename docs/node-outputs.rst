@@ -246,9 +246,7 @@ Select input command output, used when specifying an input such as "HDMI 2"::
                 _msgid: "74f61e13.34871"
             }
 
-.. tip:: msg.payload will be a string, representing the requested input
-
-.. note:: Supported input names: HDMI1, HDMI2, HDMI3, HDMI4, phono, audio1, audio2 and "chromecast"
+.. tip:: msg.payload will be a string, representing the requested input. Supported input names: HDMI1, HDMI2, HDMI3, HDMI4, phono, audio1, audio2 and "chromecast"
 
 Playback Control
 ***************
@@ -266,9 +264,7 @@ For playback control, msg.command changes, based upon the requested action (i.e.
                 _msgid: "fda4a47c.e79c08"
             }
 
-.. tip:: msg.payload will be a string, representing the command
-
-.. note:: Supported commands: Play, Pause, Stop, Fast Forward, Rewind, Next, Previous, Start Over
+.. tip:: msg.payload will be a string, supported commands: Play, Pause, Stop, Fast Forward, Rewind, Next, Previous, Start Over
 
 Volume Control
 ***************
@@ -327,7 +323,7 @@ Mute command::
                 _msgid: "8fcd1348.907e1"
             }
 
-.. tip:: msg.payload will always be either +/- 1, the number to adjust the thermostat set point by
+.. tip:: msg.payload will be a string, either "ON" or "OFF"
 
 Thermostat-Specific Capabilities/ Traits
 ################
@@ -389,4 +385,4 @@ Available modes will depend upon device configuration within the Node-RED Smart 
                 _msgid: "6a879991.5d6d38"
             }
 
-.. tip:: msg.payload will be a string, supported modes: Auto, Eco, Heat, Cool, On, Off (support varies by smart assistant platform)
+.. tip:: msg.payload will be a string, API supported modes: Auto, Eco, Heat, Cool, On, Off (support varies by smart assistant platform)

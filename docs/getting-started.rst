@@ -38,10 +38,12 @@ Refer to this table for capabilities that support state.
 
 Start Simple
 ***************
-If you are only planning to use voice control you only need:
+If you are only planning to use voice control only, and you are not concerned about state visibility in teh Alexa/ Google Home Apps, you only need:
 
 * An "alexa-smart-home-v3" node (set to `Auto Acknowledge`_)
 * A receiving node for commands, such as MQTT out/ publishing that enables you to interact with the device itself
+
+.. note:: Any device you chose to use this simple flow with must be configured with "Report State" **disabled**. See `Add State`_ if you want to benefit from state information in your Smart Assistant application(s).
 
 .. image:: basic-flow.png
     :alt: Screenshot of basic concept flow example

@@ -8,9 +8,6 @@
     state-reporting.rst
     troubleshooting.rst
 
-.. image:: logo-banner.png
-    :alt: Node-RED Smart Home Control logo
-
 **********
 Introduction
 **********

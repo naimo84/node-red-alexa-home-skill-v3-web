@@ -73,12 +73,12 @@ On scene activation::
         _confId: "bfd0fcf4.bc90e"
         command: "Activate"
         extraInfo: object
-        empty
+        payload: "ON"
         acknowledge: true
         _msgid: "c3f50a98.9e0b08"
     }
 
-.. tip:: msg.payload will be string, either "Activate" or "Deactivate"
+.. tip:: msg.payload will be string, and will always be "ON"
 
 Light-Specific Capabilities/ Traits
 ################

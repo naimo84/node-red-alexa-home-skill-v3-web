@@ -48,7 +48,7 @@ Install the Node-RED Nodes by either:
 
 Node-RED Configuration
 ################
-Once Node-RED Nodes are installed you'll need to configure your account settings, drag a new "alexa-smart-home-v3" node onto the canvas and double click it.
+Once Node-RED nodes are installed you'll need to configure your account settings, drag a new "alexa-smart-home-v3" node onto the canvas and double click it.
 
 Click the edit button to define a new account:
 
@@ -66,11 +66,10 @@ You can now start to build flows using the concept and example flows in this doc
 
 Concept Flows
 ################
-Refer to this table for capabilities that support state.
 
 Start Simple
 ***************
-If you are only planning to use voice control only, and you are not concerned about state visibility in teh Alexa/ Google Home Apps, you only need:
+If you are only planning to use voice control only, and you are not concerned about state visibility in the Alexa/ Google Home Apps, you only need:
 
 * An "alexa-smart-home-v3" node (set to `Auto Acknowledge`_)
 * A receiving node for commands, such as MQTT out/ publishing that enables you to interact with the device itself
@@ -88,6 +87,8 @@ This basic flow is a great starting point for first-time users. You can then pro
 
 Add State
 ***************
+.. tip:: Not all capabilities support state, see: `Capabilities that Support State`_
+
 Now you have basic voice commands working, let's add state updates to your flow.
 
 If you only plan on interacting with the device using the Alexa/ Google app, or voice assistants you can simply take state from the "alexa-smart-home-v3" node and feed it straight into the "alexa-smart-home-v3-state" node.
@@ -102,7 +103,7 @@ If, however, you will physically interact with the device, or it has a timer fun
 
 In the example above you can see a function node that has been created to intercept MQTT messages for the device and "translate" them to the required format to send back to Node-RED Smart Home Control.
 
-.. tip:: When both an "alexa-smart-home-v3" and "alexa-smart-home-v3-state" node are used in a flow you must ensure that these nodes are configured for the same device.
+.. warning:: When both an "alexa-smart-home-v3" and "alexa-smart-home-v3-state" node are used in a flow you must ensure that these nodes are configured for the same device.
 
 Auto Acknowledge
 ***************

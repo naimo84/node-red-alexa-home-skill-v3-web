@@ -50,6 +50,7 @@ Where "||" is listed this implies "OR" - do not include this in your state respo
     }
 
 .. _state-support:
+
 Capabilities that Support State
 ################
 

@@ -20,6 +20,7 @@ var countries = require('countries-api');
 var logger = require('../loaders/logger');
 const defaultLimiter = require('../loaders/limiter').defaultLimiter;
 const restrictiveLimiter = require('../loaders/limiter').restrictiveLimiter;
+const removeUserServices = require('../services/func-services').removeUserServices;
 ///////////////////////////////////////////////////////////////////////////
 // Functions
 ///////////////////////////////////////////////////////////////////////////
@@ -645,6 +646,9 @@ async (req, res) => {
 			await oauthModels.GrantCode.deleteMany({user: userId});
 			await oauthModels.AccessToken.deleteMany({user: userId});
 			await oauthModels.RefreshToken.deleteMany({user: userId});
+			// Remove active services
+			removeUserServices(userAccount.username, "Amazon");
+			removeUserServices(userAccount.username, "Google");
 			// Success send 200 status
 			res.status(202).json({message: 'deleted OAuth tokens'});
 			if (req.user.superuser === true) {

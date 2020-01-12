@@ -59,7 +59,7 @@ Re-link Your Account
 
 If you are still struggling to get the skill working it is definitely worth un-linking/ disabling the skill via your smart assistant application and re-linking/ enabling the skill.
 
-Some long-term users of the service have been linked with a ***development-only** edition of the skill which can expire after 90 days of development inactivity. Since the majority of development work occurs in the API/ back-end it is highly likely that this can be a re-occurring issue.
+Some long-term users of the service have been linked with a **development-only** edition of the skill which can expire after 90 days of development inactivity. Since the majority of development work occurs in the API/ back-end it is highly likely that this can be a re-occurring issue.
 
 The production version of the skill is a "permanent" fixture.
 

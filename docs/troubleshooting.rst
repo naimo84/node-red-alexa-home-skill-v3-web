@@ -49,7 +49,9 @@ In day-to-day usage you are extremely unlikely to be throttled, however during t
 
 Re-link Your Account
 ################
-The equivalent of turning it off an on again... I know! It is definitely worth un-linking/ disabling the skill via your smart assistant application and re-linking/ enabling the skill. Some users of the service have been linked with a ***development-only** edition of the skill which can expire after 90 days of development inactivity. Since the majority of development work occurs in the API/ back-end it is highly likely that this can be a re-occurring issue. The production version of the skill is a "permanent" fixture.
+The equivalent of turning it off an on again... I know! It is definitely worth un-linking/ disabling the skill via your smart assistant application and re-linking/ enabling the skill. Some users of the service have been linked with a ***development-only** edition of the skill which can expire after 90 days of development inactivity. Since the majority of development work occurs in the API/ back-end it is highly likely that this can be a re-occurring issue.
+
+The production version of the skill is a "permanent" fixture.
 
 
 Still Stuck?

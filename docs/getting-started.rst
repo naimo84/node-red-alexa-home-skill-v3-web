@@ -87,7 +87,7 @@ This basic flow is a great starting point for first-time users. You can then pro
 
 Add State
 ***************
-.. tip:: Not all capabilities support state, see :ref:`state-support`.
+.. tip:: Not all capabilities support state, see: `Capabilities that Support State <https://node-red-smart-home-control.readthedocs.io/en/development-cleanup/state-reporting.html#capabilities-that-support-state>`_
 
 Now you have basic voice commands working, let's add state updates to your flow.
 

@@ -57,8 +57,8 @@ Supported Capabilities
    |             |               |             |             | to channel  |
    |             |               |             |             | 101"        |
    +-------------+---------------+-------------+-------------+-------------+
-   | Color       | C             | Red, Green, | MQTT        | "Alexa, set |
-   | Controller  | olorSetting   | Blue etc.   | -enabled    | Lounge      |
+   | Color       | ColorSetting  | Red, Green, | MQTT        | "Alexa, set |
+   | Controller  |               | Blue etc.   | -enabled    | Lounge      |
    |             |               |             | smart bulb/ | Light to    |
    |             |               |             | light       | (Green \|   |
    |             |               |             |             | Red \|      |
@@ -84,7 +84,7 @@ Supported Capabilities
    |             |               | Cool, Cool  |             | Warm White" |
    |             |               | White       |             |             |
    +-------------+---------------+-------------+-------------+-------------+
-   | Contact     | ContactSensor | \*No        | N/A         | "Alexa, is  |
+   | Contact     | None          | \*No        | N/A         | "Alexa, is  |
    | Sensor      |               | commands\*  |             | the Kitchen |
    |             |               |             |             | window      |
    |             |               |             |             | open?" Note |
@@ -112,7 +112,7 @@ Supported Capabilities
    |             |               |             |             | unlock      |
    |             |               |             |             | Front Door" |
    +-------------+---------------+-------------+-------------+-------------+
-   | Motion      | MotionSensor  | \*No        | N/A         | You can use |
+   | Motion      | None          | \*No        | N/A         | You can use |
    | Sensor      |               | commands\*  |             | this        |
    |             |               |             |             | interface   |
    |             |               |             |             | as a        |

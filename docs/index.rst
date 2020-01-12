@@ -4,6 +4,7 @@
 
     self
     getting-started.rst
+    example-flows.rst
     node-outputs.rst
     state-reporting.rst
     troubleshooting.rst

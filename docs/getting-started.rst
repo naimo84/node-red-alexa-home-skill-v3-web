@@ -87,7 +87,7 @@ This basic flow is a great starting point for first-time users. You can then pro
 
 Add State
 ***************
-.. tip:: Not all capabilities support state, see: `Capabilities that Support State`_
+.. tip:: Not all capabilities support state, see :ref:`state-support`.
 
 Now you have basic voice commands working, let's add state updates to your flow.
 
@@ -101,7 +101,17 @@ If, however, you will physically interact with the device, or it has a timer fun
 .. image:: concept-oob-state.PNG
     :alt: Screenshot of concept flow with out-of-band state updates
 
-In the example above you can see a function node that has been created to intercept MQTT messages for the device and "translate" them to the required format to send back to Node-RED Smart Home Control.
+In the example above you can see a function node that has been created to intercept MQTT messages for the device and "translate" them to the required format to send back to Node-RED Smart Home Control. Example function code, for a wi-fi light switch running Tasmota firmware is shown below::
+
+    var tokens = msg.topic.split("/");
+    var device = tokens[1];
+    var element = tokens[2]
+    var state = msg.payload;
+
+    // MQTT POWER State
+    if (element == 'POWER') {
+        return { "payload" : { "state" : { "power" : state } }, "acknowledge" : true };
+    }
 
 .. warning:: When both an "alexa-smart-home-v3" and "alexa-smart-home-v3-state" node are used in a flow you must ensure that these nodes are configured for the same device.
 

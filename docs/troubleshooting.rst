@@ -25,7 +25,7 @@ If you're not seeing any errors in the Node-RED debug console you can use "mosqu
 
 If, after issuing voice or Alexa/ Google Home application based commands, you see no output you should:
 
-* Reset your password via the `My Account <https://red.cb-net.co.uk/my-account>`_ page - it may be your Web API and MQTT account passwords have become unsynchronised.
+* Reset your password via the `My Account <https://red.cb-net.co.uk/my-account>`_ page - it may be your Web API and MQTT account passwords are no longer synchronised.
 
 .. note:: You'll only see messages for your account, the service uses Access Control Lists (ACLs) to filter MQTT messages.
 
@@ -46,6 +46,10 @@ Yes, throttling. Due to the architecture of Alexa skills, there is an AWS Lambda
 In day-to-day usage you are extremely unlikely to be throttled, however during testing you may trigger the rate limit against your account/ a specific device.
 
 .. note:: The current rate limit is 100 requests, per device, per hour. If you exceed the defined limit you will be unable to request state data on the specific device for one hour. Commands are currently unaffected by this limit. This is subject to change at any time, without warning.
+
+Re-link Your Account
+################
+The equivalent of turning it off an on again... I know! It is definitely worth un-linking/ disabling the skill via your smart assistant application and re-linking/ enabling the skill. Some users of the service have been linked with a ***development-only** edition of the skill which can expire after 90 days of development inactivity. Since the majority of development work occurs in the API/ back-end it is highly likely that this can be a re-occurring issue. The production version of the skill is a "permanent" fixture.
 
 
 Still Stuck?

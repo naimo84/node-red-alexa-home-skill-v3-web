@@ -55,16 +55,11 @@ In day-to-day usage you are extremely unlikely to be throttled, however during t
 
 Re-link Your Account
 ################
-The equivalent of turning it off an on again... I know! It is definitely worth un-linking/ disabling the skill via your smart assistant application and re-linking/ enabling the skill.
+.. tip:: Before re-linking your account it is worth clearing your account "tokens" - use the "Delete Token" button found on the "My Account" page.
 
-Before doing this it is worth clearing your account "tokens", the "Delete Token" button found on the "My Account" page:
+If you are still struggling to get the skill working it is definitely worth un-linking/ disabling the skill via your smart assistant application and re-linking/ enabling the skill.
 
-.. image:: my-account.png
-    :alt: Screenshot of My Account page available via https://red.cb-net.co.uk/my-account
-
-Then use your smart assistant/ smart home app to disable the skill and re-enable it (which should trigger the account linking workflow).
-
-Some users of the service have been linked with a ***development-only** edition of the skill which can expire after 90 days of development inactivity. Since the majority of development work occurs in the API/ back-end it is highly likely that this can be a re-occurring issue.
+Some long-term users of the service have been linked with a ***development-only** edition of the skill which can expire after 90 days of development inactivity. Since the majority of development work occurs in the API/ back-end it is highly likely that this can be a re-occurring issue.
 
 The production version of the skill is a "permanent" fixture.
 

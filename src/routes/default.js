@@ -240,18 +240,18 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 			// var aclPattern = await Topics.findOne({topics:	['command/%u/#','state/%u/#','response/%u/#','message/%u/#']});
 			// Check for existing ACL
 			var aclUser = await Topics.findOne({topics: [
-				'command/' + req.params.username +'/#',
-				'state/'+ req.params.username + '/#',
-				'response/' + req.params.username + '/#',
-				'message/' + req.params.username + '/#'
+				'command/' + account.username +'/#',
+				'state/'+ account.username + '/#',
+				'response/' + account.username + '/#',
+				'message/' + account.username + '/#'
 			]});
 			// If does not exist, create user-specific ACL
 			if (!aclUser) {
 				var aclUser = new Topics({topics: [
-					'command/' + req.params.username +'/#',
-					'state/'+ req.params.username + '/#',
-					'response/' + req.params.username + '/#',
-					'message/' + req.params.username + '/#'
+					'command/' + account.username +'/#',
+					'state/'+ account.username + '/#',
+					'response/' + account.username + '/#',
+					'message/' + account.username + '/#'
 				]});
 				// Save new user-specific MQTT topics
 				await aclUser.save();

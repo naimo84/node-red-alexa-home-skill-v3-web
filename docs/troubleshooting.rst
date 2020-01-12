@@ -3,6 +3,7 @@ Troubleshooting
 **********
 When something isn't working as expected you have a few things you can check.
 
+
 Add a Node-RED Debug Node
 ################
 Add a debug node after any "alexa-smart-home-v3" node, you can then verify that the command output is being received when you issue a voice command, or interact with a device using the Alexa/ Google Home applications. Ensure you configure the debug node to "output complete msg object."
@@ -10,12 +11,14 @@ Add a debug node after any "alexa-smart-home-v3" node, you can then verify that 
 .. image:: debug.png
     :alt: Screenshot of debug node, linked to Node-RED Smart Home Control flow
 
+
 Review the Node-RED Debug Console
 ################
 You should keep an eye on the built-in debug console, available in the Node-RED web-interface. The skill will send messages to your individual Node-RED instance if you send an incorrect state update/ an update that is in the wrong format. You will also be warned if your account is subject to `Throttling?`_
 
 .. image:: warning.png
     :alt: Screenshot of warning message in Node-RED debug console
+
 
 Check MQTT Messages
 ################
@@ -29,6 +32,7 @@ If, after issuing voice or Alexa/ Google Home application based commands, you se
 
 .. note:: You'll only see messages for your account, the service uses Access Control Lists (ACLs) to filter MQTT messages.
 
+
 Review Node-RED Console Log
 ################
 A final, and more "involved" approach, is to look at the Node-RED console logs. The skill related Nodes/ contrib output significant information to the console log. Include any output here, and from the commands/ views above if you end up raising an issue on GuitHub.
@@ -36,6 +40,7 @@ A final, and more "involved" approach, is to look at the Node-RED console logs. 
 For Docker-deployed instances, this is as simple as executing the command (container name dependant)::
 
     sudo docker logs -f nodered
+
 
 Throttling?
 ################
@@ -47,9 +52,19 @@ In day-to-day usage you are extremely unlikely to be throttled, however during t
 
 .. note:: The current rate limit is 100 requests, per device, per hour. If you exceed the defined limit you will be unable to request state data on the specific device for one hour. Commands are currently unaffected by this limit. This is subject to change at any time, without warning.
 
+
 Re-link Your Account
 ################
-The equivalent of turning it off an on again... I know! It is definitely worth un-linking/ disabling the skill via your smart assistant application and re-linking/ enabling the skill. Some users of the service have been linked with a ***development-only** edition of the skill which can expire after 90 days of development inactivity. Since the majority of development work occurs in the API/ back-end it is highly likely that this can be a re-occurring issue.
+The equivalent of turning it off an on again... I know! It is definitely worth un-linking/ disabling the skill via your smart assistant application and re-linking/ enabling the skill.
+
+Before doing this it is worth clearing your account "tokens", the "Delete Token" button found on the "My Account" page:
+
+.. image:: my-account.png
+    :alt: Screenshot of My Account page available via https://red.cb-net.co.uk/my-account
+
+Then use your smart assistant/ smart home app to disable the skill and re-enable it (which should trigger the account linking workflow).
+
+Some users of the service have been linked with a ***development-only** edition of the skill which can expire after 90 days of development inactivity. Since the majority of development work occurs in the API/ back-end it is highly likely that this can be a re-occurring issue.
 
 The production version of the skill is a "permanent" fixture.
 

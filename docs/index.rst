@@ -1,7 +1,6 @@
 .. toctree::
     :glob:
     :hidden:
-    :collapse: false
 
     self
     getting-started.rst

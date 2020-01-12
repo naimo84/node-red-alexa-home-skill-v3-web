@@ -39,7 +39,7 @@ A final, and more "involved" approach, is to look at the Node-RED console logs. 
 
 For Docker-deployed instances, this is as simple as executing the command (container name dependant)::
 
-    sudo docker logs -f nodered
+    sudo docker logs -f <container_name>
 
 
 Throttling?
@@ -62,6 +62,7 @@ Some long-term users of the service have been linked with a **development-only**
 The production version of the skill is a "permanent" fixture.
 
 .. tip:: Before re-linking your account it is worth clearing your account "tokens" - use the "Delete Tokens" button found on the "My Account" page.
+
 
 Still Stuck?
 ################

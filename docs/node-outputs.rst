@@ -1,5 +1,5 @@
 **********
-Node Outputs
+Default Node Outputs
 **********
 Note that outputs are consistent across Alexa and Google Home issued commands, this is intentional in order to eliminate the need to re-engineer flows/ create complex logic to manage the different command directives.
 

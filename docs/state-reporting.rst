@@ -2,6 +2,34 @@
 State Reporting
 **********
 
+Capabilities that Support State
+################
+Not all capabilities/ traits support state updates, the table below illustrates those that do:
+
+    ========================== ========= ===========
+    Capability                 Alexa App Google Home
+    ========================== ========= ===========
+    BrightnessController       YES       YES
+    ChannelController          NO        N/A
+    ColorController            YES       YES\*
+    ColorTemperatureController YES       YES\*
+    ContactSensor              YES       N/A
+    InputController            NO        N/A
+    LockController             YES       N/A
+    MotionSensor               YES       N/A
+    PercentageController       YES       N/A
+    PlaybackController         NO        N/A
+    PowerController            YES       YES
+    RangeController            YES       YES
+    SceneController            NO        NO
+    Speaker                    YES       N/A
+    StepSpeaker                NO        N/A
+    TemperatureSensor          YES       N/A
+    ThermostatController       YES       YES
+    ========================== ========= ===========
+
+.. note:: Google Home support for capabilities varies by mobile platform (i.e. iOS vs Android).
+
 Expected State Payload
 ################
 State payload format is *very specific* - as a minimum you must include msg.acknowledge set to ``true`` and a state element update that is relevant for the device. For example, a device that has a PowerController capability can have it's state set if the following is passed to the "alexa-smart-home-v3-state" node::
@@ -48,30 +76,3 @@ Where "||" is listed this implies "OR" - do not include this in your state respo
             }
         }
     }
-
-Capabilities that Support State
-################
-
-    ========================== ========= ===========
-    Capability                 Alexa App Google Home
-    ========================== ========= ===========
-    BrightnessController       YES       YES
-    ChannelController          NO        N/A
-    ColorController            YES       YES\*
-    ColorTemperatureController YES       YES\*
-    ContactSensor              YES       N/A
-    InputController            NO        N/A
-    LockController             YES       N/A
-    MotionSensor               YES       N/A
-    PercentageController       YES       N/A
-    PlaybackController         NO        N/A
-    PowerController            YES       YES
-    RangeController            YES       YES
-    SceneController            NO        NO
-    Speaker                    YES       N/A
-    StepSpeaker                NO        N/A
-    TemperatureSensor          YES       N/A
-    ThermostatController       YES       YES
-    ========================== ========= ===========
-
-.. note:: Google Home support for these states is platform specific (namely, and ironically, iOS support these states).

@@ -55,19 +55,18 @@ In day-to-day usage you are extremely unlikely to be throttled, however during t
 
 Re-link Your Account
 ################
-.. tip:: Before re-linking your account it is worth clearing your account "tokens" - use the "Delete Token" button found on the "My Account" page.
-
 If you are still struggling to get the skill working it is definitely worth un-linking/ disabling the skill via your smart assistant application and re-linking/ enabling the skill.
 
 Some long-term users of the service have been linked with a **development-only** edition of the skill which can expire after 90 days of development inactivity. Since the majority of development work occurs in the API/ back-end it is highly likely that this can be a re-occurring issue.
 
 The production version of the skill is a "permanent" fixture.
 
+.. tip:: Before re-linking your account it is worth clearing your account "tokens" - use the "Delete Tokens" button found on the "My Account" page.
 
 Still Stuck?
 ################
 Check out the `GitHub repository <https://github.com/coldfire84/node-red-alexa-home-skill-v3-web>`_ for this project where you can raise questions, bugs and feature requests.
 
-There is also a new `Slack channel <https://join.slack.com/t/cb-net/shared_invite/enQtODc1ODgzNzkxNTM3LTYwZGZmNjAxZWZmYTU4ZDllOGM3OTMxMzI4NzRlZmUzZmQ4NDljZWZiOTIwNTYzYjJmZjVlYzhhYWFiNThlMDA>`_  where you can engage in the discussion.
+There is also a new `Slack Workspace <https://join.slack.com/t/cb-net/shared_invite/enQtODc1ODgzNzkxNTM3LTYwZGZmNjAxZWZmYTU4ZDllOGM3OTMxMzI4NzRlZmUzZmQ4NDljZWZiOTIwNTYzYjJmZjVlYzhhYWFiNThlMDA>`_  where you discuss issues with other users.
 
 .. warning:: Node-RED Smart Home Control is an open source, free to use service. There is no warranty or support, implied or otherwise and the creators and contributors of this service and/ or related website are not responsible for any issues arising from it's use, including loss or damage relating to equipment, property, injury or life. You consume this service at your own risk.

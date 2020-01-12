@@ -24,7 +24,9 @@ Key Features
 
 Supported Capabilities
 ################
+
 .. tip:: There are Alexa restrictions based on region/ locale, Amazon publish and update their region-specific restrictions `here. <https://developer.amazon.com/it/docs/device-apis/list-of-interfaces.html>`_
+
 
    +-------------+---------------+-------------+-------------+-------------+
    | Alexa       | Google        | Supported   | Example     | Example     |

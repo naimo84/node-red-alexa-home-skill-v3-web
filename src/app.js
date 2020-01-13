@@ -203,7 +203,8 @@ const createServer = async() => {
 		var sessionOptions = {
 			resave: false,
 			saveUninitialized: false,
-			secret: cookieSecret
+			secret: cookieSecret,
+			cookie: {}
 		}
 		// Handle prod/ non-prod
 		if (app.get('env') === 'production') {

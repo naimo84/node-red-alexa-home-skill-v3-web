@@ -22,7 +22,8 @@ var Account = new Schema({
 var options = {
     usernameUnique: true,
     saltlen: 32,
-	keylen: 512,
+    keylen: 512,
+    digestAlgorithm: 'sha512',
 	iterations: 25000,
     limitAttempts: true,
     usernameQueryFields: ["email"]

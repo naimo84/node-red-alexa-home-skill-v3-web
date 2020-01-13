@@ -199,28 +199,35 @@ const createServer = async() => {
 		app.use(morgan("combined", {stream: logger.stream})); // change to use Winston
 		// Enable req.flash support
 		app.use(flash());
-		// Configure session handler options
-		var sessionOptions = {
-			resave: false,
-			saveUninitialized: false,
-			secret: cookieSecret,
-			cookie: {}
-		}
-		// Handle prod/ non-prod
+		// Handle production environment session handler options
 		if (app.get('env') === 'production') {
 			logger.log('info', "[App] Production environment detected enabling trust proxy/ secure cookies");
 			app.enable('trust proxy');
-			//app.set('trust proxy', 1) // trust first proxy
-			sessionOptions.cookie.secure = true // serve secure cookies
+			app.use(session({
+				store: new mongoStore({
+					url: "mongodb://" + mongo_user +":" + mongo_password + "@" + mongo_host + ":" + mongo_port + "/sessions",
+					touchAfter: 24 * 3600
+				}),
+				resave: false,
+				saveUninitialized: false,
+				secret: cookieSecret,
+				cookie: {
+					secure: true
+				}
+			}));
 		}
-		// Setup session handler
-		app.use(session({
-			store: new mongoStore({
-				url: "mongodb://" + mongo_user +":" + mongo_password + "@" + mongo_host + ":" + mongo_port + "/sessions",
-				touchAfter: 24 * 3600
-			}),
-			sessionOptions
-		}));
+		// Handle non production environment session handler options
+		else {
+			app.use(session({
+				store: new mongoStore({
+					url: "mongodb://" + mongo_user +":" + mongo_password + "@" + mongo_host + ":" + mongo_port + "/sessions",
+					touchAfter: 24 * 3600
+				}),
+				resave: false,
+				saveUninitialized: false,
+				secret: cookieSecret
+			}));
+		}
 		app.use(bodyParser.json());
 		app.use(bodyParser.urlencoded({ extended: false }));
 		app.use(passport.initialize());

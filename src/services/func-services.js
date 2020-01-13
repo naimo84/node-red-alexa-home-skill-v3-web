@@ -48,6 +48,39 @@ const createACL = async(pattern) => {
         return undefined;
 	}
 }
+
+// Async function for password reset
+const resetPassword = async(username, password) => {
+	try {
+		// Find related user
+		var account = await Account.findOne({username: username});
+		// Set password
+		await account.setPassword(password);
+		// Save Account
+		await account.save();
+		// Get updated user object, returning hash/ salt for use in PBKDF2 MQTT password
+		var account = await Account.findByUsername(username, true);
+		logger.log('debug', "[Change Password] Account hash: " + account.hash + ", account salt: " + account.salt);
+		if (!account.salt || account.salt == undefined || !account.hash || account.hash == undefined){
+			logger.log('error', "[Change Password] Unable to set MQTT password, hash / salt unavailable!");
+			return false;
+		}
+		// Set MQTT Password
+		var mqttPass = "PBKDF2$sha512$25000$" + account.salt + "$" + account.hash;
+		account.mqttPass = mqttPass;
+		account.password = mqttPass;
+		// Save Account
+		await account.save();
+		// Return Success
+		logger.log('verbose', "[Change Password] Changed password for: " + account.username);
+		return true;
+	}
+	catch(e) {
+		logger.log('error', "[Change Password] Unable to change password for user, error: " + e);
+		return false;
+	}
+}
+
 // Create/ modify the MQTT superuser account
 const setupServiceAccount = async(username, password) => {
 	try{
@@ -69,7 +102,7 @@ const setupServiceAccount = async(username, password) => {
 			// Detect if account salt not returned by Account.register() helper function, if not use findByUsername to return/ this functionality is due to be removed form passport-local-mongoose
 			if (!account.hash || !account.salt || account.hash == undefined || account.salt == undefined) account = await Account.findByUsername(username, true);
 			// Generate Super User MQTT password PBKDF2 hash
-			var mqttPass = "PBKDF2$sha256$901$" + account.salt + "$" + account.hash;
+			var mqttPass = "PBKDF2$sha512$25000$" + account.salt + "$" + account.hash;
 			// Update Super User account
 			await Account.updateOne({username: account.username},{$set: {password: mqttPass, mqttPass: mqttPass, topics: topics._id}});
             logger.log('info' , "[App] Created MQTT superuser account!");
@@ -85,7 +118,9 @@ const setupServiceAccount = async(username, password) => {
 		}
 		// Super User account found and configured correctly
 		else {
-            logger.log('info', "[App] Superuser MQTT account, " + username + " already exists/ is configured correctly!");
+			var result = await resetPassword(username, password);
+			//logger.log('info', "[App] Superuser MQTT account, " + username + " already exists/ is configured correctly!");
+			logger.log('warning', "[App] Reset Password for superuser MQTT account, " + username);
             return true;
 		}
 	}
@@ -99,5 +134,6 @@ module.exports = {
     updateUserServices,
     removeUserServices,
     createACL,
-    setupServiceAccount
+	setupServiceAccount,
+	resetPassword
 }

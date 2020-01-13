@@ -21,6 +21,7 @@ var logger = require('../loaders/logger');
 const defaultLimiter = require('../loaders/limiter').defaultLimiter;
 const restrictiveLimiter = require('../loaders/limiter').restrictiveLimiter;
 const removeUserServices = require('../services/func-services').removeUserServices;
+const resetPassword = require('../services/func-services').resetPassword;
 ///////////////////////////////////////////////////////////////////////////
 // Functions
 ///////////////////////////////////////////////////////////////////////////
@@ -777,38 +778,6 @@ function ensureAuthenticated(req,res,next) {
         //console.log("failed auth?");
         res.redirect('/login');
     }
-}
-
-// Async function for password reset
-const resetPassword = async(username, password) => {
-	try {
-		// Find related user
-		var account = await Account.findOne({username: username});
-		// Set password
-		await account.setPassword(password);
-		// Save Account
-		await account.save();
-		// Get updated user object, returning hash/ salt for use in PBKDF2 MQTT password
-		var account = await Account.findByUsername(username, true);
-		logger.log('debug', "[Change Password] Account hash: " + account.hash + ", account salt: " + account.salt);
-		if (!account.salt || account.salt == undefined || !account.hash || account.hash == undefined){
-			logger.log('error', "[Change Password] Unable to set MQTT password, hash / salt unavailable!");
-			return false;
-		}
-		// Set MQTT Password
-		var mqttPass = "PBKDF2$sha256$901$" + account.salt + "$" + account.hash;
-		account.mqttPass = mqttPass;
-		account.password = mqttPass;
-		// Save Account
-		await account.save();
-		// Return Success
-		logger.log('verbose', "[Change Password] Changed password for: " + account.username);
-		return true;
-	}
-	catch(e) {
-		logger.log('error', "[Change Password] Unable to change password for user, error: " + e);
-		return false;
-	}
 }
 
 module.exports = router;

@@ -288,18 +288,22 @@ const createServer = async() => {
 		});
 
 		// NodeJS App Settings
-		var port = (process.env.VCAP_APP_PORT || 3000);
-		var host = (process.env.VCAP_APP_HOST || '0.0.0.0');
+		var port, host, app_uri, app_id;
+		// Set TCP port
+		if (process.env.VCAP_APP_PORT) port = process.env.VCAP_APP_PORT;
+		else port = (process.env.WEB_APP_PORT || 3000);
+		// Set IP/ host
+		if (process.env.VCAP_APP_HOST) port = process.env.VCAP_APP_HOST;
+		else host = (process.env.WEB_APP_HOST || '0.0.0.0');
 		// Express Settings
 		if (process.env.VCAP_APPLICATION) {
 			var application = JSON.parse(process.env.VCAP_APPLICATION);
-			var app_uri = application['application_uris'][0];
+			app_uri = application['application_uris'][0];
 			app_id = 'https://' + app_uri;
 		}
 		else {
-			//var app_id = 'http://localhost:' + port;
-			var app_uri = (process.env.WEB_HOSTNAME || 'localhost');
-			var app_id = 'https://' + app_uri;
+			app_uri = (process.env.WEB_HOSTNAME || 'localhost');
+			app_id = 'https://' + app_uri;
 		}
 		// Create HTTP Server, to be proxied
 		var server = app.listen(port, function(){

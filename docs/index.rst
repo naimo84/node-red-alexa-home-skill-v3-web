@@ -22,11 +22,13 @@ Key Features
 * Support for a large array of device types including blinds, smart plugs, lights, thermostats (see more here).
 * Supports "out of band" state updates (from physical or other automated device interactions) whilst providing real-time visibility of device state across Smart Assistant applications.
 
-Supported Capabilities
+Regional Restrictions
 ################
-
 .. tip:: There are Alexa restrictions based on region/ locale, Amazon publish and update their region-specific restrictions `here. <https://developer.amazon.com/it/docs/device-apis/list-of-interfaces.html>`_
 
+
+Supported Capabilities
+################
 
    +-------------+---------------+-------------+-------------+-------------+
    | Alexa       | Google        | Supported   | Example     | Example     |

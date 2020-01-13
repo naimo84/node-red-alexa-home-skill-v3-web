@@ -193,24 +193,32 @@ const createServer = async() => {
 		// Create Express instance
 		var app = express();
 		app.set('view engine', 'ejs');
-		app.enable('trust proxy');
+		// Configure favicon
 		app.use(favicon(path.join(__dirname, '/interfaces/static', 'favicon.ico')))
 		// Configure logging
 		app.use(morgan("combined", {stream: logger.stream})); // change to use Winston
 		// Enable req.flash support
 		app.use(flash());
+		// Configure session handler options
+		var sessionOptions = {
+			resave: false,
+			saveUninitialized: false,
+			secret: cookieSecret
+		}
+		// Handle prod/ non-prod
+		if (app.get('env') === 'production') {
+			logger.log('info', "[App] Production environment detected enabling trust proxy/ secure cookies");
+			app.enable('trust proxy');
+			//app.set('trust proxy', 1) // trust first proxy
+			sessionOptions.cookie.secure = true // serve secure cookies
+		}
 		// Setup session handler
 		app.use(session({
 			store: new mongoStore({
 				url: "mongodb://" + mongo_user +":" + mongo_password + "@" + mongo_host + ":" + mongo_port + "/sessions",
 				touchAfter: 24 * 3600
 			}),
-			resave: false,
-			saveUninitialized: false,
-			secret: cookieSecret,
-			cookie: {
-				secure: true
-			}
+			sessionOptions
 		}));
 		app.use(bodyParser.json());
 		app.use(bodyParser.urlencoded({ extended: false }));

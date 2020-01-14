@@ -23,6 +23,7 @@ var options = {
     usernameUnique: true,
     saltlen: 32,
     keylen: 64,
+    encoding: 'base64',
     digestAlgorithm: 'sha512',
 	iterations: 25000,
     limitAttempts: true,

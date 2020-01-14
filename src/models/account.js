@@ -22,7 +22,6 @@ var Account = new Schema({
 var options = {
     usernameUnique: true,
     saltlen: 32,
-    rawSalt: true,
     keylen: 64,
     encoding: 'base64',
     digestAlgorithm: 'sha512',

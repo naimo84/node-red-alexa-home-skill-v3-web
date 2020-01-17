@@ -13,13 +13,21 @@ a:visited {
 }
 
 pre {
-	background-color: #2d2d2d; !important;
+	background-color: #2d2d2d !important;
 }
 
-.wy-nav-content {
-	background: #3c3c3c;
-	color: aliceblue;
+@media screen and (min-width: 1100px) {
+    .wy-nav-content-wrap {
+        background:rgba(0,0,0,0.05)
+    }
+
+    .wy-nav-content {
+		background: #3c3c3c;
+		color: aliceblue;
+    }
 }
+
+
 
 .method dt, .class dt, .data dt, .attribute dt, .function dt,
 	.descclassname, .descname {

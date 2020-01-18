@@ -69,7 +69,7 @@ Concept Flows
 
 Start Simple
 ***************
-If you are only planning to use voice control only, and you are not concerned about state visibility in the Alexa/ Google Home Apps, you only need:
+If you are planning to use voice control **only**, and you are not concerned about state visibility in the Alexa/ Google Home Apps, you only need:
 
 * An "alexa-smart-home-v3" node (set to `Auto Acknowledge`_)
 * A receiving node for commands, such as MQTT out/ publishing that enables you to interact with the device itself

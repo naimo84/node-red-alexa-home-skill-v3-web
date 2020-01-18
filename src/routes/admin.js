@@ -253,22 +253,29 @@ const toggleUser = async(id, enabled) => {
 	try {
 		// Find User
 		let user = await Account.findOne({_id: id});
+		let  account = await Account.findByUsername(user.username, true);
 		// Set Account Status
-		if (enabled == true && user.username != mqtt_user) {
-			user.active = true
-			logger.log('verbose', "[Admin] Enabling User Account: " + user.username);
+		if (enabled == true && account.username != mqtt_user) {
+			// Enable account
+			account.active = true;
+			// Set MQTT password
+			account.mqttPass = "PBKDF2$sha256$901$" + account.salt + "$" + account.hash;
+			logger.log('verbose', "[Admin] Enabling User Account: " + account.username);
 		}
-		else if (enabled == false && user.username != mqtt_user) {
-			user.active = false
-			logger.log('verbose', "[Admin] Disabling User Account: " + user.username);
+		else if (enabled == false && account.username != mqtt_user) {
+			// Disable account
+			account.active = false;
+			// Randomise MQTT password
+			account.mqttPass = crypto.randomBytes(16).toString('hex');
+			logger.log('verbose', "[Admin] Disabling User Account: " + account.username);
 		}
 		else {
 			logger.log('error', "[Admin] toggleUser invalid state requested: " + enabled);
 			return false;
 		}
 		// Save Account
-		await user.save();
-		logger.log('verbose', "[Admin] Account saved following 'active' element change: " + user.username);
+		await account.save();
+		logger.log('verbose', "[Admin] Account saved following 'active' element change: " + account.username);
 		return true;
 	}
 	catch(e) {

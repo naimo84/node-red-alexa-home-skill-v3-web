@@ -6,10 +6,10 @@ Deploy Your Own
 
 Pre-Requisites
 ***************
-To deploy your own instance your going to need:
+To deploy your own instance you are going to need:
 
 1. A cloud-based Linux server (this guide assumes Ubuntu server)
-2. An AWS account where you can run a lambda instance
+2. An AWS account where you can run Lambda instances
 3. An email service that supports programmatic sending/ receiving of email
 4. A registered domain
 5. A CloudFlare account, configured to perform DNS for your registered domain

@@ -263,7 +263,7 @@ It is currently recommended to use source to build your container::
     sudo docker logs -f red
 
 Nginx
----------------
+***************
 Create the NGINX container using the following commands::
 
     sudo mkdir -p /var/docker/nginx/conf.d
@@ -309,7 +309,7 @@ Create the NGINX container using the following commands::
     nginx
 
 Dynamic DNS
----------------
+***************
 Depending on how/ where you deploy you may suffer from "ephemeral" IP addresses (i.e. on Google Cloud Platform).
 
 You can pay for a Static IP address, or use ddclient to update CloudFlare or similar services::
@@ -338,8 +338,8 @@ You can pay for a Static IP address, or use ddclient to update CloudFlare or sim
     <FQDN of web service>, <FQDN of MQTT service>
 
 Create AWS Lambda Function
----------------
-Create a new AWS Lambda function in both::
+***************
+Create a new AWS Lambda function in the following regions::
 
 * eu-west-1 (for European users)
 * us-east-1 (for US East-coast)
@@ -360,7 +360,7 @@ Finally, define an environment variable::
 * WEB_API_HOSTNAME : set this to your web API hostname as defined in your .env file, i.e. "red.cb-net.co.uk"
 
 Create Alexa Skill
----------------
+***************
 Under Build | Account Linking set:
 
 * Authorization URI: https://<hostname>/auth/start
@@ -386,7 +386,7 @@ Use the Client Id/ Client Secret in your .env file:
 .. note:: Send Alexa Events enable the skill to send "out of band" state updates that are then reflected in the Alea App/ through voice queries.
 
 Configure Web Service OAuth
----------------
+***************
 To configure OAuth / enable account linking between Amazon and the skill:
 
 1. Browse to https://<hostname>/login
@@ -397,7 +397,7 @@ To configure OAuth / enable account linking between Amazon and the skill:
 .. tip:: Ensure the domain list is comma separated with **no** spaces.
 
 Firewall Configuration
----------------
+***************
 External ports/ communication is all secured by either HTTPS or MQTT/TLS, as a result you will need to configure your external firewall as follows:
 
 * Internet > TCP port 443 : HTTPS
@@ -441,15 +441,15 @@ The following commands will configure UFW and Docker - **be sure to change '172.
 Additionally you can configure fail2ban to provide brute-force protection on your server following the instructions here.
 
 Configure AWS Cloudwatch Logging
----------------
-
+***************
 First, create the required Identity/ Group via the AWS IAM console::
 
 1. Add a user: node-red-logger
 2. Add a group: grp-node-red-log
 3. Assign 'AmazonAPIGatewayPushToCloudWatchLogs' managed policy to the group.
 4. Generate and Save API Key/ Secret
-5. Create a file that you can pass-through to docker container as /root/.aws/credentials - I use /var/docker/red/credentials in the command-line example for the container.
+
+Now create a file that you can pass-through to docker container as /root/.aws/credentials - I use /var/docker/red/credentials in the command-line example for the container.
 
 This file should contain::
 
@@ -458,7 +458,7 @@ This file should contain::
     aws_secret_access_key = <YOUR_SECRET_ACCESS_KEY>
 
 MongoDB Backups
----------------
+***************
 Everything else is immutable, so our only real concern here is Mongodb backups.
 
 1. Create a new S3 bucket, i.e: s3-node-red-alexa (capture access token and secret access token)

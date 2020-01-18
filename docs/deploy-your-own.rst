@@ -2,10 +2,10 @@
 Deploy Your Own
 **********
 
-.. warning:: This is for advanced users/ scenarios only
+.. warning:: This is for advanced users/ scenarios only, with the free to use `hosted instance <https://node-red-smart-home-control.readthedocs.io/en/development-cleanup/getting-started.html>`_ you can be up and running in just a few minutes.
 
 Pre-requisites
-################
+***************
 To deploy your own instance your going to need:
 
 1. A cloud-based Linux server (this guide assumes Ubuntu server)
@@ -20,7 +20,6 @@ You will require two DNS host names/ A records to be defined for the skill:
 
 These should be separate A records to enable caching/ security functionality via CloudFlare - you cannot route MQTT traffic through the CloudFlare security platform.
 
-Both of these
 .. tip:: You can of course choose to run your environment differently, if you will have to workout how to modify the setup instructions accordingly.
 
 Define Service Accounts
@@ -29,7 +28,7 @@ You need to define three user accounts/ passwords:
 
 1. MongoDB admin account
 2. MongoDB account for the skill to connect to the database
-3. MQTT account for the skill to connect with to the MQTT server
+3. Superuser account for the skill to connect with to the MQTT server/ your admin account for the Web API
 
 Define these as environment variables to make container setup easier::
 
@@ -45,6 +44,16 @@ Define these as environment variables to make container setup easier::
 Install Docker CE
 ***************
 For Ubuntu 18.04 follow `this Digital Ocean guide. <https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04>`_
+
+Summarised version::
+
+    sudo apt install apt-transport-https ca-certificates curl software-properties-common
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+    sudo apt update
+    sudo apt install docker-ce
+
+.. note:: These instructions are specifically designed for use on Ubuntu 18.04.
 
 Create Docker Network
 ***************
@@ -186,9 +195,11 @@ Then start the container::
     --log-opt max-file=5 \
     coldfire84/mosquitto-auth:development
 
+.. note:: A custom container is used as it includes the `mosquitto-auth-plug <https://github.com/jpmens/mosquitto-auth-plug>`_
+
 Redis Container
 ***************
-Redis server container is used by express-limiter::
+Create the required Redis server container::
 
     sudo mkdir -p /var/docker/redis/data
     sudo docker create --name redis \
@@ -199,8 +210,12 @@ Redis server container is used by express-limiter::
     --log-opt max-file=5 \
     redis
 
+.. note:: Redis is used by express-limiter
+
 NodeJS WebApp Container
 ***************
+Now it's time to build/ deploy the Web API itself.
+
 Create .env file
 ---------------
 Copy the supplied template .env.template to a secure folder on your Docker host, i.e::

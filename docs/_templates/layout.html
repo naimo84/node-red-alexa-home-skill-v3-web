@@ -1,6 +1,6 @@
 {% extends '!layout.html' %}
 
-{% block document %}
+{% block header %}
     <div id="google_translate_element" style="text-align: right;"></div>
 {% endblock %}
 
@@ -16,6 +16,8 @@
     <!-- End Google Translate -->
     <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.4/lib/darkmode-js.min.js"></script>
     <script>
-        new Darkmode({ label: '🌓' }).showWidget();
+        //new Darkmode({ label: '🌓' }).showWidget();
+        const darkmode =  new Darkmode();
+        darkmode.toggle();
     </script>
 {% endblock %}

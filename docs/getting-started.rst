@@ -64,6 +64,8 @@ You can now start to build flows using the concept and example flows in this doc
 
 .. tip:: Unless you are hosting your own instance of the skill, you can leave the default "MQTT Hostname" and "Web API Hostname" fields as-is.
 
+.. warning:: You only need to define your account configuration once, re-use this configuration across all of your flow.
+
 Concept Flows
 ################
 

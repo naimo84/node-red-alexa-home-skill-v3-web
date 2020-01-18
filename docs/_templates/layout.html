@@ -1,11 +1,8 @@
 {% extends '!layout.html' %}
 
-{% block header %}
-    <div id="google_translate_element" style="text-align: right;"></div>
-{% endblock %}
-
 {% block footer %}
     <!-- Start Google Translate -->
+    <div id="google_translate_element" style="text-align: right;"></div>
     <script type="text/javascript">
         function googleTranslateElementInit() {
         new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
@@ -16,8 +13,6 @@
     <!-- End Google Translate -->
     <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.4/lib/darkmode-js.min.js"></script>
     <script>
-        //new Darkmode({ label: '🌓' }).showWidget();
-        const darkmode =  new Darkmode();
-        darkmode.toggle();
+        new Darkmode({ label: '🌓' }).showWidget();
     </script>
 {% endblock %}

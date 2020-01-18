@@ -8,6 +8,7 @@
     node-outputs.rst
     state-reporting.rst
     troubleshooting.rst
+    deploy-your-own.rst
 
 **********
 Introduction

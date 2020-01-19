@@ -2,13 +2,6 @@
  * Generated with CSS Flag Sprite generator (https://www.flag-sprites.com/)
  */
 
-.flag {
-    display: inline-block;
-    width: 32px;
-    height: 32px;
-    background: url('../images/flags_oauth.png') no-repeat;
-}
-
 .flag.flag-au {
     background-position: -32px 0;
 }

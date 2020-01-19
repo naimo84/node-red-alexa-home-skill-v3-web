@@ -20,6 +20,7 @@ pre {
     .wy-nav-content {
 		background: #3c3c3c;
 		color: #e1e4e5;
+		max-width: 100%;
     }
 }
 

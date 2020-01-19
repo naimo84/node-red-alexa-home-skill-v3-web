@@ -1,8 +1,8 @@
 {%- extends '!breadcrumbs.html' %}
 
 {% block breadcrumbs_aside %}
-    <div>
-        <div>
+    <div style="display: flex;">
+        <div style="flex: 0 0 65%;">
             <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-fr" alt="France" role="button" onclick="gTranslate('fr')" />
             <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-de" alt="Germany" role="button" onclick="gTranslate('de')" />
             <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-jp" alt="Japan" role="button" onclick="gTranslate('ja')" />
@@ -11,6 +11,6 @@
             <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-es" alt="Spain" role="button" onclick="gTranslate('es')" />
             <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-us" alt="United States of America" role="button" onclick="gTranslate('en')" />
         </div>
-        <div id="google_translate_element" style="text-align: right;"></div>
+        <div id="google_translate_element" style="text-align: right;flex: 1"></div>
     </div>
 {% endblock %}

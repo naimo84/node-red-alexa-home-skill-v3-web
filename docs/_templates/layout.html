@@ -1,10 +1,19 @@
 {% extends '!layout.html' %}
 
 {% block extrahead %}
-    <!-- Start Google Translate -->
-    <div id="google_translate_element" style="text-align: right;"></div>
+    <link href="{{ pathto("_static/css/rtd_dark_centre.css", True) }}" rel="stylesheet" type="text/css">
+    <link href="{{ pathto("_static/css/flags.css", True) }}" rel="stylesheet" type="text/css">
 {% endblock %}
 
-{% block extrahead %}
-    <link href="{{ pathto("_static/css/rtd_dark_centre.css", True) }}" rel="stylesheet" type="text/css">
+{% block extrabody %}
+    <!-- Start Google Translate -->
+    <div id="google_translate_element" style="text-align: right;">
+        <img src="_static/images/blank.gif" class="flag flag-fr" alt="France" role="button" onclick="gTranslate('fr')" />
+        <img src="_static/images/blank.gif" class="flag flag-de" alt="Germany" role="button" onclick="gTranslate('de')" />
+        <img src="_static/images/blank.gif" class="flag flag-jp" alt="Japan" role="button" onclick="gTranslate('ja')" />
+        <img src="_static/images/blank.gif" class="flag flag-mx" alt="Mexico" role="button" onclick="gTranslate('es')" />
+        <img src="_static/images/blank.gif" class="flag flag-it" alt="Italy" role="button" onclick="gTranslate('it')" />
+        <img src="_static/images/blank.gif" class="flag flag-es" alt="Spain" role="button" onclick="gTranslate('es')" />
+        <img src="_static/images/blank.gif" class="flag flag-us" alt="United States of America" role="button" onclick="gTranslate('en')" />
+    </div>
 {% endblock %}

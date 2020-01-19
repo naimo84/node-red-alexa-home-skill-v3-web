@@ -7,7 +7,7 @@ Before you can use this service with Alexa or Google Home you need to:
 1. Create and verify an account via `https://red.cb-net.co.uk/new-user. <https://red.cb-net.co.uk/new-user>`_
 2. Link your Amazon and/ or Google account with the Node-RED Smart Home Control skill
 3. Define one or more `devices. <https://red.cb-net.co.uk/devices>`_
-4. `Install required Node-RED Nodes`_
+4. Install required Node-RED Nodes
 5. Setup Node-RED flows using your devices.
 
 .. tip:: If you get stuck, don't forget to review the `Troubleshooting <https://node-red-smart-home-control.readthedocs.io/en/development-cleanup/troubleshooting.html>`_ section.

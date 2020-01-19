@@ -6,9 +6,8 @@
     display: inline-block;
     width: 32px;
     height: 32px;
-    background: url('_static/flags_oauth.png') no-repeat;
+    background: url('/_static/flags_oauth.png') no-repeat;
 }
-
 
 .flag.flag-au {
     background-position: -32px 0;

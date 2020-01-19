@@ -1,5 +1,17 @@
 {% extends '!layout.html' %}
 
+{% block sidebartitle %}
+    <div>
+        <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-fr" alt="France" role="button" onclick="gTranslate('fr')" />
+        <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-de" alt="Germany" role="button" onclick="gTranslate('de')" />
+        <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-jp" alt="Japan" role="button" onclick="gTranslate('ja')" />
+        <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-mx" alt="Mexico" role="button" onclick="gTranslate('es')" />
+        <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-it" alt="Italy" role="button" onclick="gTranslate('it')" />
+        <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-es" alt="Spain" role="button" onclick="gTranslate('es')" />
+        <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-us" alt="United States of America" role="button" onclick="gTranslate('en')" />
+    </div>
+{% endblock %}
+
 {% block extrahead %}
     <link href="{{ pathto("_static/css/rtd_dark_centre.css", True) }}" rel="stylesheet" type="text/css">
     <link href="{{ pathto("_static/css/flags.css", True) }}" rel="stylesheet" type="text/css">
@@ -15,13 +27,5 @@
 
 {% block extrabody %}
     <!-- Start Google Translate -->
-    <div id="google_translate_element" style="text-align: right;">
-        <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-fr" alt="France" role="button" onclick="gTranslate('fr')" />
-        <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-de" alt="Germany" role="button" onclick="gTranslate('de')" />
-        <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-jp" alt="Japan" role="button" onclick="gTranslate('ja')" />
-        <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-mx" alt="Mexico" role="button" onclick="gTranslate('es')" />
-        <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-it" alt="Italy" role="button" onclick="gTranslate('it')" />
-        <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-es" alt="Spain" role="button" onclick="gTranslate('es')" />
-        <img src="{{ pathto("_static/images/blank.gif", True) }}" class="flag flag-us" alt="United States of America" role="button" onclick="gTranslate('en')" />
-    </div>
+    <div id="google_translate_element" style="text-align: right;"></div>
 {% endblock %}

@@ -15,12 +15,23 @@ pre {
 @media screen and (min-width: 1100px) {
     .wy-nav-content-wrap {
         background:rgba(0,0,0,0.05)
-    }
+	}
+
+	.wy-grid-for-nav {
+		position: relative !important;
+		max-width: 1100px !important;
+		margin: 0 auto !important;
+	}
+
+	.wy-nav-side {
+		position: fixed !important;
+		margin: 0 auto !important;
+		left: auto !important;
+	}
 
     .wy-nav-content {
 		background: #3c3c3c;
 		color: #e1e4e5;
-		max-width: 100% !important;
     }
 }
 

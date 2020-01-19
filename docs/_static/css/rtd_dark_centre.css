@@ -16,7 +16,11 @@ pre {
 	.wy-nav-content {
 		background: #3c3c3c;
 		color: #e1e4e5;
-    }
+	}
+
+	.wy-body-for-nav {
+		background: #4e4b4b;
+	}
 }
 
 @media screen and (min-width: 1100px) {

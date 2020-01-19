@@ -39,6 +39,10 @@ pre {
 	}
 }
 
+.wy-nav-top {
+	background: #191919 !important;
+}
+
 .method dt, .class dt, .data dt, .attribute dt, .function dt,
 	.descclassname, .descname {
 	background-color: #525252 !important;

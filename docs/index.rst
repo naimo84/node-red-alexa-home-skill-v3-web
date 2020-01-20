@@ -15,6 +15,11 @@ Introduction
 **********
 With 1200+ users, and 3500+ defined devices, available in 12 Amazon Alexa markets and due for launch (shortly!) in 11 Google Assistant markets, Node-RED Smart Home Control enables you to quickly bring voice-control to your Node-RED flows, using Amazon Alexa and/ or Google Assistant.
 
+You can support the ongoing development and hosting costs of this service via PayPal or alternatively through the `GitHub Sponsors programme <https://github.com/coldfire84>`_.
+
+.. image:: _static/images/btn_donate_LG.gif
+   :target: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=A2F2KF4GKKXT6&currency_code=GBP&source=url
+
 .. warning:: Node-RED Smart Home Control is an open source, free to use service. There is no warranty or support, implied or otherwise and the creators and contributors of this service and/ or related website are not responsible for any issues arising from it's use, including loss or damage relating to equipment, property, injury or life. You consume this service at your own risk.
 
 Key Features

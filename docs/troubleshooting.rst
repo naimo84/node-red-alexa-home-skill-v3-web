@@ -24,6 +24,13 @@ Node-RED Smart Home Control will send messages to your individual Node-RED insta
     :alt: Screenshot of warning message in Node-RED debug console
 
 
+Check Local MQTT Service
+################
+.. tip:: This is environment-specific. Most users will have a local MQTT service they have setup to act as a hub for their assisted/ smart homes.
+
+If your environment contains a local MQTT server, such as Mosquitto, please ensure this is up and running - if down then device control will likely fail.
+
+
 Check MQTT Messages
 ################
 If you're not seeing any errors in the Node-RED debug console you can use "mosquitto_sub" to check for account-specific MQTT messages. This will enable you to confirm that the Node-RED Smart Home Control API is receiving your commands, at that they are available to your Node-RED Instance::

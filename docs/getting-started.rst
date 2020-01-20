@@ -12,6 +12,8 @@ Before you can use this service with Alexa or Google Home you need to:
 
 .. tip:: If you get stuck, don't forget to review the `Troubleshooting <https://node-red-smart-home-control.readthedocs.io/en/development-cleanup/troubleshooting.html>`_ section.
 
+.. note:: Looking to migrate from another skill? See `Migrating from the "V2" Skill`_
+
 Account Linking
 ################
 
@@ -129,3 +131,18 @@ It is possible to disable "Auto Acknowledge" and use your own logic to establish
     :alt: Screenshot of concept flow with response node
 
 .. warning:: This is the most advanced flow type, the majority of scenarios do not warrant/ require this level of complexity - it's just available should you want it!
+
+Migrating from the "V2" Skill
+################
+The Node-RED nodes for the original Alexa Smart Home Skill API "v2" and this "v3" service can co-exist, but your existing flows will need to be modified if you want them to use the v3 bridge.
+
+You are able to test new flows, using the v3 skill nodes alongside the v2 skill, prior to moving your devices.
+
+A typical migration path would look like:
+
+1. Follow initial setup instructions, as-per `Getting Started`_
+2. Redefine your devices via `https://red.cb-net.co.uk/devices <https://red.cb-net.co.uk/devices>`_ - you'll need different names if co-existing with API version 2 skill
+3. Review `Default Node Outputs </node-outputs.html>`_ - namely response nodes change to msg.acknowledge from msg.payload plus the addition on State nodes with the required function nodes to handle input from outside of the pre-defined Alexa Home Skill nodes
+4. Replace legacy/ V2 Nodes with nodes associated with new nodes, removing devices from the v2 bridge and the Alexa App
+
+.. note:: These services do not share any data, therefore you must create a new account on the v3 bridge/ define your devices.

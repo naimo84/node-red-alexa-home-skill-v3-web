@@ -13,6 +13,8 @@ Before you can use this service with Alexa or Google Home you need to:
 
 You may also need to consider whether deploying a local MQTT service is required (to act as a hub for your devices), if so follow the instructions under `Install Local MQTT Service`_ to get up and running.
 
+A `Raspberry Pi <https://www.raspberrypi.org/>`_ is the ideal "work horse" for both Node-RED and MQTT server workloads (within reason!).
+
 .. tip:: If you get stuck, don't forget to review the :ref:`Troubleshooting <_troubleshooting>` section.
 
 .. note:: Looking to migrate from another skill? See `Migrating from the "V2" Skill`_
@@ -54,7 +56,7 @@ Install Local MQTT Service
 
 .. warning:: If you're only using HTTP-controlled, or other non-MQTT devices then you can skip this step.
 
-First, install Docker CE using the commands/ process outlined :ref:`here <docker>`.
+First, install Docker CE using the commands/ process outlined :ref:`here <docker>`. If you're using a Raspberry Pi you can follow `these instructions <https://www.docker.com/blog/happy-pi-day-docker-raspberry-pi/>`_ to get up and running.
 
 Now prepare configuration/ persistent storage for Mosquitto container::
 
@@ -119,7 +121,7 @@ Install Node-RED
 ################
 If you don't already have Node-RED running in your environment I'd highly recommend using the Docker images available here: `https://hub.docker.com/r/nodered/node-red <https://hub.docker.com/r/nodered/node-red>`_
 
-Install Docker CE using the commands/ process outlined :ref:`here <docker>`.
+Install Docker CE using the commands/ process outlined :ref:`here <docker>`. If you're using a Raspberry Pi you can follow `these instructions <https://www.docker.com/blog/happy-pi-day-docker-raspberry-pi/>`_ to get up and running.
 
 Create the Node-RED Docker container using the following commands::
 
@@ -234,7 +236,7 @@ It is possible to disable "Auto Acknowledge" and use your own logic to establish
 
 Migrating from the "V2" Skill
 ################
-The Node-RED nodes for the original Alexa Smart Home Skill API "v2" and this "v3" service can co-exist, but your existing flows will need to be modified if you want them to use the v3 bridge.
+The Node-RED nodes for the original `Alexa Smart Home Skill API "v2" <https://alexa-node-red.bm.hardill.me.uk/>`_ and this Smart home API "v3" service can co-exist, but your existing flows will need to be modified if you want them to use the "v3" bridge/ devices.
 
 You are able to test new flows, using the v3 skill nodes alongside the v2 skill, prior to moving your devices.
 

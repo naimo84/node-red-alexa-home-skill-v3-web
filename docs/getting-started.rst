@@ -47,6 +47,27 @@ To link your Google account:
 
 .. note:: Not all capabilities are supported by Google Home, the device creation wizard highlights which capabilities/ traits are supported. To remove the need to define Google or Alexa-specific devices the API itself will automatically only expose a devices' supported capabilities/ actions to Google Home. You can see a comparison between the two services here.
 
+Install Node-RED
+################
+If you don't already have Node-RED running in your environment I'd highly recommend using the Docker images available here: `https://hub.docker.com/r/nodered/node-red <https://hub.docker.com/r/nodered/node-red>`_
+
+Install Docker CE using the commands/ process outlined here: `https://node-red-smart-home-control.readthedocs.io/en/development-cleanup/deploy-your-own.html#install-docker-ce <https://node-red-smart-home-control.readthedocs.io/en/development-cleanup/deploy-your-own.html#install-docker-ce>`_
+
+Create the Node-RED Docker container using the following commands::
+
+	sudo docker volume create nodered-data
+	sudo docker create \
+	-p 1880:1880
+	--name="nodered" \
+	-v nodered-data:/data \
+	-e TZ=Europe/London \
+	--restart=always \
+	--log-opt max-size=10m \
+	--log-opt max-file=5 \
+	nodered/node-red
+
+You now have Node-RED running in your environment, browse to http://<hostname>:1880 in order to install Nodes and configure your flows.
+
 Install Node-RED Nodes
 ################
 Install the Node-RED Nodes by either:

@@ -47,6 +47,75 @@ To link your Google account:
 
 .. note:: Not all capabilities are supported by Google Home, the device creation wizard highlights which capabilities/ traits are supported. To remove the need to define Google or Alexa-specific devices the API itself will automatically only expose a devices' supported capabilities/ actions to Google Home. You can see a comparison between the two services here.
 
+Deploying Local MQTT Service
+################
+.. note:: If you're looking to use MQTT-connected devices, running firmware such as `Tasmota <https://github.com/arendst/Tasmota/>`_, you're going to need a local MQTT service to act as a "hub." The instructions below outline how to install Mosquitto and configure it to act as an **internal** bridge for your devices.
+
+.. tip:: If you're only using HTTP-controlled, or other non-MQTT devices then you can skip this step.
+
+You must ensure that the MQTT server you deploy is accessible from the network where your IoT/ MQTT enabled devices reside.
+
+Install Docker CE using the commands/ process outlined `here. </deploy-your-own.html#install-docker-ce>`_
+
+Now prepare configuration/ persistent storage for Mosquitto container::
+
+	sudo mkdir -p /var/docker/mosquitto/config/conf.d
+	sudo mkdir -p /var/docker/mosquitto/data
+	sudo mkdir -p /var/docker/mosquitto/log
+
+Create the required configuration file::
+
+	sudo vi /var/docker/mosquitto/config/mosquitto.conf
+
+File contents should be as below::
+
+	pid_file /var/run/mosquitto.pid
+
+	# Configure ports
+	port 1883
+
+	# Block anonymous access
+	allow_anonymous false
+
+	# Configure persistence for retained messages
+	persistence true
+	persistence_location /mosquitto/data/
+
+	# Configure Logging
+	log_timestamp_format %Y-%m-%dT%H:%M:%S
+	log_dest file /mosquitto/log/mosquitto.log
+	log_dest stdout
+	log_type all
+
+	# Configure file-based access
+	password_file /mosquitto/config/pwfile
+
+	# Add /mosquitto/config/conf.d to includes
+	include_dir /mosquitto/config/conf.d
+
+Ensure Mosquitto related file/ directory ownership is correct and create the Docker container::
+
+	sudo chown -R 1883:1883 /var/docker/mosquitto/config
+	sudo chown -R 1883:1883 /var/docker/mosquitto/data
+	sudo chown -R 1883:1883 /var/docker/mosquitto/log
+
+	sudo docker create --name mosquitto \
+	-p 1883:1883 \
+	-v /var/docker/mosquitto/config:/mosquitto/config \
+	-v /var/docker/mosquitto/data:/mosquitto/data \
+	-v /var/docker/mosquitto/log:/mosquitto/log \
+	--restart=always \
+	--log-opt max-size=10m \
+	--log-opt max-file=5 \
+	eclipse-mosquitto
+
+Now create users, on a **per-device** basis (that way if any single device is compromised the impact will be minimised)::
+
+	sudo docker exec -it mosquitto_passwd -b /mosquitto/config/pwfile 'username' 'password '
+
+.. tip:: If using Tasmota, the usernames and passwords you define in the step above will be what you enter in the device MQTT configuration, as outlined here: https://github.com/arendst/Tasmota/wiki/MQTT
+
+
 Install Node-RED
 ################
 If you don't already have Node-RED running in your environment I'd highly recommend using the Docker images available here: `https://hub.docker.com/r/nodered/node-red <https://hub.docker.com/r/nodered/node-red>`_
@@ -55,7 +124,10 @@ Install Docker CE using the commands/ process outlined `here. </deploy-your-own.
 
 Create the Node-RED Docker container using the following commands::
 
+	# Create Docker volume to enable persistent data/ config
 	sudo docker volume create nodered-data
+
+	# Create Node-RED Docker container
 	sudo docker create \
 	-p 1880:1880
 	--name="nodered" \
@@ -66,7 +138,7 @@ Create the Node-RED Docker container using the following commands::
 	--log-opt max-file=5 \
 	nodered/node-red
 
-You now have Node-RED running in your environment, browse to http://<hostname>:1880 in order to install Nodes and configure your flows.
+You now have Node-RED running in your environment, browse to http://<hostname_or_IP>:1880 in order to install Nodes and configure your flows.
 
 Install Node-RED Nodes
 ################
@@ -176,68 +248,3 @@ A typical migration path would look like:
 
 .. note:: These services do not share any data, therefore you must create a new account on the v3 bridge/ define your devices.
 
-Deploying Local MQTT Service
-################
-.. note:: If you're looking to use MQTT-connected devices, running firmware such as `Tasmota <https://github.com/arendst/Tasmota/>`_, you're going to need a local MQTT service to act as a "hub." The instructions below outline how to install Mosquitto and configure it to act as an **internal** bridge for your devices.
-
-You must ensure that the MQTT server you deploy is accessible from the network where your IoT/ MQTT enabled devices reside.
-
-Install Docker CE using the commands/ process outlined `here. </deploy-your-own.html#install-docker-ce>`_
-
-Now prepare configuration/ persistent storage for Mosquitto container::
-
-	sudo mkdir -p /var/docker/mosquitto/config/conf.d
-	sudo mkdir -p /var/docker/mosquitto/data
-	sudo mkdir -p /var/docker/mosquitto/log
-
-Create the required configuration file::
-
-	sudo vi /var/docker/mosquitto/config/mosquitto.conf
-
-File contents should be as below::
-
-	pid_file /var/run/mosquitto.pid
-
-	# Configure ports
-	port 1883
-
-	# Block anonymous access
-	allow_anonymous false
-
-	# Configure persistence for retained messages
-	persistence true
-	persistence_location /mosquitto/data/
-
-	# Configure Logging
-	log_timestamp_format %Y-%m-%dT%H:%M:%S
-	log_dest file /mosquitto/log/mosquitto.log
-	log_dest stdout
-	log_type all
-
-	# Configure file-based access
-	password_file /mosquitto/config/pwfile
-
-	# Add /mosquitto/config/conf.d to includes
-	include_dir /mosquitto/config/conf.d
-
-Ensure Mosquitto related file/ directory ownership is correct and create the Docker container::
-
-	sudo chown -R 1883:1883 /var/docker/mosquitto/config
-	sudo chown -R 1883:1883 /var/docker/mosquitto/data
-	sudo chown -R 1883:1883 /var/docker/mosquitto/log
-
-	sudo docker create --name mosquitto \
-	-p 1883:1883 \
-	-v /var/docker/mosquitto/config:/mosquitto/config \
-	-v /var/docker/mosquitto/data:/mosquitto/data \
-	-v /var/docker/mosquitto/log:/mosquitto/log \
-	--restart=always \
-	--log-opt max-size=10m \
-	--log-opt max-file=5 \
-	eclipse-mosquitto
-
-Now create users, on a **per-device** basis (that way if any single device is compromised the impact will be minimised)::
-
-	sudo docker exec -it mosquitto_passwd -b /mosquitto/config/pwfile 'username' 'password '
-
-.. tip:: If using Tasmota, the usernames and passwords you define in the step above will be what you enter in the device MQTT configuration, as outlined here: https://github.com/arendst/Tasmota/wiki/MQTT

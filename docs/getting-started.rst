@@ -72,7 +72,11 @@ Install Node-RED Nodes
 ################
 Install the Node-RED Nodes by either:
 
-* Using the palette look for "node-red-contrib-alexa-smart-home"
+* Using the palette look for `node-red-contrib-alexa-smart-home`
+
+.. image:: _static/images/install-nodes.gif
+    :alt: Animation that shows steps for installing nodes via Node-RED pallet
+
 * Using the command: `npm i node-red-contrib-alexa-smart-home`
 
 Node-RED Configuration

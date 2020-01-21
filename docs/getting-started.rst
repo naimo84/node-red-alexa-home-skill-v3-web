@@ -10,7 +10,7 @@ Before you can use this service with Alexa or Google Home you need to:
 4. Install required Node-RED Nodes
 5. Setup Node-RED flows using your devices.
 
-You may also need to consider whether deploying a local MQTT service is required (to act as a hub for your devices), if so follow the instructions under `Deploying Local MQTT Service`_ to get up and running.
+You may also need to consider whether deploying a local MQTT service is required (to act as a hub for your devices), if so follow the instructions under `Install Local MQTT Service`_ to get up and running.
 
 .. tip:: If you get stuck, don't forget to review the `Troubleshooting <https://node-red-smart-home-control.readthedocs.io/en/development-cleanup/troubleshooting.html>`_ section.
 
@@ -47,15 +47,13 @@ To link your Google account:
 
 .. note:: Not all capabilities are supported by Google Home, the device creation wizard highlights which capabilities/ traits are supported. To remove the need to define Google or Alexa-specific devices the API itself will automatically only expose a devices' supported capabilities/ actions to Google Home. You can see a comparison between the two services here.
 
-Deploying Local MQTT Service
+Install Local MQTT Service
 ################
-.. note:: If you're looking to use MQTT-connected devices, running firmware such as `Tasmota <https://github.com/arendst/Tasmota/>`_, you're going to need a local MQTT service to act as a "hub." The instructions below outline how to install Mosquitto and configure it to act as an **internal** bridge for your devices.
+.. tip:: If you're looking to use MQTT-connected devices, running firmware such as `Tasmota <https://github.com/arendst/Tasmota/>`_, you're going to need a local MQTT service to act as a "hub." The instructions below outline how to install Mosquitto and configure it to act as an **internal** bridge for your devices. You must ensure that the MQTT server you deploy is accessible from the network where your IoT/ MQTT enabled devices reside.
 
-.. tip:: If you're only using HTTP-controlled, or other non-MQTT devices then you can skip this step.
+.. warning:: If you're only using HTTP-controlled, or other non-MQTT devices then you can skip this step.
 
-You must ensure that the MQTT server you deploy is accessible from the network where your IoT/ MQTT enabled devices reside.
-
-Install Docker CE using the commands/ process outlined `here. </deploy-your-own.html#install-docker-ce>`_
+First, install Docker CE using the commands/ process outlined `here. </deploy-your-own.html#install-docker-ce>`_
 
 Now prepare configuration/ persistent storage for Mosquitto container::
 
@@ -113,7 +111,7 @@ Now create users, on a **per-device** basis (that way if any single device is co
 
 	sudo docker exec -it mosquitto_passwd -b /mosquitto/config/pwfile 'username' 'password '
 
-.. tip:: If using Tasmota, the usernames and passwords you define in the step above will be what you enter in the device MQTT configuration, as outlined here: https://github.com/arendst/Tasmota/wiki/MQTT
+.. tip:: If you are using Tasmota, the usernames and passwords you define in the step above will be what you enter in the device MQTT configuration, as outlined here: https://github.com/arendst/Tasmota/wiki/MQTT
 
 
 Install Node-RED

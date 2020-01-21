@@ -34,6 +34,8 @@ Link your Google Account
 ***************
 .. warning:: You currently have to request extension of the skill to your Google account. Please contact `node-red@cb-net.co.uk <mailto:node-red@cb-net.co.uk>`_ for access.
 
+Once granted access you may need to browse to https://console.actions.google.com/u/0/project/node-red-208520/simulatorcreate?isDeepLink to accept Google Terms and Conditions to use the service.
+
 To link your Google account:
 
 1. Open the Google Home App
@@ -170,26 +172,26 @@ Create the required configuration file::
 File contents should be as below::
 
 	pid_file /var/run/mosquitto.pid
-	
+
 	# Configure ports
 	port 1883
-	
+
 	# Block anonymous access
 	allow_anonymous false
-	
+
 	# Configure persistence for retained messages
 	persistence true
 	persistence_location /mosquitto/data/
-	
+
 	# Configure Logging
 	log_timestamp_format %Y-%m-%dT%H:%M:%S
 	log_dest file /mosquitto/log/mosquitto.log
 	log_dest stdout
 	log_type all
-	
+
 	# Configure file-based access
 	password_file /mosquitto/config/pwfile
-	
+
 	# Add /mosquitto/config/conf.d to includes
 	include_dir /mosquitto/config/conf.d
 
@@ -198,7 +200,7 @@ Ensure Mosquitto related file/ directory ownership is correct and create the Doc
 	sudo chown -R 1883:1883 /var/docker/mosquitto/config
 	sudo chown -R 1883:1883 /var/docker/mosquitto/data
 	sudo chown -R 1883:1883 /var/docker/mosquitto/log
-	
+
 	sudo docker create --name mosquitto \
 	-p 1883:1883 \
 	-v /var/docker/mosquitto/config:/mosquitto/config \

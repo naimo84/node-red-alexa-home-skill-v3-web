@@ -1,3 +1,5 @@
+.. _troubleshooting:
+
 **********
 Troubleshooting
 **********
@@ -11,7 +13,7 @@ Add a debug node after any "alexa-smart-home-v3" node, you can then verify that 
 .. image:: debug.png
     :alt: Screenshot of debug node, linked to Node-RED Smart Home Control flow
 
-You should see output as described in `Default Node Outputs <https://node-red-smart-home-control.readthedocs.io/en/development-cleanup/node-outputs.html>`_
+You should see output as described :ref:`here <node-outputs>`.
 
 
 Review the Node-RED Debug Console

@@ -1,4 +1,5 @@
-.. _rst_getting-started:
+.. _getting-started:
+
 **********
 Getting Started
 **********
@@ -12,7 +13,7 @@ Before you can use this service with Alexa or Google Home you need to:
 
 You may also need to consider whether deploying a local MQTT service is required (to act as a hub for your devices), if so follow the instructions under `Install Local MQTT Service`_ to get up and running.
 
-.. tip:: If you get stuck, don't forget to review the `Troubleshooting <https://node-red-smart-home-control.readthedocs.io/en/development-cleanup/troubleshooting.html>`_ section.
+.. tip:: If you get stuck, don't forget to review the :ref:`Troubleshooting <_troubleshooting>` section.
 
 .. note:: Looking to migrate from another skill? See `Migrating from the "V2" Skill`_
 
@@ -53,7 +54,7 @@ Install Local MQTT Service
 
 .. warning:: If you're only using HTTP-controlled, or other non-MQTT devices then you can skip this step.
 
-First, install Docker CE using the commands/ process outlined `here. </deploy-your-own.html#install-docker-ce>`_
+First, install Docker CE using the commands/ process outlined :ref:`here <docker>`.
 
 Now prepare configuration/ persistent storage for Mosquitto container::
 
@@ -118,7 +119,7 @@ Install Node-RED
 ################
 If you don't already have Node-RED running in your environment I'd highly recommend using the Docker images available here: `https://hub.docker.com/r/nodered/node-red <https://hub.docker.com/r/nodered/node-red>`_
 
-Install Docker CE using the commands/ process outlined `here. </deploy-your-own.html#install-docker-ce>`_
+Install Docker CE using the commands/ process outlined :ref:`here <docker>`.
 
 Create the Node-RED Docker container using the following commands::
 
@@ -192,7 +193,7 @@ This basic flow is a great starting point for first-time users. You can then pro
 
 Add State
 ***************
-.. tip:: Not all capabilities support state, see: `Capabilities that Support State <https://node-red-smart-home-control.readthedocs.io/en/development-cleanup/state-reporting.html#capabilities-that-support-state>`_
+.. tip:: Not all capabilities support state, see :ref:`here <capabilities-state>`.
 
 Now you have basic voice commands working, let's add state updates to your flow.
 

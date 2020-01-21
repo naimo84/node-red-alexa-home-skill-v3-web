@@ -2,6 +2,8 @@
 State Reporting
 **********
 
+.. _capabilities-state:
+
 Capabilities that Support State
 ################
 Not all capabilities/ traits support state updates, the table below illustrates those that do:

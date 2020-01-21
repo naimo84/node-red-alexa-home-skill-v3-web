@@ -2,7 +2,7 @@
 Deploy Your Own
 **********
 
-.. warning:: This is for advanced users/ scenarios only, with the free to use `hosted instance <https://node-red-smart-home-control.readthedocs.io/en/development-cleanup/getting-started.html>`_ you can be up and running in just a few minutes.
+.. warning:: This is for advanced users/ scenarios only, with the free to use :ref:`hosted instance <getting-started>`. you can be up and running in just a few minutes.
 
 Pre-Requisites
 ***************
@@ -42,6 +42,8 @@ Define these as environment variables to make container setup easier::
 These will also be copied into a .env file later in the deployment process.
 
 .. warning:: Once the skill is setup you should clear your shell history.
+
+.. _docker:
 
 Install Docker CE
 ***************

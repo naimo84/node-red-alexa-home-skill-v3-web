@@ -1,3 +1,5 @@
+.. _node-outputs:
+
 **********
 Default Node Outputs
 **********

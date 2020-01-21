@@ -51,7 +51,7 @@ Install Node-RED
 ################
 If you don't already have Node-RED running in your environment I'd highly recommend using the Docker images available here: `https://hub.docker.com/r/nodered/node-red <https://hub.docker.com/r/nodered/node-red>`_
 
-Install Docker CE using the commands/ process outlined here: `https://node-red-smart-home-control.readthedocs.io/en/development-cleanup/deploy-your-own.html#install-docker-ce <https://node-red-smart-home-control.readthedocs.io/en/development-cleanup/deploy-your-own.html#install-docker-ce>`_
+Install Docker CE using the commands/ process outlined `here. </deploy-your-own.html#install-docker-ce>`_
 
 Create the Node-RED Docker container using the following commands::
 
@@ -178,7 +178,7 @@ Deploying Local MQTT Service
 
 You must ensure that the MQTT server you deploy is accessible from the network where your IoT/ MQTT enabled devices reside.
 
-Install Docker CE using the commands/ process outlined here: `https://node-red-smart-home-control.readthedocs.io/en/development-cleanup/deploy-your-own.html#install-docker-ce <https://node-red-smart-home-control.readthedocs.io/en/development-cleanup/deploy-your-own.html#install-docker-ce>`_
+Install Docker CE using the commands/ process outlined `here. </deploy-your-own.html#install-docker-ce>`_
 
 Now prepare configuration/ persistent storage for Mosquitto container::
 

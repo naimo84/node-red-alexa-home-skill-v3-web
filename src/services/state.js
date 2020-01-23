@@ -284,7 +284,7 @@ const sendGoogleHomeState = async(user, device) => {
 				enableDevTypeStateReport = true;
 				sendGoogleStateUpdate = true;
 			}
-			else if (device.displayCategories.indexOf("EXTERNAL_BLIND") > -1) {
+			else if (device.displayCategories.indexOf("EXTERIOR_BLIND") > -1) {
 				enableDevTypeStateReport = true;
 				sendGoogleStateUpdate = true;
 			}
@@ -367,7 +367,7 @@ const sendAlexaState = async(user, device) => {
 				enableDevTypeStateReport = true;
 				sendGoogleStateUpdate = true;
 			}
-			else if (device.displayCategories.indexOf("EXTERNAL_BLIND") > -1) {
+			else if (device.displayCategories.indexOf("EXTERIOR_BLIND") > -1) {
 				enableDevTypeStateReport = true;
 				sendGoogleStateUpdate = true;
 			}

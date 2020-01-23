@@ -346,18 +346,18 @@ const sendAlexaState = async(user, device) => {
 		var hasdisplayCategories = getSafe(() => device.displayCategories);
 		if (hasdisplayCategories != undefined) {
 			// Per-device type send-state configuration, can enable/ disable Alexa and/ or Google Home
-			if (device.displayCategories.indexOf("INTERIOR_BLIND") > -1) {
+			if (device.displayCategories.indexOf("CONTACT_SENSOR") > -1) {
 				enableDevTypeStateReport = true;
 				sendGoogleStateUpdate = true;
 			}
-			else if (device.displayCategories.indexOf("CONTACT_SENSOR") > -1) {
+			else if (device.displayCategories.indexOf("INTERIOR_BLIND") > -1) {
 				enableDevTypeStateReport = true;
 			}
-			if (device.displayCategories.indexOf("EXTERNAL_BLIND") > -1) {
+			else if (device.displayCategories.indexOf("EXTERNAL_BLIND") > -1) {
 				enableDevTypeStateReport = true;
 				sendGoogleStateUpdate = true;
 			}
-			if (device.displayCategories.indexOf("FAN") > -1) {
+			else if (device.displayCategories.indexOf("FAN") > -1) {
 				enableDevTypeStateReport = true;
 				sendGoogleStateUpdate = true;
 			}

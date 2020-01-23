@@ -203,7 +203,7 @@ async (req, res) => {
 	try{
 		let service = req.body;
 		if (req.user.superuser === true) {
-			await oauthModels.Application.findOne({_id: req.params.id});
+			var data = await oauthModels.Application.findOne({_id: req.params.id});
 			data.title = service.title;
 			data.oauth_secret = service.oauth_secret;
 			data.domains = service.domains;

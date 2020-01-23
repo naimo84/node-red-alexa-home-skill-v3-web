@@ -154,6 +154,8 @@ Install the Node-RED Nodes by either:
 
 Node-RED Configuration
 ################
+.. warning:: You must verify your account (via email sent on account creation) in order for the Node-RED nodes to connect.
+
 Once Node-RED nodes are installed you'll need to configure your account settings, drag a new "alexa-smart-home-v3" node onto the canvas and double click it.
 
 Click the edit button to define a new account:
@@ -236,7 +238,7 @@ It is possible to disable "Auto Acknowledge" and use your own logic to establish
 
 Migrating from the "V2" Skill
 ################
-The Node-RED nodes for the original `Alexa Smart Home Skill API "v2" <https://alexa-node-red.bm.hardill.me.uk/>`_ and this Smart home API "v3" service can co-exist, but your existing flows will need to be modified if you want them to use the "v3" bridge/ devices.
+The Node-RED nodes for the original `Alexa Smart Home Skill API "v2" <https://alexa-node-red.bm.hardill.me.uk/>`_ service and this Smart home API "v3" service can co-exist, but your existing flows will need to be modified if you want them to use the "v3" service/ devices.
 
 You are able to test new flows, using the v3 skill nodes alongside the v2 skill, prior to moving your devices.
 
@@ -245,7 +247,7 @@ A typical migration path would look like:
 1. Follow initial setup instructions, as-per `Getting Started`_
 2. Redefine your devices via `https://red.cb-net.co.uk/devices <https://red.cb-net.co.uk/devices>`_ - you'll need different names if co-existing with API version 2 skill
 3. Review `Default Node Outputs </node-outputs.html>`_ - namely response nodes change to msg.acknowledge from msg.payload plus the addition on State nodes with the required function nodes to handle input from outside of the pre-defined Alexa Home Skill nodes
-4. Replace legacy/ V2 Nodes with nodes associated with new nodes, removing devices from the v2 bridge and the Alexa App
+4. Replace legacy/ V2 Nodes with nodes associated with new nodes, removing devices from the v2 service and the Alexa App
 
-.. note:: These services do not share any data, therefore you must create a new account on the v3 bridge/ define your devices.
+.. note:: These services do not share any data, therefore you must create a new account on the v3 service/ define your devices.
 

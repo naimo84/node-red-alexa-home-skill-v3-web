@@ -348,10 +348,11 @@ const sendAlexaState = async(user, device) => {
 			// Per-device type send-state configuration, can enable/ disable Alexa and/ or Google Home
 			if (device.displayCategories.indexOf("CONTACT_SENSOR") > -1) {
 				enableDevTypeStateReport = true;
-				sendGoogleStateUpdate = true;
+				//sendGoogleStateUpdate = true;
 			}
 			else if (device.displayCategories.indexOf("INTERIOR_BLIND") > -1) {
 				enableDevTypeStateReport = true;
+				sendGoogleStateUpdate = true;
 			}
 			else if (device.displayCategories.indexOf("EXTERNAL_BLIND") > -1) {
 				enableDevTypeStateReport = true;

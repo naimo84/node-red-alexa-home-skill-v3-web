@@ -538,6 +538,13 @@ router.put('/devices', defaultLimiter,
 			var device = req.body;
 			// Set username on device to match req.user.username
 			device.username = user;
+
+			// Sanity check new device
+			if (req.user.activeServices.indexOf('Google') > -1 && device.displayCategories == 'SMARTLOCK' && (!device.attributes.require2FA || !device.attributes.pin || !device.attributes.type2FA)){
+				logger.log('warning' , "[Create Device] Google Home user tried to create new Smart Lock device without a PIN");
+				res.status(500).send('As a Google Home user you must set a PIN on your lock!');
+			}
+
 			// Create new device
 			var dev = new Devices(device);
 			// Save device

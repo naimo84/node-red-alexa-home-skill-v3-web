@@ -542,7 +542,7 @@ router.put('/devices', defaultLimiter,
 			// Sanity check new device
 			if (req.user.activeServices.indexOf('Google') > -1 && device.displayCategories == 'SMARTLOCK' && (!device.attributes.require2FA || !device.attributes.pin || !device.attributes.type2FA)){
 				logger.log('warning' , "[Create Device] Google Home user tried to create new Smart Lock device without a PIN");
-				res.status(500).send('As a Google Home user you must set a PIN on your lock!');
+				return res.status(500).send('As a Google Home user you must set a PIN on your lock!');
 			}
 
 			// Create new device
@@ -695,6 +695,13 @@ router.post('/device/:dev_id', defaultLimiter,
 				data.reportState = device.reportState;
 				data.attributes = device.attributes;
 				data.state = device.state;
+
+				// Sanity check new device
+				if (req.user.activeServices.indexOf('Google') > -1 && device.displayCategories == 'SMARTLOCK' && (!device.attributes.require2FA || !device.attributes.pin || !device.attributes.type2FA)){
+					logger.log('warning' , "[Create Device] Google Home user tried to create new Smart Lock device without a PIN");
+					return res.status(500).send('As a Google Home user you must set a PIN on your lock!');
+				}
+
 				// Save updated device
 				await data.save();
 				// Return 201 status

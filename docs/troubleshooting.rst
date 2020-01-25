@@ -10,7 +10,7 @@ Add a Node-RED Debug Node
 ################
 Add a debug node after any "alexa-smart-home-v3" node, you can then verify that the command output is being received when you issue a voice command, or interact with a device using the Alexa/ Google Home applications. Ensure you configure the debug node to "output complete msg object."
 
-.. image:: debug.png
+.. image:: _static/images/debug.png
     :alt: Screenshot of debug node, linked to Node-RED Smart Home Control flow
 
 You should see output as described :ref:`here <node-outputs>`.
@@ -22,7 +22,7 @@ Your next port of call is the built-in Node-RED debug console, available in the 
 
 Node-RED Smart Home Control will send messages to your individual Node-RED instance if you send an incorrect state update/ an update that is in the wrong format. You will also be warned if your account is subject to `Throttling?`_
 
-.. image:: warning.png
+.. image:: _static/images/warning.png
     :alt: Screenshot of warning message in Node-RED debug console
 
 

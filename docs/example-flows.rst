@@ -9,7 +9,7 @@ This flow shows a simple Input Controller example for a Yamaha MusicCast AV Rece
 
 .. note:: There is no state supported by the InputController capability.
 
-.. image:: input-controller-flow.png
+.. image:: _static/images/input-controller-flow.png
     :alt: Screenshot of input controller example flow
 
 Flow code (copy and paste into Node-RED)::
@@ -24,7 +24,7 @@ This flow shows a simple Playback Controller example for a Kodi RPC endpoint (us
 
 .. note:: There is no state supported by the PlaybackController capability.
 
-.. image:: playback-controller-example.png
+.. image:: _static/images/playback-controller-example.png
     :alt: Screenshot of motion sensor example flow
 
 Flow code (copy and paste into Node-RED)::
@@ -39,7 +39,7 @@ Motion Sensor
 
 Use the flow below to send motion sensor updates to Amazon/ Alexa - useful if you want to be able to perform actions that may not be achievable locally via NBode-RED or MQTT (for example getting Alexa to speak or interact with other Alexa-connected smart home devices and services).
 
-.. image:: montionsensor-example.png
+.. image:: _static/images/montionsensor-example.png
     :alt: Screenshot of motion sensor example flow
 
 Function code needed to submit the state updates to the Node-RED Smart Home Control service, and in-turn Amazon::

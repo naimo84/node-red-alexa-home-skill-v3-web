@@ -57,7 +57,7 @@ To link your Google account:
 .. image:: _static/images/works-wih-google.png
     :alt: Add a "works with Google device"
 
-5. Select "Node-RED Smart Home Control" and complete the account linking process
+5. Select "[test] Node-RED Smart Home Control" and complete the account linking process
 
 .. image:: _static/images/account-linking-google.png
     :alt: Screenshot of Google Account Linking process
@@ -124,6 +124,10 @@ Ensure Mosquitto related file/ directory ownership is correct and create the Doc
 	--log-opt max-file=5 \
 	eclipse-mosquitto
 
+Start the Mosquitto MQTT server::
+
+	sudo docker start mosquitto
+
 Now create users, on a **per-device** basis (that way if any single device is compromised the impact will be minimised)::
 
 	sudo docker exec -it mosquitto_passwd -b /mosquitto/config/pwfile 'username' 'password '
@@ -153,6 +157,10 @@ Create the Node-RED Docker container using the following commands::
 	--log-opt max-file=5 \
 	nodered/node-red
 
+Start Node-RED::
+
+	sudo docker start nodered
+
 You now have Node-RED running in your environment, browse to http://<hostname_or_IP>:1880 in order to install Nodes and configure your flows.
 
 Install Node-RED Nodes
@@ -174,12 +182,12 @@ Once Node-RED nodes are installed you'll need to configure your account settings
 
 Click the edit button to define a new account:
 
-.. image:: account-config-initial.png
+.. image:: _static/images/account-config-initial.png
     :alt: Screenshot of initial account configuration.
 
 Enter your Node-RED Smart Home Control username and password and click 'Add' to save the account details.
 
-.. image:: account-config-details.png
+.. image:: _static/images/account-config-details.png
     :alt: Screenshot of username/ password configuration.
 
 You can now start to build flows using the concept and example flows in this documentation for inspiration.
@@ -198,7 +206,7 @@ If you are planning to use voice control **only**, and you are not concerned abo
 * An "alexa-smart-home-v3" node (set to `Auto Acknowledge`_)
 * A receiving node for commands, such as MQTT out/ publishing that enables you to interact with the device itself
 
-.. image:: basic-flow.png
+.. image:: _static/images/basic-flow.png
     :alt: Screenshot of basic concept flow example
 
 .. note:: Any device you chose to use this simple flow with must be configured with "Report State" **disabled**. See `Add State`_ if you want to benefit from state information in your Smart Assistant application(s).
@@ -217,12 +225,12 @@ Now you have basic voice commands working, let's add state updates to your flow.
 
 If you only plan on interacting with the device using the Alexa/ Google app, or voice assistants you can simply take state from the "alexa-smart-home-v3" node and feed it straight into the "alexa-smart-home-v3-state" node.
 
-.. image:: basic-flow-state.png
+.. image:: _static/images/basic-flow-state.png
     :alt: Screenshot of concept flow with basic state updates
 
 If, however, you will physically interact with the device, or it has a timer function or there are any other means for you to change its state, you will need to ensure you are sending "out of band" state updates (where the changes in state have not come from activity within the service itself) to the Node-RED Smart Home Control service.
 
-.. image:: concept-oob-state.PNG
+.. image:: _static/images/concept-oob-state.PNG
     :alt: Screenshot of concept flow with out-of-band state updates
 
 In the example above you can see a function node that has been created to intercept MQTT messages for the device and "translate" them to the required format to send back to Node-RED Smart Home Control. Example function code, for a wi-fi light switch running Tasmota firmware is shown below::
@@ -245,7 +253,7 @@ By default, when you add an "alexa-smart-home-v3" node to a flow it is configure
 
 It is possible to disable "Auto Acknowledge" and use your own logic to establish whether the command was successful, before setting `msg.acknowledge` to `true` or `false` and sending the message to a `alexa-smart-home-v3-resp` node. Note that you must send the **original** message, as output from the "alexa-smart-home-v3" node, modified to include msg.acknowledge.
 
-.. image:: concept-response.png
+.. image:: _static/images/concept-response.png
     :alt: Screenshot of concept flow with response node
 
 .. warning:: This is the most advanced flow type, the majority of scenarios do not warrant/ require this level of complexity - it's just available should you want it!

@@ -59,7 +59,7 @@ To link your Google account:
 
 5. Select "Node-RED Smart Home Control" and complete the account linking process
 
-.. image:: _static/images/account-linking-google
+.. image:: _static/images/account-linking-google.png
     :alt: Screenshot of Google Account Linking process
 
 .. note:: Not all capabilities/ device types are supported by Google Home, the device creation wizard highlights which capabilities/ traits are supported. To remove the need to define Google or Alexa-specific devices the API itself will automatically only expose a devices' supported capabilities/ actions to Google Home. You can see a comparison between the two services here.

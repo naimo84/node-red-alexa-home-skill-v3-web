@@ -539,7 +539,13 @@ router.put('/devices', defaultLimiter,
 			// Set username on device to match req.user.username
 			device.username = user;
 
-			// Sanity check new device
+			// Check for duplicate device name
+			var checkDevice = await Devices.findOne({username:user, friendlyName: device.friendlyName});
+			if (checkDevice) {
+				logger.log('warning' , "[Create Device] User tried to create a device with duplicate friendly name");
+				return res.status(500).send('Please ensure your devices have unique names!');
+			}
+			// Require 2FA PIN on Google Home-enabled user Smart Lock
 			if (req.user.activeServices.indexOf('Google') > -1 && device.displayCategories == 'SMARTLOCK' && (!device.attributes.require2FA || !device.attributes.pin || !device.attributes.type2FA)){
 				logger.log('warning' , "[Create Device] Google Home user tried to create new Smart Lock device without a PIN");
 				return res.status(500).send('As a Google Home user you must set a PIN on your lock!');
@@ -696,7 +702,7 @@ router.post('/device/:dev_id', defaultLimiter,
 				data.attributes = device.attributes;
 				data.state = device.state;
 
-				// Sanity check new device
+				// Require 2FA PIN on Google Home-enabled user Smart Lock
 				if (req.user.activeServices.indexOf('Google') > -1 && device.displayCategories == 'SMARTLOCK' && (!device.attributes.require2FA || !device.attributes.pin || !device.attributes.type2FA)){
 					logger.log('warning' , "[Create Device] Google Home user tried to create new Smart Lock device without a PIN");
 					return res.status(500).send('As a Google Home user you must set a PIN on your lock!');

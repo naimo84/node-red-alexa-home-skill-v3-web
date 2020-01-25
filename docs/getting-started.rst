@@ -42,13 +42,24 @@ Once granted access you may need to browse to https://console.actions.google.com
 To link your Google account:
 
 1. Open the Google Home App
-2. Hit Account icon (bottom right)
-3. Under Account go to Settings
-4. Under Settings go to Assistant
-5. Under Assistant go to Home Control
-6. Under Home Control open top-left menu and select "Manage account"
+2. Hit the '+' icon in the top left of the App
 
-.. note:: Not all capabilities are supported by Google Home, the device creation wizard highlights which capabilities/ traits are supported. To remove the need to define Google or Alexa-specific devices the API itself will automatically only expose a devices' supported capabilities/ actions to Google Home. You can see a comparison between the two services here.
+.. image:: _static/images/home.png
+    :alt: Google Home App screenshot
+
+3. Go to "Set up device"
+
+.. image:: _static/images/add-and-manage.png
+    :alt: Add a new device
+
+4. Under "Works with Google" hit "Have something already setup?"
+
+.. image:: _static/images/works-wih-google.png
+    :alt: Add a "works with Google device"
+
+5. Select "Node-RED Smart Home Control" and complete the account linking process
+
+.. note:: Not all capabilities/ device types are supported by Google Home, the device creation wizard highlights which capabilities/ traits are supported. To remove the need to define Google or Alexa-specific devices the API itself will automatically only expose a devices' supported capabilities/ actions to Google Home. You can see a comparison between the two services here.
 
 Install Local MQTT Service
 ################

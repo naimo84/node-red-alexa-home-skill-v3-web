@@ -1,5 +1,5 @@
 project = 'Node-RED Smart Home Control'
-html_logo = 'logo.png'
+html_logo = '_static/images/logo.png'
 master_doc = 'index'
 html_static_path = ['_static']
 templates_path = ['_templates']

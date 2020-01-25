@@ -58,7 +58,8 @@ router.get('/', defaultLimiter, async (req, res) => {
 router.get('/docs', defaultLimiter, async (req, res) => {
 	sendPageView(req.path, 'Documentation', req.ip, req.headers['user-agent']);
 	//outputSessionID(req, "/docs");
-	res.render('pages/docs', {user: req.user, docs: true, brand: process.env.BRAND, title: "Documentation | " + process.env.BRAND});
+	//res.render('pages/docs', {user: req.user, docs: true, brand: process.env.BRAND, title: "Documentation | " + process.env.BRAND});
+	res.redirect('https://docs.cb-net.co.uk');
 });
 ///////////////////////////////////////////////////////////////////////////
 // About

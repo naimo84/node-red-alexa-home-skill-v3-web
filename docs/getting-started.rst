@@ -15,7 +15,7 @@ You may also need to consider whether deploying a local MQTT service is required
 
 A `Raspberry Pi <https://www.raspberrypi.org/>`_ is the ideal "work horse" for both Node-RED and MQTT server workloads (within reason!).
 
-.. tip:: If you get stuck, don't forget to review the :ref:`Troubleshooting <_troubleshooting>` section.
+.. tip:: If you get stuck, don't forget to review the :ref:`troubleshooting section <troubleshooting>`.
 
 .. note:: Looking to migrate from another skill? See `Migrating from the "V2" Skill`_
 

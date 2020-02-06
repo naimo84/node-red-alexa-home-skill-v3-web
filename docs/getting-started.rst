@@ -6,7 +6,7 @@ Getting Started
 Before you can use this service with Alexa or Google Home you need to:
 
 1. Create and verify an account via `https://red.cb-net.co.uk/new-user. <https://red.cb-net.co.uk/new-user>`_
-2. Link your Amazon and/ or Google account with the Node-RED Smart Home Control skill
+2. Link your Amazon and/ or Google account with the Node-RED Smart Home Control API
 3. Define one or more `devices. <https://red.cb-net.co.uk/devices>`_
 4. Install required Node-RED Nodes
 5. Setup Node-RED flows using your devices.
@@ -17,7 +17,7 @@ A `Raspberry Pi <https://www.raspberrypi.org/>`_ is the ideal "work horse" for b
 
 .. tip:: If you get stuck, don't forget to review the :ref:`troubleshooting section <troubleshooting>`.
 
-.. note:: Looking to migrate from another skill? See `Migrating from the "V2" Skill`_
+.. note:: Looking to migrate from another service? See `Migrating from Another Service`_
 
 Account Linking
 ################
@@ -35,7 +35,7 @@ To link your Amazon account:
 
 Link your Google Account
 ***************
-.. warning:: You currently have to request extension of the skill to your Google account. Please contact `node-red@cb-net.co.uk <mailto:node-red@cb-net.co.uk>`_ for access.
+.. warning:: You currently have to request extension of the service to your Google account. Please contact `node-red@cb-net.co.uk <mailto:node-red@cb-net.co.uk>`_ for access.
 
 Once granted access you may need to browse to https://console.actions.google.com/u/0/project/node-red-208520/simulatorcreate?isDeepLink to accept Google Terms and Conditions to use the service.
 
@@ -192,7 +192,7 @@ Enter your Node-RED Smart Home Control username and password and click 'Add' to 
 
 You can now start to build flows using the concept and example flows in this documentation for inspiration.
 
-.. tip:: Unless you are hosting your own instance of the skill, you can leave the default "MQTT Hostname" and "Web API Hostname" fields as-is.
+.. tip:: Unless you are hosting your own instance of the API, you can leave the default "MQTT Hostname" and "Web API Hostname" fields as-is.
 
 .. warning:: You only need to define your account configuration once, re-use this configuration across all of your flow.
 
@@ -258,17 +258,17 @@ It is possible to disable "Auto Acknowledge" and use your own logic to establish
 
 .. warning:: This is the most advanced flow type, the majority of scenarios do not warrant/ require this level of complexity - it's just available should you want it!
 
-Migrating from the "V2" Skill
+Migrating from Another Service
 ################
-The Node-RED nodes for the original `Alexa Smart Home Skill API "v2" <https://alexa-node-red.bm.hardill.me.uk/>`_ service and this Smart home API "v3" service can co-exist, but your existing flows will need to be modified if you want them to use the "v3" service/ devices.
+The Node-RED nodes from other services such as `https://alexa-node-red.bm.hardill.me.uk/ <https://alexa-node-red.bm.hardill.me.uk/>`_ service and this API can co-exist, but your existing flows will need to be modified if you want them to use the "v3" service/ devices.
 
-You are able to test new flows, using the v3 skill nodes alongside the v2 skill, prior to moving your devices.
+You are able to test new flows, using the the nodes associated with this API alongside another service, prior to moving your devices.
 
 A typical migration path would look like:
 
 1. Follow initial setup instructions, as-per `Getting Started`_
-2. Redefine your devices via `https://red.cb-net.co.uk/devices <https://red.cb-net.co.uk/devices>`_ - you'll need different names if co-existing with API version 2 skill
-3. Review `Default Node Outputs </node-outputs.html>`_ - namely response nodes change to msg.acknowledge from msg.payload plus the addition on State nodes with the required function nodes to handle input from outside of the pre-defined Alexa Home Skill nodes
+2. Redefine your devices via `https://red.cb-net.co.uk/devices <https://red.cb-net.co.uk/devices>`_ - you'll need different names if co-existing with another service
+3. Review `Default Node Outputs </node-outputs.html>`_ - namely response nodes change to msg.acknowledge from msg.payload plus the addition on State nodes with the required function nodes to handle input from outside of the pre-defined nodes
 4. Replace legacy/ V2 Nodes with nodes associated with new nodes, removing devices from the v2 service and the Alexa App
 
 .. note:: These services do not share any data, therefore you must create a new account on the v3 service/ define your devices.

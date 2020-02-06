@@ -48,7 +48,7 @@ If, after issuing voice or Alexa/ Google Home application based commands, you se
 
 Review Node-RED Console Log
 ################
-A more "involved" approach is to look at the Node-RED console logs. The skill related Nodes/ contrib output significant information to the console log. Include any output here, and from the commands/ views above if you end up raising an issue on GuitHub.
+A more "involved" approach is to look at the Node-RED console logs. The service related Nodes/ contrib output significant information to the console log. Include any output here, and from the commands/ views above if you end up raising an issue on GuitHub.
 
 For Docker-deployed instances, this is as simple as executing the command (container name dependant)::
 
@@ -57,11 +57,11 @@ For Docker-deployed instances, this is as simple as executing the command (conta
 
 Re-link Your Account
 ################
-If you are still struggling to get the skill working it is definitely worth un-linking/ disabling the skill via your smart assistant application and re-linking/ enabling the skill.
+If you are still struggling to get the service working it is definitely worth un-linking/ disabling the service via your smart assistant application and re-linking/ enabling the service.
 
-Some long-term users of the service have been linked with a **development-only** edition of the skill which can expire after 90 days of development inactivity. Since the majority of development work occurs in the API/ back-end it is highly likely that this can be a re-occurring issue.
+Some long-term users of the service have been linked with a **development-only** edition of the service which can expire after 90 days of development inactivity. Since the majority of development work occurs in the API/ back-end it is highly likely that this can be a re-occurring issue.
 
-The production version of the skill is a "permanent" fixture.
+The production version of the service is a "permanent" fixture.
 
 .. tip:: Before re-linking your account it is worth clearing your account "tokens" - use the "Delete Tokens" button found on the "My Account" page.
 
@@ -77,7 +77,7 @@ There is also a new `Slack Workspace <https://join.slack.com/t/cb-net/shared_inv
 
 Throttling?
 ################
-Yes, throttling. Due to the architecture of Alexa skills, there is an AWS Lambda function that supports this service/ any Amazon interactions. In order to limit potential costs and ensure a good service experience for users across Node-RED Smart Home Control, a rate limiter is in-place for:
+Yes, throttling. There is an AWS Lambda function that supports this service/ any Amazon Alexa interactions. In order to limit potential costs and ensure a good service experience for users across Node-RED Smart Home Control, a rate limiter is in-place for:
 
 * Viewing state in the Alexa Application
 

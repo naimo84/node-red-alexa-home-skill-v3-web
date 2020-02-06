@@ -14,7 +14,7 @@ To deploy your own instance you are going to need:
 4. A registered domain
 5. A CloudFlare account, configured to perform DNS for your registered domain
 
-You will require two DNS host names/ A records to be defined for the skill:
+You will require two DNS host names/ A records to be defined for the API and MQTT service:
 1. Web interface/ API - where you/ your users will login and define their devices
 2. MQTT service
 
@@ -27,8 +27,8 @@ Define Service Accounts
 You need to define three user accounts/ passwords:
 
 1. MongoDB admin account
-2. MongoDB account for the skill to connect to the database
-3. Superuser account for the skill to connect with to the MQTT server/ your admin account for the Web API
+2. MongoDB account for the API to connect to the database
+3. Superuser account for the API to connect with to the MQTT server/ your admin account for the Web API
 
 Define these as environment variables to make container setup easier::
 
@@ -41,7 +41,7 @@ Define these as environment variables to make container setup easier::
 
 These will also be copied into a .env file later in the deployment process.
 
-.. warning:: Once the skill is setup you should clear your shell history.
+.. warning:: Once the API is setup you should clear your shell history.
 
 .. _docker:
 
@@ -69,7 +69,7 @@ MongoDB Container/ Account Creation
 ***************
 Docker image is used for mongo, with auth enabled.
 
-Skill-required user accounts are created automatically via docker-entrypoint-initdb.d script, use the following commands to setup the MongoDB database (modifying the environment variables to suit)::
+API-required user accounts are created automatically via docker-entrypoint-initdb.d script, use the following commands to setup the MongoDB database (modifying the environment variables to suit)::
 
     sudo mkdir -p /var/docker/mongodb/docker-entrypoint-initdb.d
     sudo mkdir -p /var/docker/mongodb/etc

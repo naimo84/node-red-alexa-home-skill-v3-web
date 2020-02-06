@@ -62,7 +62,7 @@ To link your Google account:
 .. image:: _static/images/account-linking-google.png
     :alt: Screenshot of Google Account Linking process
 
-.. note:: Not all capabilities/ device types are supported by Google Home, the device creation wizard highlights which capabilities/ traits are supported. To remove the need to define Google or Alexa-specific devices the API itself will automatically only expose a devices' supported capabilities/ actions to Google Home. You can see a comparison between the two services here.
+.. note:: Not all device types and traits are supported by Google Home, the device creation wizard highlights which capabilities/ traits are supported. To remove the need to define Google or Alexa-specific devices the API itself will automatically only expose a devices' supported capabilities or "traits" to Google Home. You can see a comparison between the two services here.
 
 Install Local MQTT Service
 ################
@@ -223,7 +223,7 @@ Add State
 
 Now you have basic voice commands working, let's add state updates to your flow.
 
-If you only plan on interacting with the device using the Alexa/ Google app, or voice assistants you can simply take state from the "alexa-smart-home-v3" node and feed it straight into the "alexa-smart-home-v3-state" node.
+If you only plan on interacting with the device using the Alexa or Google Home app, or voice assistants you can simply take state from the "alexa-smart-home-v3" node and feed it straight into the "alexa-smart-home-v3-state" node.
 
 .. image:: _static/images/basic-flow-state.png
     :alt: Screenshot of concept flow with basic state updates

@@ -39,7 +39,7 @@ If you're not seeing any errors in the Node-RED debug console you can use "mosqu
 
     mosquitto_sub -h mq-red.cb-net.co.uk -t '#' -v -u <bridge_username> -P '<bridge password>' --capath /etc/ssl/certs --id test-<bridge_username> -p 8883
 
-If, after issuing voice or Alexa/ Google Home application based commands, you see no output you should:
+If, after issuing a command via the Alexa or Google Home applications or, after using a voice command you see no output you should:
 
 * Reset your password via the `My Account <https://red.cb-net.co.uk/my-account>`_ page - it may be your Web API and MQTT account passwords are no longer synchronised.
 

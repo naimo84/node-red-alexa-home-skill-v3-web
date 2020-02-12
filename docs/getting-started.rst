@@ -5,11 +5,12 @@ Getting Started
 **********
 Before you can use this service with Alexa or Google Home you need to:
 
-1. Create and verify an account via `https://red.cb-net.co.uk/new-user. <https://red.cb-net.co.uk/new-user>`_
-2. Link your Amazon and/ or Google account with the Node-RED Smart Home Control API
-3. Define one or more `devices. <https://red.cb-net.co.uk/devices>`_
-4. Install required Node-RED Nodes
-5. Setup Node-RED flows using your devices.
+1. Create an account via `https://red.cb-net.co.uk/new-user. <https://red.cb-net.co.uk/new-user>`_
+2. Verify your account, using the email sent following account creation
+3. Link your Amazon and/ or Google account with the Node-RED Smart Home Control API
+4. Define one or more `devices. <https://red.cb-net.co.uk/devices>`_
+5. Install required Node-RED Nodes
+6. Setup Node-RED flows using your devices.
 
 You may also need to consider whether deploying a local MQTT service is required (to act as a hub for your devices), if so follow the instructions under `Install Local MQTT Service`_ to get up and running.
 

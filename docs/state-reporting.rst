@@ -56,19 +56,22 @@ Where "||" is listed this implies "OR" - do not include this in your state respo
         payload {
             state {
                 "brightness": 0-100,
-                "colorbrightness": 0-1,
+                "colorBrightness": 0-1,
                 "colorHue": 0-360,
                 "colorSaturation": 0-1,
                 "colorTemperature": 0-10000,
-                "contact": "DETECTED" || "NOT_DETECTED"
+                "contact" : "DETECTED" || "NOT_DETECTED",
                 "input": string,
                 "lock": "LOCKED" || "UNLOCKED",
-                "motion": "DETECTED" || "NOT_DETECTED"
+                "mode" : string,
+                "motion" : "DETECTED" || "NOT_DETECTED",
+                "mute" : "ON" || "OFF",
                 "percentage": number,
                 "percentageDelta": number,
-                "playback": "Play",
+                "playback": playback,
                 "power": "ON" || "OFF",
-                "range":  number (1-100 for blinds/ awnings, 1-10 for other devices),
+                "rangeValue" : number,
+                "rangeValueDelta" : number,
                 "temperature": number,
                 "thermostatMode": "HEAT" || "COOL",
                 "thermostatSetPoint" : number,

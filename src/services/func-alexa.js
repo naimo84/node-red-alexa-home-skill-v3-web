@@ -1340,7 +1340,7 @@ const replaceCapabilityAsync = async(capability, reportState, attributes, type) 
 			},
 			"configuration": {
 			  "supportedRange": {
-				"minimumValue": 1,
+				"minimumValue": 0,
 				"maximumValue": 10,
 				"precision": 1
 			  },

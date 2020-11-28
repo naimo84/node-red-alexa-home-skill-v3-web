@@ -722,6 +722,7 @@ function saveDevice() {
 		// Modify Existing Device
 		var device = devices[devID];
 		device.attributes = {};
+		device.friendlyName = $('#friendlyName').val();
 		device.description = $('#description').val();
 		// Google Home Room Hint
 		if ($('#roomHint').val() != "Optional") {

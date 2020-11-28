@@ -701,6 +701,7 @@ router.post('/device/:dev_id', defaultLimiter,
 				// Find related device in MongoDB
 				var data = await Devices.findOne({_id: device._id, username: device.username});
 				// Update elements based upon user submission
+				data.friendlyName = device.friendlyName;
 				data.description = device.description;
 				data.capabilities = device.capabilities;
 				data.displayCategories = device.displayCategories;

@@ -322,6 +322,7 @@ const sendGoogleHomeState = async(user, device) => {
 			var response = await gHomeQueryDeviceState(device);
 			if (response != undefined) {
 				var stateReport = {
+					"requestId": uuidv4(),
 					"agentUserId": user._id,
 					"payload": {
 						"devices" : {

@@ -10,6 +10,7 @@ const Topics = require('../models/topics');
 const logger = require('../loaders/logger');
 const defaultLimiter = require('../loaders/limiter').defaultLimiter;
 const sendPageViewUid = require('../services/ganalytics').sendPageViewUid;
+const crypto = require('crypto');
 ///////////////////////////////////////////////////////////////////////////W
 // Variables
 ///////////////////////////////////////////////////////////////////////////

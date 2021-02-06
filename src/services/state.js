@@ -226,7 +226,10 @@ const updateDeviceState = async(username, endpointId, payload) => {
 		};
 		if (payload.state.hasOwnProperty('temperature')) { // Temperature, with basic validation
 			if (typeof payload.state.temperature == 'number'){
-				dev.state.temperature = payload.state.temperature;
+				// Ensure we're only updating state if needed/ user sent payload is different from stored state
+				var storedTemperatureState = getSafe(() => dev.state.temperature);
+				if (storedTemperatureState == payload.state.temperature){stateUnchanged = true}
+				else {dev.state.temperature = payload.state.temperature}
 			}
 			else {alerts.push('[' + dev.friendlyName + '] ' + 'Invalid temperature state, expecting payload.state.temperature (number)')}
 		};

@@ -255,7 +255,10 @@ const updateDeviceState = async(username, endpointId, payload) => {
 			return alerts;
 		}
 		// State unchanged, no need to update DB/ send to Alexa/ Google
-		else if (stateUnchanged == true) {return true}
+		else if (stateUnchanged == true) {
+			logger.log('verbose', "[State] Dropped superfluous state update for user: " + username + ", " + "endpointId: " + endpointId);
+			return true
+		}
 		// No validation errors, update device state element
 		else {
 			// Update device state element

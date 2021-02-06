@@ -77,6 +77,8 @@ const updateDeviceState = async(username, endpointId, payload) => {
 		// Start with existing state, if any
 		dev.state = (dev.state || {});
 		dev.state.time = dt;
+		// Assume state update is not duplicate of existing state
+		var stateUnchanged = false;
 		// Based on payload contents build revised state, keeping elements which have not changed
 		if (payload.state.hasOwnProperty('brightness')) { // Brightness, with validation
 			if (typeof payload.state.brightness == 'number' && payload.state.brightness >= 0 && payload.state.brightness <= 100) {dev.state.brightness = payload.state.brightness}
@@ -154,7 +156,12 @@ const updateDeviceState = async(username, endpointId, payload) => {
 			else {alerts.push('[' + dev.friendlyName + '] ' + 'Invalid playback state, expecting payload.state.playback (string)')}
 		};
 		if (payload.state.hasOwnProperty('power')) { // Power, with validation
-			if (typeof payload.state.power == 'string' && (payload.state.power == 'ON' || payload.state.power == 'OFF')) {dev.state.power = payload.state.power}
+			if (typeof payload.state.power == 'string' && (payload.state.power == 'ON' || payload.state.power == 'OFF')) {
+				// Ensure we're only updating state if needed/ user sent payload is different from stored state
+				var storedPowerState = getSafe(() => dev.state.power);
+				if (storedPowerState == payload.state.power){stateUnchanged = true}
+				else {dev.state.power = payload.state.power}
+			}
 			else {alerts.push('[' + dev.friendlyName + '] ' + 'Invalid power state, expecting payload.state.power (string, ON or OFF)')}
 		};
 		if (payload.state.hasOwnProperty('rangeValue')) { // Range Value, with basic validation
@@ -244,6 +251,8 @@ const updateDeviceState = async(username, endpointId, payload) => {
 			// Return Array of Validation Error Messages
 			return alerts;
 		}
+		// State unchanged, no need to update DB/ send to Alexa/ Google
+		else if (stateUnchanged == true) {return true}
 		// No validation errors, update device state element
 		else {
 			// Update device state element

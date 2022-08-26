@@ -8,7 +8,7 @@ var morgan = require('morgan');
 var express = require('express');
 const session = require('express-session');
 //const mongoStore = require('connect-mongo')(session);
-const cookieSession = require('cookie-session');
+// const cookieSession = require('cookie-session');
 var passport = require('passport');
 var BasicStrategy = require('passport-http').BasicStrategy;
 var LocalStrategy = require('passport-local').Strategy;
@@ -24,8 +24,10 @@ const robots = require('express-robots-txt');
 ///////////////////////////////////////////////////////////////////////////
 var db = require('./loaders/db'); // Load DB module, note connect happens later
 var mqtt = require('./loaders/mqtt'); // Load MQTT client and connect
-var redis = require('./loaders/redis-limiter') // Load Redis connection
+var redis = require('./loaders/redis-limiter') // Load Limiter Redis connection
 var state = require('./services/state'); // Load State API
+const redisSessionClient = require('./loaders/redis-sessions')// Load Limiter Session connection
+let RedisStore = require("connect-redis")(session)
 ///////////////////////////////////////////////////////////////////////////
 // Schema
 ///////////////////////////////////////////////////////////////////////////
@@ -207,25 +209,38 @@ const createServer = async() => {
 		if (app.get('env') === 'production') {
 			logger.log('info', "[App] Production environment detected enabling trust proxy/ secure cookies");
 			app.enable('trust proxy');
-			app.use(cookieSession({
-				name: 'session',
-				keys: [cookieSecret],
-				// Cookie Options
-				maxAge: 24 * 60 * 60 * 1000, // 24 hours
-				secure: true
-			  }));
+			app.use(
+			  session({
+				store: new RedisStore({ client: redisSessionClient }),
+				saveUninitialized: false,
+				secret: cookieSecret,
+				resave: false,
+				cookie: { 
+					secure: true,
+					maxAge: 24 * 60 * 60 * 1000, // 24 hours
+				}
+			}));
 		}
 		// Handle non production environment session handler options
 		else {
-			app.use(cookieSession({
-				name: 'session',
-				keys: [cookieSecret],
-				// Cookie Options
+			app.use(
+			  session({
+			  store: new RedisStore({ client: redisSessionClient }),
+			  saveUninitialized: false,
+			  secret: cookieSecret,
+			  resave: false,
+			  cookie: { 
+			  	secure: false,
 				maxAge: 24 * 60 * 60 * 1000, // 24 hours
-				secure: false
-			  }));
-
+			  }
+			}));
 		}
+		app.use(function (req, res, next) {
+			if (!req.session) {
+			  return next(new Error("Internal Error"));
+			}
+			next() // otherwise continue
+		  })
 		app.use(bodyParser.json());
 		app.use(bodyParser.urlencoded({ extended: false }));
 		app.use(passport.initialize());

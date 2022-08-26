@@ -100,13 +100,17 @@ router.get('/login', defaultLimiter, async (req, res) => {
 ///////////////////////////////////////////////////////////////////////////
 router.get('/logout', defaultLimiter, function(req,res){
 	// sendPageView(req.path, 'Logout', req.ip, req.headers['user-agent']);
-	req.logout();
-	if (req.query.next) {
-		//console.log(req.query.next);
-		res.redirect(req.query.next);
-	} else {
+	req.logout(function(err) {
+		if (err) { return next(err); }
 		res.redirect('/');
-	}
+	  });
+	// req.logout();
+	// if (req.query.next) {
+	// 	//console.log(req.query.next);
+	// 	res.redirect(req.query.next);
+	// } else {
+	// 	res.redirect('/');
+	// }
 	//outputSessionID(req, "/logout");
 });
 

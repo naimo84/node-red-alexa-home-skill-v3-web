@@ -8,10 +8,10 @@ const updateDeviceState = require('../services/state').updateDeviceState;
 // Variables
 ///////////////////////////////////////////////////////////////////////////
 // MQTT ENV variables========================
-var mqtt_user = (process.env.MQTT_USER);
-var mqtt_password = (process.env.MQTT_PASSWORD);
-var mqtt_port = (process.env.MQTT_PORT || "1883");
-var mqtt_url = (process.env.MQTT_URL || "mqtt://mosquitto:" + mqtt_port);
+var mqtt_user = process.env.MQTT_USER;
+var mqtt_password = process.env.MQTT_PASSWORD;
+var mqtt_port = process.env.MQTT_PORT || "1883";
+var mqtt_url = process.env.MQTT_URL || "mqtt://mosquitto:" + mqtt_port;
 // Shared Array Object for Alexa/ GHome Commands that are un-acknowledged
 var ongoingCommands = {};
 ///////////////////////////////////////////////////////////////////////////

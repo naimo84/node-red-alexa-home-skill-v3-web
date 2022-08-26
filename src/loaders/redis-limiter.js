@@ -5,10 +5,10 @@ var logger = require('./logger'); // Moved to own module
 ///////////////////////////////////////////////////////////////////////////
 // Redis Client Config
 ///////////////////////////////////////////////////////////////////////////
-var redisHost = (process.env.REDIS_SERVER || 'redis');
+var redisHost = process.env.REDIS_SERVER || 'redis';
 var client = require('redis').createClient({
-    host: redisHost,
-    db: 0,
+    url: `redis://${redisHost}:6397/0`,
+    // db: 0,
 	retry_strategy: function (options) {
         if (options.error && options.error.code === 'ECONNREFUSED') {
 			return new Error('The server refused the connection');
@@ -19,7 +19,7 @@ var client = require('redis').createClient({
         }
         if (options.attempt > 100) {
 			// End reconnecting with built in error
-			logger.log('error', "[Core] Redis server connection retry limit exhausted");
+			logger.log('error', "[Redis] Redis server connection retry limit exhausted");
             return undefined;
         }
 		// reconnect after
@@ -28,16 +28,19 @@ var client = require('redis').createClient({
    	}
 });
 client.on('connect', function() {
-    logger.log('info', "[Core] Connecting to Redis server...");
+    logger.log('info', "[Redis] Connecting to Redis server...");
 });
 client.on('ready', function() {
-    logger.log('info', "[Core] Redis connection ready!");
+    logger.log('info', "[Redis] Redis connection ready!");
 });
 client.on('reconnecting', function() {
-    logger.log('info', "[Core] Attempting to reconnect to Redis server");
+    logger.log('info', "[Redis] Attempting to reconnect to Redis server");
 });
 client.on('error', function (err) {
-    logger.log('error', "[Core] Unable to connect to Redis server");
+    logger.log('error', "[Redis] Unable to connect to Redis server");
+    console.log(err)
 });
+
+client.connect()
 
 module.exports = client;

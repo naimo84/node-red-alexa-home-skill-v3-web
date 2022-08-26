@@ -24,6 +24,7 @@ const robots = require('express-robots-txt');
 ///////////////////////////////////////////////////////////////////////////
 var db = require('./loaders/db'); // Load DB module, note connect happens later
 var mqtt = require('./loaders/mqtt'); // Load MQTT client and connect
+var redis = require('./loaders/redis-limiter') // Load Redis connection
 var state = require('./services/state'); // Load State API
 ///////////////////////////////////////////////////////////////////////////
 // Schema

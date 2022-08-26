@@ -8,16 +8,16 @@ const updateDeviceState = require('../services/state').updateDeviceState;
 // Variables
 ///////////////////////////////////////////////////////////////////////////
 // MQTT ENV variables========================
-var mqtt_user = process.env.MQTT_USER;
-var mqtt_password = process.env.MQTT_PASSWORD;
-var mqtt_port = process.env.MQTT_PORT || "1883";
-var mqtt_url = process.env.MQTT_URL || "mqtt://mosquitto:" + mqtt_port;
+const mqtt_user = process.env.MQTT_USER;
+const mqtt_password = process.env.MQTT_PASSWORD;
+const mqtt_port = process.env.MQTT_PORT || "1883";
+const mqtt_url = process.env.MQTT_URL || "mqtt://mosquitto:" + mqtt_port;
 // Shared Array Object for Alexa/ GHome Commands that are un-acknowledged
-var ongoingCommands = {};
+const ongoingCommands = {};
 ///////////////////////////////////////////////////////////////////////////
 // MQTT Client Configuration
 ///////////////////////////////////////////////////////////////////////////
-var mqttOptions = {
+const mqttOptions = {
 	connectTimeout: 30 * 1000,
 	reconnectPeriod: 1000,
 	keepAlive: 10,
@@ -32,7 +32,7 @@ var mqttOptions = {
 ///////////////////////////////////////////////////////////////////////////
 logger.log('info', "[MQTT] Connecting to MQTT server: " + mqtt_url);
 
-mqttClient = mqtt.connect(mqtt_url, mqttOptions);
+const mqttClient = mqtt.connect(mqtt_url, mqttOptions);
 
 mqttClient.on('error',function(err){
 	logger.log('error', "[MQTT] MQTT connect error");
@@ -51,9 +51,9 @@ mqttClient.on('connect', function(){
 ///////////////////////////////////////////////////////////////////////////
 // Event handler for received MQTT messages - note subscribe near top of script.
 mqttClient.on('message',function(topic,message){
-	var arrTopic = topic.split("/");
-	var username = arrTopic[1];
-	var endpointId = arrTopic[2];
+	const arrTopic = topic.split("/");
+	const username = arrTopic[1];
+	const endpointId = arrTopic[2];
 	var payload = JSON.parse(message.toString());
 	var commandSource = undefined;
 

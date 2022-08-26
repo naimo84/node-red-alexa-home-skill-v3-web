@@ -19,6 +19,7 @@ var verifyEmail = require('../models/verifyEmail');
 var passport = require('passport');
 var countries = require('countries-api');
 var logger = require('../loaders/logger');
+// const defaultLimiter = require('../loaders/limiter').defaultLimiter;
 const defaultLimiter = require('../loaders/limiter').defaultLimiter;
 const restrictiveLimiter = require('../loaders/limiter').restrictiveLimiter;
 const removeUserServices = require('../services/func-services').removeUserServices;
@@ -27,9 +28,9 @@ const removeUserServices = require('../services/func-services').removeUserServic
 ///////////////////////////////////////////////////////////////////////////
 const gHomeFunc = require('../services/func-ghome');
 const gHomeSync = gHomeFunc.gHomeSyncAsync;
-const sendPageView = require('../services/ganalytics').sendPageView;
-const sendPageViewUid = require('../services/ganalytics').sendPageViewUid;
-const sendEventUid = require('../services/ganalytics').sendEventUid;
+// const sendPageView = require('../services/ganalytics').sendPageView;
+// const sendPageViewUid = require('../services/ganalytics').sendPageViewUid;
+// const sendEventUid( = require('../services/ganalytics').sendEventUid;
 ///////////////////////////////////////////////////////////////////////////
 // Variables
 ///////////////////////////////////////////////////////////////////////////
@@ -49,7 +50,7 @@ let usernameRegExp = /^[a-z0-9]{5,15}$/;
 // Home
 ///////////////////////////////////////////////////////////////////////////
 router.get('/', defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'Home', req.ip, req.headers['user-agent']);
+	// sendPageView(req.path, 'Home', req.ip, req.headers['user-agent']);
 	// outputSessionID(req, "/");
 	res.render('pages/index', {user: req.user, home: true, brand: process.env.BRAND, title: "Home | " + process.env.BRAND});
 });
@@ -57,7 +58,7 @@ router.get('/', defaultLimiter, async (req, res) => {
 // Docs
 ///////////////////////////////////////////////////////////////////////////
 router.get('/docs', defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'Documentation', req.ip, req.headers['user-agent']);
+	// sendPageView(req.path, 'Documentation', req.ip, req.headers['user-agent']);
 	//outputSessionID(req, "/docs");
 	//res.render('pages/docs', {user: req.user, docs: true, brand: process.env.BRAND, title: "Documentation | " + process.env.BRAND});
 	res.status(301).redirect('https://docs.cb-net.co.uk');
@@ -66,7 +67,7 @@ router.get('/docs', defaultLimiter, async (req, res) => {
 // About
 ///////////////////////////////////////////////////////////////////////////
 router.get('/about', defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'About', req.ip, req.headers['user-agent']);
+	// sendPageView(req.path, 'About', req.ip, req.headers['user-agent']);
 	//outputSessionID(req, "/about");
 	res.render('pages/about', {user: req.user, about: true, brand: process.env.BRAND, title: "About | " + process.env.BRAND});
 });
@@ -74,7 +75,7 @@ router.get('/about', defaultLimiter, async (req, res) => {
 // Privacy
 ///////////////////////////////////////////////////////////////////////////
 router.get('/privacy', defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'Privacy', req.ip, req.headers['user-agent']);
+	// sendPageView(req.path, 'Privacy', req.ip, req.headers['user-agent']);
 	//outputSessionID(req, "/privacy");
 	res.render('pages/privacy', {user: req.user, privacy: true, brand: process.env.BRAND, title: "Privacy Policy | " + process.env.BRAND, fqdn: process.env.WEB_HOSTNAME});
 });
@@ -82,7 +83,7 @@ router.get('/privacy', defaultLimiter, async (req, res) => {
 // TOS
 ///////////////////////////////////////////////////////////////////////////
 router.get('/tos', defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'Terms of Service', req.ip, req.headers['user-agent']);
+	// sendPageView(req.path, 'Terms of Service', req.ip, req.headers['user-agent']);
 	//outputSessionID(req, "/tos");
 	res.render('pages/tos', {user: req.user, tos: true, brand: process.env.BRAND, title: "Terms of Service | " + process.env.BRAND, fqdn: process.env.WEB_HOSTNAME});
 });
@@ -90,7 +91,7 @@ router.get('/tos', defaultLimiter, async (req, res) => {
 // Login (Get)
 ///////////////////////////////////////////////////////////////////////////
 router.get('/login', defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'Login', req.ip, req.headers['user-agent']);
+	// sendPageView(req.path, 'Login', req.ip, req.headers['user-agent']);
 	//outputSessionID(req, "/login");
 	res.render('pages/login',{user: req.user, login: true, brand: process.env.BRAND, title: "Login | " + process.env.BRAND, fqdn: process.env.WEB_HOSTNAME, message: req.flash('error')});
 });
@@ -98,7 +99,7 @@ router.get('/login', defaultLimiter, async (req, res) => {
 // Logout
 ///////////////////////////////////////////////////////////////////////////
 router.get('/logout', defaultLimiter, function(req,res){
-	sendPageView(req.path, 'Logout', req.ip, req.headers['user-agent']);
+	// sendPageView(req.path, 'Logout', req.ip, req.headers['user-agent']);
 	req.logout();
 	if (req.query.next) {
 		//console.log(req.query.next);
@@ -115,7 +116,7 @@ router.get('/logout', defaultLimiter, function(req,res){
 router.post('/login', defaultLimiter,
 	passport.authenticate('local',{ failureRedirect: '/login', failureFlash: true, session: true }),
 	function(req,res){
-		sendPageViewUid(req.path, 'Login', req.ip, req.user.username, req.headers['user-agent']);
+		// sendPageViewUid(req.path, 'Login', req.ip, req.user.username, req.headers['user-agent']);
 		if (req.query.next) {
 			res.reconnect(req.query.next);
 		} else {
@@ -131,7 +132,7 @@ router.post('/login', defaultLimiter,
 // Register/ Newuser (Get)
 ///////////////////////////////////////////////////////////////////////////
 router.get('/new-user', defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'New User', req.ip, req.headers['user-agent']);
+	// sendPageView(req.path, 'New User', req.ip, req.headers['user-agent']);
 	//outputSessionID(req, "/new-user");
     res.render('pages/register',{user: req.user, newuser: true, brand: process.env.BRAND, title: "Register | " + process.env.BRAND, fqdn: process.env.WEB_HOSTNAME});
 });
@@ -172,7 +173,7 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 				mailer.send(req.body.email, process.env.MAIL_USER, 'Account Verification for ' + process.env.BRAND, body.text, body.html, function(returnValue) {
 					// Success, 201 Created
 					if (returnValue == true) {
-						sendEventUid(req.path, "Security", "Create Account", req.ip, req.body.username, req.headers['user-agent']);
+						// ssendEventUid(req.path, "Security", "Create Account", req.ip, req.body.username, req.headers['user-agent']);
 						res.status(201).send('A verification email has been sent to: ' + req.body.email + ", you need to verify your account to use this service.")
 					}
 					// Failed, 500 Internal Service Error
@@ -209,7 +210,7 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 // Verify GET
 ///////////////////////////////////////////////////////////////////////////
 router.get(['/verify', '/verify/:token'], defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'Verify', req.ip, req.headers['user-agent']);
+	// sendPageView(req.path, 'Verify', req.ip, req.headers['user-agent']);
 	let message = undefined;
 	if (!req.params.token) {
 		message = 'No token value supplied in URL, please ensure you manually enter token value below!';
@@ -287,7 +288,7 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 // Verify Resend GET
 ///////////////////////////////////////////////////////////////////////////
 router.get('/verify-resend', defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'Verify Resend', req.ip, req.headers['user-agent']);
+	// sendPageView(req.path, 'Verify Resend', req.ip, req.headers['user-agent']);
     res.render('pages/verify-resend', {user: req.user, brand: process.env.BRAND, title: "Verify Re-Send | " + process.env.BRAND});
 });
 ///////////////////////////////////////////////////////////////////////////
@@ -312,7 +313,7 @@ router.post('/verify-resend', defaultLimiter,  async (req, res) => {
 				// Send Verification Email
 				mailer.send(account.email, process.env.MAIL_USER, 'Account Verification for ' + process.env.BRAND, body.text, body.html, function(returnValue) {
 					if (returnValue == true) {
-						sendEventUid(req.path, "Security", "Send re-verification email", req.ip, account.username, req.headers['user-agent']);
+						// ssendEventUid(req.path, "Security", "Send re-verification email", req.ip, account.username, req.headers['user-agent']);
 						logger.log('info' , "[Verify Resend] A new verification email has been sent to: " + account.email);
 						return res.status(202).send('A verification email has been sent to: ' + account.email);
 					}
@@ -344,7 +345,7 @@ router.post('/verify-resend', defaultLimiter,  async (req, res) => {
 // change-password/:token (Get)
 ///////////////////////////////////////////////////////////////////////////
 router.get(['/change-password', '/change-password/:token'], restrictiveLimiter, async (req, res) => {
-	sendPageView(req.path, 'Change Password with Token', req.ip, req.headers['user-agent']);
+	// sendPageView(req.path, 'Change Password with Token', req.ip, req.headers['user-agent']);
 	let message = undefined;
 	if (!req.params.token && !req.user) {
 		message = 'No token value supplied in URL, please ensure you manually enter token value below!';
@@ -367,12 +368,12 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 			var result = await resetPassword(req.user.username, req.body.password);
 			//  Success, send 202 status
 			if (result == true) {
-				sendEventUid(req.path, "Security", "Successfully Changed Password", req.ip, req.user.username, req.headers['user-agent']);
+				// ssendEventUid(req.path, "Security", "Successfully Changed Password", req.ip, req.user.username, req.headers['user-agent']);
 				res.status(202).send('Changed Password!');
 			}
 			//  Failure, send status 500, Internal Service Error
 			else {
-				sendEventUid(req.path, "Security", "Failed to Changed Password", req.ip, req.user.username, req.headers['user-agent']);
+				// ssendEventUid(req.path, "Security", "Failed to Changed Password", req.ip, req.user.username, req.headers['user-agent']);
 				res.status(500).send("Problem setting new password");
 			}
 		}
@@ -401,11 +402,11 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 					var result = await resetPassword(lostPassword.user.username, req.body.password);
 					logger.log('verbose' , "[Change Password] resetPassword result: " + result);
 					if (result == true) {
-						sendEventUid(req.path, "Security", "Successfully Changed Password", req.ip, lostPassword.user.username, req.headers['user-agent']);
+						// ssendEventUid(req.path, "Security", "Successfully Changed Password", req.ip, lostPassword.user.username, req.headers['user-agent']);
 						return res.status(202).send('Changed Password!');
 					}
 					else {
-						sendEventUid(req.path, "Security", "Failed to Changed Password", req.ip, lostPassword.user.username, req.headers['user-agent']);
+						// ssendEventUid(req.path, "Security", "Failed to Changed Password", req.ip, lostPassword.user.username, req.headers['user-agent']);
 						return res.status(500).send("Error setting new password");
 					}
 				}
@@ -417,7 +418,7 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 		catch(e) {
 			// General error, send 500 status
 			logger.log('error' , "[Change Password] Error setting unauthenticated user's password, error: " + e.stack);
-			//sendEventUid(req.path, "Security", "Failed to Changed Password", req.ip, req.user.username, req.headers['user-agent']);
+			//// ssendEventUid(req.path, "Security", "Failed to Changed Password", req.ip, req.user.username, req.headers['user-agent']);
 			res.status(500).send("Error setting new password");
 		}
 	}
@@ -428,10 +429,10 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 ///////////////////////////////////////////////////////////////////////////
 router.get('/lost-password', defaultLimiter, async (req, res) => {
 	if (req.user){
-		sendPageViewUid(req.path, 'Lost Password', req.ip, req.user.username, req.headers['user-agent']);
+		// sendPageViewUid(req.path, 'Lost Password', req.ip, req.user.username, req.headers['user-agent']);
 	}
 	else {
-		sendPageView(req.path, 'Lost Password', req.ip, req.headers['user-agent']);
+		// sendPageView(req.path, 'Lost Password', req.ip, req.headers['user-agent']);
 	}
 	//outputSessionID(req, "/lost-password");
     res.render('pages/lost-password', { user: req.user, brand: process.env.BRAND, title: "Account Recovery | " + process.env.BRAND});
@@ -471,7 +472,7 @@ router.get('/my-account', defaultLimiter,
     ensureAuthenticated,
     async (req, res) => {
 		try {
-			sendPageViewUid(req.path, 'My Account', req.ip, req.user.username, req.headers['user-agent']);
+			// sendPageViewUid(req.path, 'My Account', req.ip, req.user.username, req.headers['user-agent']);
 			//outputSessionID(req, "/my-account");
 			var user = await Account.findOne({username: req.user.username});
 			res.render('pages/account',{user: user, acc: true, brand: process.env.BRAND, title: "My Account | " + process.env.BRAND});
@@ -489,7 +490,7 @@ router.get('/devices', defaultLimiter,
 	ensureAuthenticated,
 	async (req, res) => {
 	try {
-		sendPageViewUid(req.path, 'My Devices', req.ip, req.user.username, req.headers['user-agent']);
+		// sendPageViewUid(req.path, 'My Devices', req.ip, req.user.username, req.headers['user-agent']);
 		var user = req.user.username;
 		// Find user devices
 		var devices = await Devices.find({username:user});

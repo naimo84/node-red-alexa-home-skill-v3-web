@@ -20,9 +20,9 @@ const validateCommandAsync = require('../services/func-ghome').validateCommandAs
 const servicesFunc = require('../services/func-services');
 //var client = require('../loaders/redis-mqtt'); // Redis MQTT Command Holding Area
 const defaultLimiter = require('../loaders/limiter').defaultLimiter;
-//const sendPageView = require('../services/ganalytics').sendPageView;
-//const sendPageViewUid = require('../services/ganalytics').sendPageViewUid;
-const sendEventUid = require('../services/ganalytics').sendEventUid;
+//// const sendPageView = require('../services/ganalytics').sendPageView;
+//// const sendPageViewUid = require('../services/ganalytics').sendPageViewUid;
+// const sendEventUid( = require('../services/ganalytics').sendEventUid;
 ///////////////////////////////////////////////////////////////////////////
 // Functions
 ///////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,7 @@ router.post('/action', defaultLimiter,
 		case 'action.devices.SYNC' :
 			try {
 				logger.log('verbose', "[GHome Sync API] Running device discovery for user: " + req.user.username);
-				sendEventUid(req.path, "SYNC", "GHome SYNC Event", req.ip, req.user.username, req.headers['user-agent']);
+				// ssendEventUid(req.path, "SYNC", "GHome SYNC Event", req.ip, req.user.username, req.headers['user-agent']);
 				// Find associated user for command
 				var user = await Account.find({username: req.user.username});
 				// Find users devices
@@ -223,7 +223,7 @@ router.post('/action', defaultLimiter,
 		///////////////////////////////////////////////////////////////////////////
 		case 'action.devices.EXECUTE' :
 			try {
-				sendEventUid(req.path, "EXECUTE", "GHome EXECUTE Event", req.ip, req.user.username, req.headers['user-agent']);
+				// ssendEventUid(req.path, "EXECUTE", "GHome EXECUTE Event", req.ip, req.user.username, req.headers['user-agent']);
 				// Find users devices defined on this service
 				var devices = await Devices.find({username: req.user.username});
 				logger.log('verbose', "[GHome Exec API] Execute command(s) for user: " + req.user.username + ", command: " +  JSON.stringify(req.body.inputs[0].payload.commands));
@@ -311,7 +311,7 @@ router.post('/action', defaultLimiter,
 		case 'action.devices.QUERY' :
 			try {
 				logger.log('verbose', "[GHome QUERY API] Running device state query for user: " + req.user.username);
-				sendEventUid(req.path, "QUERY", "GHome QUERY Event", req.ip, req.user.username, req.headers['user-agent']);
+				// ssendEventUid(req.path, "QUERY", "GHome QUERY Event", req.ip, req.user.username, req.headers['user-agent']);
 				// Find associated user for command
 				var user = await Account.find({username: req.user.username});
 				// Find users devices
@@ -353,7 +353,7 @@ router.post('/action', defaultLimiter,
 		case 'action.devices.DISCONNECT' :
 			try {
 				var userId = req.user._id;
-				sendEventUid(req.path, "DISCONNECT", "GHome DISCONNECT Event", req.ip, req.user.username, req.headers['user-agent']);
+				// ssendEventUid(req.path, "DISCONNECT", "GHome DISCONNECT Event", req.ip, req.user.username, req.headers['user-agent']);
 				// Find Google Home speciifc Application Id (could vary on other instances)
 				var appGHome = await oauthModels.Application.findOne({domains: "oauth-redirect.googleusercontent.com" });
 				// Delete user OAuth data for Google Home

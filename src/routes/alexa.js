@@ -23,7 +23,7 @@ const saveGrantAsync = require('../services/func-alexa').saveGrantAsync;
 const requestAccessTokenAsync = require('../services/func-alexa').requestAccessTokenAsync;
 const validateCommandAsync = require('../services/func-alexa').validateCommandAsync;
 const buildCommandResponseAsync = require('../services/func-alexa').buildCommandResponseAsync;
-const sendEventUid = require('../services/ganalytics').sendEventUid;
+// const sendEventUid( = require('../services/ganalytics').sendEventUid;
 ///////////////////////////////////////////////////////////////////////////
 // Discovery API, can be tested via credentials of an account/ browsing to http://<hostname>/api/v1/devices
 ///////////////////////////////////////////////////////////////////////////
@@ -31,7 +31,7 @@ router.get('/devices',
 	passport.authenticate(['bearer', 'basic'], { session: false }),
 	async (req, res) => {
 		try {
-			sendEventUid(req.path, "Discovery", "Running device discovery", req.ip, req.user.username, req.headers['user-agent']);
+			// ssendEventUid(req.path, "Discovery", "Running device discovery", req.ip, req.user.username, req.headers['user-agent']);
 			var user = req.user.username;
 			var devices = await Devices.find({username: user});
 			var devs = [];
@@ -85,7 +85,7 @@ router.get('/getstate/:dev_id', getStateLimiter,
 	async (req, res) => {
 		try {
 			var id = req.params.dev_id;
-			sendEventUid(req.path, "Get State", "GetState API Request, endpointId: " + id, req.ip, req.user.username, req.headers['user-agent']);
+			// ssendEventUid(req.path, "Get State", "GetState API Request, endpointId: " + id, req.ip, req.user.username, req.headers['user-agent']);
 			// As user has authenticated, assume activeService
 			if (!req.user.activeServices || (req.user.activeServices && req.user.activeServices.indexOf("Amazon")) == -1) {updateUserServices(req.user.username, "Amazon")};
 			// Fine Device using endpointId supplied in req.params.dev_id
@@ -116,7 +116,7 @@ router.post('/command2',
 	passport.authenticate('bearer', { session: false }),
 	async (req, res) => {
 		try {
-			sendEventUid(req.path, "Command", "Execute Command, endpointId: " + req.body.directive.endpoint.endpointId, req.ip, req.user.username, req.headers['user-agent']);
+			// ssendEventUid(req.path, "Command", "Execute Command, endpointId: " + req.body.directive.endpoint.endpointId, req.ip, req.user.username, req.headers['user-agent']);
 			// User has generated a command, thus must have Alexa linked with their account, add 'Amazon' to active services
 			if (!req.user.activeServices || (req.user.activeServices && req.user.activeServices.indexOf("Amazon")) == -1) {updateUserServices(req.user.username, "Amazon")};
 			logger.log('debug', "[Alexa API] Received command for user: " + req.user.username + ", command: " + JSON.stringify(req.body));

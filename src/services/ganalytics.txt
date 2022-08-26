@@ -38,7 +38,7 @@ module.exports.sendPageViewUid = function sendPageViewUid(requestPath, friendlyN
 }
 
 // Send with userId
-module.exports.sendEventUid = function sendEventUid(requestPath, eventClass, message, userIp, userId, userAgent){
+module.exports.sendEventUid = function ssendEventUid(requestPath, eventClass, message, userIp, userId, userAgent){
     var params = {
         ec: eventClass,
         ea: message,

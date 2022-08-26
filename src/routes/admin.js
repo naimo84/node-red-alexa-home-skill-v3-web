@@ -9,7 +9,7 @@ const Devices = require('../models/devices');
 const Topics = require('../models/topics');
 const logger = require('../loaders/logger');
 const defaultLimiter = require('../loaders/limiter').defaultLimiter;
-const sendPageViewUid = require('../services/ganalytics').sendPageViewUid;
+// const sendPageViewUid = require('../services/ganalytics').sendPageViewUid;
 const crypto = require('crypto');
 ///////////////////////////////////////////////////////////////////////////W
 // Variables
@@ -30,7 +30,7 @@ router.get('/services', defaultLimiter,
 	async (req, res) => {
 		try {
 			if (req.user.superuser === true) {
-				sendPageViewUid(req.path, 'Services Admin', req.ip, req.user.username, req.headers['user-agent']);
+				// sendPageViewUid(req.path, 'Services Admin', req.ip, req.user.username, req.headers['user-agent']);
 				let apps = await oauthModels.Application.find({});
 				res.render('pages/services',{user:req.user, services: apps, brand: process.env.BRAND, title: "OAuth Services | " + process.env.BRAND});
 			} else {
@@ -50,7 +50,7 @@ router.get('/users', defaultLimiter,
 	async (req, res) => {
 		try{
 			if (req.user.superuser === true) {
-				sendPageViewUid(req.path, 'User Admin', req.ip, req.user.username, req.headers['user-agent']);
+				// sendPageViewUid(req.path, 'User Admin', req.ip, req.user.username, req.headers['user-agent']);
 				let totalCount = await Account.countDocuments({});
 				// https://docs.mongodb.com/manual/reference/method/db.collection.find/#explicitly-excluded-fields
 				let usersAndDevs = await Account.aggregate([
@@ -158,7 +158,7 @@ router.get('/user-devices', defaultLimiter,
 	async (req, res) => {
 		try {
 			if (req.user.superuser === true) {
-				sendPageViewUid(req.path, 'User Device Admin', req.ip, req.user.username, req.headers['user-agent']);
+				// sendPageViewUid(req.path, 'User Device Admin', req.ip, req.user.username, req.headers['user-agent']);
 				let devices = await Devices.find({});
 				let count = await Devices.countDocuments({});
 				res.render('pages/user-devices',{user:req.user, devices: devices, devicecount: count, brand: process.env.BRAND, title: "Device Admin | " + process.env.BRAND});

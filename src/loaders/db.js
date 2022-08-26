@@ -50,7 +50,7 @@ exports.connect = () => {
 	mongoose.connect(mongo_url, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
-		poolSize: 10,
+		// poolSize: 10,
 		socketTimeoutMS: 30000,
 		keepAlive: true,
 		keepAliveInitialDelay: 30000

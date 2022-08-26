@@ -11,7 +11,7 @@ var mongo_user = process.env.MONGO_USER;
 var mongo_password = process.env.MONGO_PASSWORD;
 var mongo_host = process.env.MONGO_HOST || "mongodb";
 var mongo_port = process.env.MONGO_PORT || "27017";
-var mongo_url = "mongodb://" + mongo_user +":" + mongo_password + "@" + mongo_host + ":" + mongo_port + "/users";
+var mongo_url = "mongodb://" + mongo_user +":" + encodeURIComponent(mongo_password) + "@" + mongo_host + ":" + mongo_port + "/users";
 mongoose.Promise = global.Promise;
 var mongoose_connection = mongoose.connection;
 ///////////////////////////////////////////////////////////////////////////

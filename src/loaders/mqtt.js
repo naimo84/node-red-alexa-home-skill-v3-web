@@ -36,6 +36,7 @@ mqttClient = mqtt.connect(mqtt_url, mqttOptions);
 
 mqttClient.on('error',function(err){
 	logger.log('error', "[MQTT] MQTT connect error");
+	console.log(err)
 });
 mqttClient.on('reconnect', function(){
 	logger.log('warn', "[MQTT] MQTT reconnect event");

@@ -1,4 +1,4 @@
-FROM node:12.18
+FROM node:16.17.0
 
 ENV NODE_ENV production
 

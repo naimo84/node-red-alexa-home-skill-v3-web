@@ -7,39 +7,41 @@ const crypto = require('crypto');
 ///////////////////////////////////////////////////////////////////////////
 // Variables
 ///////////////////////////////////////////////////////////////////////////
-var debug = (process.env.ALEXA_DEBUG || false);
+var debug = process.env.ALEXA_DEBUG || false;
 // var awscredentials = '/root/.aws/credentials'
-var logGroup = (process.env.WEB_HOSTNAME || "node-red")
+var logGroup = process.env.WEB_HOSTNAME || 'node-red';
 var startTime = new Date().toISOString();
-var consoleLoglevel = "info";
-if (debug == "true") {consoleLoglevel = "debug"};
+var consoleLoglevel = 'info';
+if (debug == 'true') {
+  consoleLoglevel = 'debug';
+}
 ///////////////////////////////////////////////////////////////////////////
 // Exports
 ///////////////////////////////////////////////////////////////////////////
 const logger = createLogger({
-	transports: [
-	  // Console Transport
-	  new transports.Console({
-		level: consoleLoglevel,
-		format: format.combine(
-		  format.timestamp(),
-		  format.colorize(),
-		  format.simple()
-		),
-		handleExceptions: true
-		})
-	]
-  });
-  // Create logger stream object for use with morgan
+  transports: [
+    // Console Transport
+    new transports.Console({
+      level: consoleLoglevel,
+      format: format.combine(
+        format.timestamp(),
+        format.colorize(),
+        format.simple()
+      ),
+      handleExceptions: true,
+    }),
+  ],
+});
+// Create logger stream object for use with morgan
 logger.stream = {
-	write: function(message, encoding) {
-	  // use the 'verbose' log level
-	  logger.verbose(message);
-	},
-	};
+  write: function (message, encoding) {
+    // use the 'verbose' log level
+    logger.verbose(message);
+  },
+};
 
 // Output Log Level
-logger.log('info', "[Core] Log Level set to: " + consoleLoglevel);
+logger.log('info', '[Core] Log Level set to: ' + consoleLoglevel);
 
 // Check for AWS credentials
 // fs.access(awscredentials, fs.F_OK, (err) => {

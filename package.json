@@ -1,6 +1,6 @@
 {
   "name": "node-red-alexa-home-skill-v3",
-  "version": "0.11.5",
+  "version": "0.11.6",
   "description": "",
   "main": "src/app.js",
   "scripts": {
@@ -50,6 +50,7 @@
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^7.1.2",
     "passport-totp": "0.0.2",
+    "prettier": "^2.7.1",
     "querystring": "^0.2.1",
     "redis": "^4.3.0",
     "saslprep": "^1.0.3",

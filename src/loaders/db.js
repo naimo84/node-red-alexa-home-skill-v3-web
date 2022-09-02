@@ -9,32 +9,47 @@ var logger = require('./logger'); // Moved to own module
 // MongoDB Settings
 var mongo_user = process.env.MONGO_USER;
 var mongo_password = process.env.MONGO_PASSWORD;
-var mongo_host = process.env.MONGO_HOST || "mongodb";
-var mongo_port = process.env.MONGO_PORT || "27017";
-var mongo_url = "mongodb://" + mongo_user +":" + encodeURIComponent(mongo_password) + "@" + mongo_host + ":" + mongo_port + "/users";
+var mongo_host = process.env.MONGO_HOST || 'mongodb';
+var mongo_port = process.env.MONGO_PORT || '27017';
+var mongo_url =
+  'mongodb://' +
+  mongo_user +
+  ':' +
+  encodeURIComponent(mongo_password) +
+  '@' +
+  mongo_host +
+  ':' +
+  mongo_port +
+  '/users';
 mongoose.Promise = global.Promise;
 var mongoose_connection = mongoose.connection;
 ///////////////////////////////////////////////////////////////////////////
 // Connect to Mongo Instance
 ///////////////////////////////////////////////////////////////////////////
-mongoose_connection.on('connecting', function() {
-	logger.log('info', `[Core] Connecting to MongoDB: ${mongo_url.replace(mongo_password, '*****')}`);
+mongoose_connection.on('connecting', function () {
+  logger.log(
+    'info',
+    `[Core] Connecting to MongoDB: ${mongo_url.replace(
+      mongo_password,
+      '*****'
+    )}`
+  );
 });
-mongoose_connection.on('error', function(error) {
-	logger.log('error', "[Core] MongoDB connection error: " + error);
-	//mongoose.disconnect();
+mongoose_connection.on('error', function (error) {
+  logger.log('error', '[Core] MongoDB connection error: ' + error);
+  //mongoose.disconnect();
 });
-mongoose_connection.on('connected', function() {
-    logger.log('info', "[Core] MongoDB connected!");
+mongoose_connection.on('connected', function () {
+  logger.log('info', '[Core] MongoDB connected!');
 });
-mongoose_connection.once('open', function() {
-    logger.log('info', "[Core] MongoDB connection opened!");
+mongoose_connection.once('open', function () {
+  logger.log('info', '[Core] MongoDB connection opened!');
 });
 mongoose_connection.on('reconnected', function () {
-    logger.log('info', "[Core] MongoDB reconnected!");
+  logger.log('info', '[Core] MongoDB reconnected!');
 });
-mongoose_connection.on('disconnected', function() {
-	logger.log('warn', "[Core] MongoDB disconnected!");
+mongoose_connection.on('disconnected', function () {
+  logger.log('warn', '[Core] MongoDB disconnected!');
 });
 
 // Fix Mongoose Deprecation Warnings; https://mongoosejs.com/docs/deprecations.html
@@ -45,16 +60,19 @@ mongoose_connection.on('disconnected', function() {
 // mongoose.set('useUnifiedTopology', true);
 
 exports.connect = () => {
-	mongoose.connect(mongo_url, {
-		useNewUrlParser: true,
-		useUnifiedTopology: true,
-		// poolSize: 10,
-		socketTimeoutMS: 30000,
-		keepAlive: true,
-		keepAliveInitialDelay: 30000
-	}).
-		catch(error => logger.log('error', '[Core] Error connecting to MongoDB: ' + error));
-}
+  mongoose
+    .connect(mongo_url, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      // poolSize: 10,
+      socketTimeoutMS: 30000,
+      keepAlive: true,
+      keepAliveInitialDelay: 30000,
+    })
+    .catch((error) =>
+      logger.log('error', '[Core] Error connecting to MongoDB: ' + error)
+    );
+};
 
 // Move back to useUnifiedTopology: false
 // exports.connect = () => {

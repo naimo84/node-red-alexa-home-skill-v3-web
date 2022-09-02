@@ -3,25 +3,20 @@
 <% if (isVerified == false) { %>
 	<div class="alert alert-danger alert-dismissible fade show" role="alert">
 		<strong>Warning!</strong> You need to verify your account! Browse to <a href='https://<%= fqdn %>/verify-resend'>https://<%= fqdn %>/verify-resend</a> to generate email verification token and complete the process.
-		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-		<span aria-hidden="true">&times;</span>
-		</button>
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 	</div>
 <% } %>
 <% if (grants == 0) { %>
 	<div class="alert alert-danger alert-dismissible fade show" role="alert">
 		<strong>Warning!</strong> You still need to link your Amazon/ Google Account to use this service! See <a href='/docs'>here</a> for more information.
-		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-		<span aria-hidden="true">&times;</span>
-		</button>
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
 	</div>
 <% } %>
 
 <div class="alert alert-secondary alert-dismissible fade show" role="alert">
 	You can support the ongoing running of this service via <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=A2F2KF4GKKXT6&currency_code=GBP&source=url' target='_blank'>PayPal</a> or <a href='https://github.com/coldfire84' target='_blank'>GitHub Sponsors</a>.
-	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-	<span aria-hidden="true">&times;</span>
-	</button>
+	<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 
 <div class="container main-content">
@@ -824,7 +819,7 @@ function saveDevice() {
 
 function addDevice() {
 	clearDevice();
-	$("#newDeviceModal").modal();
+	$("#newDeviceModal").modal('show');
 }
 
 function clearDevice() {
@@ -883,7 +878,7 @@ function edit(id) {
 	// Flush Modal
 	clearDevice();
 	// Show modal, with Interfaces/ Capability options
-	$("#newDeviceModal").modal();
+	$("#newDeviceModal").modal('show');
 	$('#simpleOptions').show();
 	// Load basic device data into modal
 	var device = devices[id];

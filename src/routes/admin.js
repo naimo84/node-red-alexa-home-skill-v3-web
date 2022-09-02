@@ -59,9 +59,18 @@ router.get('/users', defaultLimiter, ensureAuthenticated, async (req, res) => {
   try {
     if (req.user.superuser === true) {
       // sendPageViewUid(req.path, 'User Admin', req.ip, req.user.username, req.headers['user-agent']);
-      let totalCount = await Account.countDocuments({});
+      const count = await Account.countDocuments();
       // https://docs.mongodb.com/manual/reference/method/db.collection.find/#explicitly-excluded-fields
+      const limit = 100;
+      const page = req.query.page || 1
+      const offset = parseInt(page * limit)
+      const pages = Math.ceil(count / limit);
+      const current = Math.ceil(page);
       let usersAndDevs = await Account.aggregate([
+        {
+          $skip: offset,
+        },
+        { $limit: limit },
         {
           $lookup: {
             from: 'devices',
@@ -86,9 +95,11 @@ router.get('/users', defaultLimiter, ensureAuthenticated, async (req, res) => {
       res.render('pages/users', {
         user: req.user,
         users: usersAndDevs,
-        usercount: totalCount,
+        usercount: count,
         brand: process.env.BRAND,
         title: 'User Admin | ' + process.env.BRAND,
+        current,
+        pages,
       });
     } else {
       res.redirect(403, '/');
@@ -209,15 +220,12 @@ router.get(
       if (req.user.superuser === true) {
         // sendPageViewUid(req.path, 'User Device Admin', req.ip, req.user.username, req.headers['user-agent']);
         const limit = 100;
-        const offset = parseInt(req.query.page * limit) || 0;
+        const page = req.query.page || 1
+        const offset = parseInt(page * limit);
         const devices = await Devices.find().skip(offset).limit(limit);
         const count = await Devices.countDocuments();
         const pages = Math.ceil(count / limit);
-        const current = Math.ceil(req.query.page);
-        // console.log(count)
-        // console.log(offset)
-        // console.log(totalPages)
-        // console.log(req.query.page)
+        const current = Math.ceil(page);
         res.render('pages/user-devices', {
           user: req.user,
           devices: devices,

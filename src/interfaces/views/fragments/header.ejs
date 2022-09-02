@@ -34,7 +34,7 @@
 <body>
 <% } %>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-        <a class="navbar-brand notranslate" href="#"><%= brand %></a>
+        <div class="ms-1"><a class="navbar-brand notranslate" href="#"><%= brand %></a></div>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-label="Toggle Navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -66,7 +66,7 @@
                       <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="/admin/services">OAuth Services</a></li>
                         <li><a class="dropdown-item" href="/admin/users">All Users</a></li>
-                        <li><a class="dropdown-item" href="/admin/user-devices/?page=1">All Devices</a></li>
+                        <li><a class="dropdown-item" href="/admin/user-devices">All Devices</a></li>
                       </ul>
                   </div>
                   <% } %>

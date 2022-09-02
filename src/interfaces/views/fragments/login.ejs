@@ -1,22 +1,25 @@
 <h1 class="h3 mb-3 font-weight-normal">Please Sign In</h1>
 <div class="input-group mb-3">
-    <div class="input-group-prepend">
-        <span class="input-group-text" style="width: 102px;" id="basic-addon2" disabled><strong>Username</strong></span>
-    </div>
+    <span class="input-group-text" style="width: 102px;" id="basic-addon2" disabled><strong>Username</strong></span>
     <input type="text" id="username" name="username" class="form-control" autocomplete="username" required autofocus>
 </div>
 <div class="input-group mb-3">
-    <div class="input-group-prepend">
-        <span class="input-group-text" style="width: 102px;" id="basic-addon2" disabled><strong>Password</strong></span>
-    </div>
+    <span class="input-group-text" style="width: 102px;" id="basic-addon2" disabled><strong>Password</strong></span>
     <input type="password" id="password" name="password" class="form-control" autocomplete="current-password" required>
 </div>
-<small id="tosLink" class="form-text text-muted"><a href="#tosModal">View Terms of Service</a></small>
-<small id="privacyLink" class="form-text text-muted"><a href="#privacyModal">View Privacy Policy</a></small>
-<br>
-<button class="btn btn-lg btn-success btn-block" type="submit" value="login">Sign In</button>
-<br>
-<p> <a href="/lost-password" class="btn btn-secondary btn-block">Lost Password?</a></p>
-<p> <a href="/verify-resend" class="btn btn-secondary btn-block">Re-send Account Verification Email</a></p>
-<p> <a href="/new-user" class="btn btn-primary btn-block">Register for an Account?</a></p>
-
+<div class="mb-3 d-grid gap-2"">
+    <button class="btn btn-lg btn-success btn-block" type="submit" value="login">Sign In</button>
+</div>
+<div class="mb-3 d-grid gap-2"">
+    <a href="/lost-password" class="btn btn-secondary btn-block">Lost Password?</a>
+</div>
+<div class="mb-3 d-grid gap-2"">
+    <a href="/verify-resend" class="btn btn-secondary btn-block">Re-send Account Verification Email</a>
+</div>
+<div class="d-grid gap-2">
+    <a href="/new-user" class="btn btn-primary btn-block">Register for an Account?</a>
+</div>
+<div class="d-grid gap-2"">
+    <small id="tosLink" class="form-text text-muted"><a href="#tosModal">View Terms of Service</a></small>
+    <small id="privacyLink" class="form-text text-muted"><a href="#privacyModal">View Privacy Policy</a></small>
+</div>

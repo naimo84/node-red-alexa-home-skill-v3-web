@@ -756,7 +756,7 @@ router.get(
       // sendPageViewUid(req.path, 'My Devices', req.ip, req.user.username, req.headers['user-agent']);
       var user = req.user.username;
       // Find user devices
-      var devices = await Devices.find({ username: user });
+      var devices = await Devices.find({ username: user }).sort({ friendlyName: 1});
       // Get Count of Devices
       var countDevs = await Devices.countDocuments({ username: user });
       // Get Count of Grant Codes (to show if account is linked or not)

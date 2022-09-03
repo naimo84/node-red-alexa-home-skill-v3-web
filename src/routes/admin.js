@@ -62,11 +62,14 @@ router.get('/users', defaultLimiter, ensureAuthenticated, async (req, res) => {
       const count = await Account.countDocuments();
       // https://docs.mongodb.com/manual/reference/method/db.collection.find/#explicitly-excluded-fields
       const limit = 100;
-      const page = req.query.page || 1
-      const offset = parseInt(page * limit)
+      const page = req.query.page || 1;
+      const offset = parseInt((page -1) * limit);
       const pages = Math.ceil(count / limit);
       const current = Math.ceil(page);
       let usersAndDevs = await Account.aggregate([
+        {
+          $sort: { created: 1 },
+        },
         {
           $skip: offset,
         },
@@ -220,8 +223,8 @@ router.get(
       if (req.user.superuser === true) {
         // sendPageViewUid(req.path, 'User Device Admin', req.ip, req.user.username, req.headers['user-agent']);
         const limit = 100;
-        const page = req.query.page || 1
-        const offset = parseInt(page * limit);
+        const page = req.query.page || 1;
+        const offset = parseInt((page -1) * limit);
         const devices = await Devices.find().skip(offset).limit(limit);
         const count = await Devices.countDocuments();
         const pages = Math.ceil(count / limit);

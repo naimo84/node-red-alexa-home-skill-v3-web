@@ -152,7 +152,7 @@ router.get(
 ///////////////////////////////////////////////////////////////////////////
 router.post(
   '/command2',
-  passport.authenticate('bearer', { session: false }),
+  passport.authenticate(['basic','bearer'], { session: false }),
   async (req, res) => {
     try {
       // ssendEventUid(req.path, "Command", "Execute Command, endpointId: " + req.body.directive.endpoint.endpointId, req.ip, req.user.username, req.headers['user-agent']);

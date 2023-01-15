@@ -1,0 +1,8 @@
+version: "2"
+services:
+  alexa_v3:
+    container_name: alexa_v3
+    restart: always    
+    build: .   
+    image: docker.naimo84.dev/alexa:1.0.1
+

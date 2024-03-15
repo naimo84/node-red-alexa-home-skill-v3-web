@@ -40,29 +40,7 @@ if (!process.env.ALEXA_CLIENTID && !process.env.ALEXA_CLIENTSECRET) {
 ///////////////////////////////////////////////////////////////////////////
 // Main
 ///////////////////////////////////////////////////////////////////////////
-const setupHomeGraph = async () => {
-  try {
-    var data = await readFile(ghomeJWT_file, 'utf8');
-    gHomeReportState = true;
-    keys = JSON.parse(data);
-    // Request Token
-    gToken = await requestToken2Async(keys);
-    logger.log('info', '[State API] Obtained GHome HomeGraph OAuth token');
-    //logger.log('debug', "[State API] GHome HomeGraph OAuth token:" + gToken);
-  } catch (e) {
-    logger.log(
-      'error',
-      '[State API] Report state setup failed, error: ' + e.stack
-    );
-  }
-};
 
-setupHomeGraph();
-
-// Create timer job to re-request access token before expiration
-var refreshToken = setInterval(function () {
-  setupHomeGraph();
-}, 3540000);
 ///////////////////////////////////////////////////////////////////////////
 // Functions
 ///////////////////////////////////////////////////////////////////////////

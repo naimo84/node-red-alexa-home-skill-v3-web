@@ -1,8 +1,37 @@
-version: "2"
+
 services:
+  
   alexa_v3:
     container_name: alexa_v3
     restart: always    
     build: .   
     image: docker.naimo84.dev/alexa:1.0.1
+    volumes: 
+      - ./ghomejwt.json:/usr/src/app/ghomejwt.json
+    env_file:
+     - .env
+    networks:
+      - alexa
 
+  redis: 
+    image: redis
+    container_name: redis
+    networks:
+      - alexa
+
+  mongo:
+    restart: on-failure:10
+    image: mongo:5.0.25
+    container_name: mongo
+    ports:
+      - 27017:27017
+    networks:
+      - alexa
+    env_file:
+     - .env
+   
+  
+
+networks:
+  alexa:
+    name: alexa
